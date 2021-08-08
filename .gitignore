@@ -1,3 +1,5 @@
+# CMake ignores template from https://github.com/github/gitignore/blob/master/CMake.gitignore
+
 CMakeLists.txt.user
 CMakeCache.txt
 CMakeFiles
@@ -9,3 +11,38 @@ install_manifest.txt
 compile_commands.json
 CTestTestfile.cmake
 _deps
+
+# C++ ignores template from https://github.com/github/gitignore/blob/master/C++.gitignore
+
+# Prerequisites
+*.d
+
+# Compiled Object files
+*.slo
+*.lo
+*.o
+*.obj
+
+# Precompiled Headers
+*.gch
+*.pch
+
+# Compiled Dynamic libraries
+*.so
+*.dylib
+*.dll
+
+# Fortran module files
+*.mod
+*.smod
+
+# Compiled Static libraries
+*.lai
+*.la
+*.a
+*.lib
+
+# Executables
+*.exe
+*.out
+*.app
