@@ -1,0 +1,32 @@
+set(FBXSDK_DIR "${PROJECT_SOURCE_DIR}/external/fbxsdk")
+
+find_package(FBXSDK)
+
+add_library(FBXSDK::FBXSDK SHARED IMPORTED)
+
+set_target_properties(FBXSDK::FBXSDK PROPERTIES
+    IMPORTED_IMPLIB_DEBUG "${FBXSDK_LIB}/debug/libfbxsdk-md.lib"
+    IMPORTED_IMPLIB_RELEASE "${FBXSDK_LIB}/release/libfbxsdk-md.lib"
+    IMPORTED_IMPLIB_MINSIZEREL "${FBXSDK_LIB}/release/libfbxsdk-md.lib"
+    INTERFACE_INCLUDE_DIRECTORIES "${FBXSDK_INCLUDE}"
+)
+
+add_library(FBXSDK::LIBXML2 SHARED IMPORTED)
+
+set_target_properties(FBXSDK::LIBXML2 PROPERTIES
+    IMPORTED_IMPLIB_DEBUG "${FBXSDK_LIB}/debug/libxml2-md.lib"
+    IMPORTED_IMPLIB_RELEASE "${FBXSDK_LIB}/release/libxml2-md.lib"
+    IMPORTED_IMPLIB_MINSIZEREL "${FBXSDK_LIB}/release/libxml2-md.lib"
+    INTERFACE_INCLUDE_DIRECTORIES "${FBXSDK_INCLUDE}"
+)
+
+add_library(FBXSDK::ZLIB SHARED IMPORTED)
+
+set_target_properties(FBXSDK::ZLIB PROPERTIES
+    IMPORTED_IMPLIB_DEBUG "${FBXSDK_LIB}/debug/zlib-md.lib"
+    IMPORTED_IMPLIB_RELEASE "${FBXSDK_LIB}/release/zlib-md.lib"
+    IMPORTED_IMPLIB_MINSIZEREL "${FBXSDK_LIB}/release/zlib-md.lib"
+    INTERFACE_INCLUDE_DIRECTORIES "${FBXSDK_INCLUDE}"
+)
+
+target_link_libraries(GrannyConverterLibrary PUBLIC FBXSDK::FBXSDK FBXSDK::LIBXML2 FBXSDK::ZLIB)
