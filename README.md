@@ -6,7 +6,7 @@ This library converts scenes of granny2 files from `*.gr2` to `*.fbx`.
 ## External requirements
 - Windows - Unix based operation systems are not supported.
 - Qt Framework 5.15.2 (msvc2019 x86) - https://www.qt.io/download-qt-installer (Alternative: https://github.com/miurahr/aqtinstall/)
-- DevIL 1.8.0 - http://openil.sourceforge.net/
+- DevIL 1.8.0 SDK - http://openil.sourceforge.net/
 - FBX SDK 2019.5 - https://www.autodesk.com/developer-network/platform-technologies/fbx-sdk-2019-5
 - granny2
 
@@ -17,8 +17,8 @@ Install the framework in version 5.15.2 (msvc2019 x86).
 
 Use the online installer from https://www.qt.io/download-qt-installer or as an alternative you can use the tool `aqtinstall` "Another (unofficial) Qt CLI Installer" from https://github.com/miurahr/aqtinstall/.
 
-### Setup DevIL
-Download DevIL image library from http://openil.sourceforge.net/download.php "DevIL 1.8.0 for 64-bit Windows" archive and extract its content to `external/devilsdk`.
+### Setup DevIL SDK
+Download DevIL 1.8.0 SDK from http://openil.sourceforge.net/download.php "DevIL 1.8.0 SDK for Windows" archive and extract its content to `external/devilsdk`.
 
 ### Setup FBX SDK
 Download installer "FBX SDK 2019.5 VS2017" for FBX SDK 2019.5 from https://www.autodesk.com/developer-network/platform-technologies/fbx-sdk-2019-5 and install it on your computer.
