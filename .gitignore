@@ -46,3 +46,7 @@ _deps
 *.exe
 *.out
 *.app
+
+# Project specific
+external/devilsdk
+external/granny2
