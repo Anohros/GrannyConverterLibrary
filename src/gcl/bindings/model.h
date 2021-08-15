@@ -56,7 +56,7 @@ public:
 
     ///
     /// \brief Returns if model has rigid body meshes.
-    /// \return
+    /// \return Returns whether model has at least one rigid meshes or not.
     ///
     bool hasRigidMeshes();
 
