@@ -1,8 +1,10 @@
 #include "gcl/importer/grannyimporteranimation.h"
 
-#include <QDebug>
+#include "gcl/utilities/logging.h"
 
 namespace GCL::Importer {
+
+using namespace GCL::Utilities::Logging;
 
 GrannyImporterAnimation::GrannyImporterAnimation(Scene::SharedPtr scene)
     : m_scene(scene)
@@ -15,10 +17,10 @@ GrannyImporterAnimation::~GrannyImporterAnimation()
 
 void GrannyImporterAnimation::importAnimations(GrannyFileInfo* grannyFileInfo) const
 {
-    qInfo("Load animations from granny file.");
+    info("Load animations from granny file.");
 
     if (!grannyFileInfo->AnimationCount) {
-        qWarning("Skip load animations because granny file does not have at least one animation.");
+        warning("Skip load animations because granny file does not have at least one animation.");
         return;
     }
 
@@ -35,12 +37,12 @@ void GrannyImporterAnimation::importAnimations(GrannyFileInfo* grannyFileInfo) c
             }
         }
     } else {
-        qWarning("Skip load animations because animation does not have at least one animation track.");
+        warning("Skip load animations because animation does not have at least one animation track.");
     }
 
     m_scene->addAnimation(animation);
 
-    qInfo("Added animation to scene.");
+    info("Added animation to scene.");
 }
 
 Track::SharedPtr GrannyImporterAnimation::importTrack(

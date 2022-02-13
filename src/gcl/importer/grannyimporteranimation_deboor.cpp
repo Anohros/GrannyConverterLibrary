@@ -1,7 +1,5 @@
 #include "gcl/importer/grannyimporteranimation_deboor.h"
 
-#include <QDebug>
-
 #include <vector>
 
 namespace GCL::Importer {

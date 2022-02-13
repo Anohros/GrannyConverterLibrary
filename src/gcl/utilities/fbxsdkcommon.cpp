@@ -1,19 +1,19 @@
 #include "gcl/utilities/fbxsdkcommon.h"
 
 #include "gcl/utilities/filestreamutility.h"
-
-#include <QDebug>
+#include "gcl/utilities/logging.h"
 
 namespace GCL::Utilities {
 
 using namespace std;
+using namespace GCL::Utilities::Logging;
 
 void FbxSdkCommon::InitializeSdkObjects(FbxManager*& manager, FbxScene*& scene)
 {
     manager = FbxManager::Create();
 
     if (!manager) {
-        qFatal("Unable to create FBX Manager!");
+        fatal("Unable to create FBX Manager!");
         exit(1);
     }
 
@@ -22,7 +22,7 @@ void FbxSdkCommon::InitializeSdkObjects(FbxManager*& manager, FbxScene*& scene)
     scene = FbxScene::Create(manager, "Scene");
 
     if (!scene) {
-        qFatal("Unable to create FBX scene!");
+        fatal("Unable to create FBX scene!");
         exit(1);
     }
 }
@@ -37,7 +37,7 @@ bool FbxSdkCommon::SaveScene(FbxManager* fbxManager, FbxDocument* document, cons
     FbxExporter* exporter = FbxExporter::Create(fbxManager, "");
 
     if (!exporter->SetFileExportVersion(FBX_2019_00_COMPATIBLE, FbxSceneRenamer::eNone)) {
-        qWarning("Failed to set file export version to fbx 2019.");
+        warning("Failed to set file export version to fbx 2019.");
     }
 
     auto ioPluginRegistry = fbxManager->GetIOPluginRegistry();
@@ -63,8 +63,8 @@ bool FbxSdkCommon::SaveScene(FbxManager* fbxManager, FbxDocument* document, cons
     settings->SetBoolProp(EXP_ASCIIFBX, ascii);
 
     if (exporter->Initialize(filename, fileFormat, settings) == false) {
-        qFatal("Failed to initialize fbx exporter!");
-        qFatal("Error returned: %s", exporter->GetStatus().GetErrorString());
+        fatal("Failed to initialize fbx exporter!");
+        fatal("Error returned: %s", exporter->GetStatus().GetErrorString());
         return false;
     }
 
