@@ -54,8 +54,9 @@ public:
     ///
     /// \brief Import the granny scene.
     /// \param Full filepath to the importing granny file.
+    /// \return Returns status whether file was imported successfully or skipped.
     ///
-    void importFromFile(const char* fullFilePath);
+    bool importFromFile(const char* fullFilePath);
 
     ///
     /// \brief Load and add materials from granny file to the scene.

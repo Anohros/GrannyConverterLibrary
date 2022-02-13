@@ -40,8 +40,13 @@ void GrannyImporter::initialize()
     m_importerAnimation = new GrannyImporterAnimation(m_scene);
 }
 
-void GrannyImporter::importFromFile(const char* grannyFilePath)
+bool GrannyImporter::importFromFile(const char* grannyFilePath)
 {
+    if (!ifstream(grannyFilePath).is_open()) {
+        warning("Skip import from file. File \"%s\" was not found.", grannyFilePath);
+        return false;
+    }
+
     info("Import granny file (file: \"%s\") to scene.", grannyFilePath);
 
     GrannyFile* grannyFile = GrannyReadEntireFile(grannyFilePath);
@@ -68,6 +73,8 @@ void GrannyImporter::importFromFile(const char* grannyFilePath)
 
     // Import all animations of the granny file to the scene.
     importAnimations(grannyFileInfo, grannyFilePath);
+
+    return true;
 }
 
 void GrannyImporter::importMaterials(GrannyFileInfo* grannyFileInfo, const char* grannyFilePath)
