@@ -27,3 +27,6 @@ target_compile_definitions(GrannyConverterLibrary PRIVATE GRANNYCONVERTERLIBRARY
 # DevIL SDK and FBX SDK
 include("${PROJECT_SOURCE_DIR}/cmake/devilsdk.cmake")
 include("${PROJECT_SOURCE_DIR}/cmake/fbxsdk.cmake")
+
+# Add examples.
+add_subdirectory(examples/converter)
