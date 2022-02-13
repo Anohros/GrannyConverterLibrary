@@ -1,9 +1,12 @@
 #include "gcl/importer/grannyimporter.h"
 
-#include <QDebug>
+#include "gcl/utilities/logging.h"
+
 #include <filesystem>
 
 namespace GCL::Importer {
+
+using namespace GCL::Utilities::Logging;
 
 GrannyImporter::GrannyImporter()
     : m_scene(new Scene())
@@ -39,7 +42,7 @@ void GrannyImporter::initialize()
 
 void GrannyImporter::importFromFile(const char* grannyFilePath)
 {
-    qInfo("Import granny file (file: \"%s\") to scene.", grannyFilePath);
+    info("Import granny file (file: \"%s\") to scene.", grannyFilePath);
 
     GrannyFile* grannyFile = GrannyReadEntireFile(grannyFilePath);
     GrannyFileInfo* grannyFileInfo = GrannyGetFileInfo(grannyFile);
@@ -50,7 +53,7 @@ void GrannyImporter::importFromFile(const char* grannyFilePath)
     auto searchPath = filesystem::path(grannyFilePath).parent_path();
     if (!searchPath.empty()) {
         searchPath = searchPath.u8string().append("/");
-        qDebug("Add search path \"%s\" to the scene.", searchPath.u8string().c_str());
+        debug("Add search path \"%s\" to the scene.", searchPath.u8string().c_str());
         m_scene->addSearchPath(searchPath.u8string());
     }
 
@@ -71,11 +74,11 @@ void GrannyImporter::importMaterials(GrannyFileInfo* grannyFileInfo, const char*
 {
     // Load materials from granny file only if it has at least one material.
     if (!grannyFileInfo->MaterialCount) {
-        qDebug("Skip load materials because granny file \"%s\" has no materials.", grannyFilePath);
+        debug("Skip load materials because granny file \"%s\" has no materials.", grannyFilePath);
         return;
     }
 
-    qInfo("Import materials from granny file \"%s\".", grannyFilePath);
+    info("Import materials from granny file \"%s\".", grannyFilePath);
     m_importerMaterial->importMaterials(grannyFileInfo);
 }
 
@@ -83,11 +86,11 @@ void GrannyImporter::importModels(GrannyFileInfo* grannyFileInfo, const char* gr
 {
     // Load models from granny file only if it has at least one model.
     if (!grannyFileInfo->ModelCount) {
-        qDebug("Skip load models because granny file (file: \"%s\") has no models.", grannyFilePath);
+        debug("Skip load models because granny file (file: \"%s\") has no models.", grannyFilePath);
         return;
     }
 
-    qInfo("Import models from granny file \"%s\".", grannyFilePath);
+    info("Import models from granny file \"%s\".", grannyFilePath);
     m_importerModel->importModels(grannyFileInfo);
 }
 
@@ -95,11 +98,11 @@ void GrannyImporter::importAnimations(GrannyFileInfo* grannyFileInfo, const char
 {
     // Load animations from granny file only if it has at least one animation.
     if (!grannyFileInfo->AnimationCount) {
-        qDebug("Skip load animations because granny file (file: \"%s\") has no animations.", grannyFilePath);
+        debug("Skip load animations because granny file (file: \"%s\") has no animations.", grannyFilePath);
         return;
     }
 
-    qInfo("Import animations from granny file \"%s\".", grannyFilePath);
+    info("Import animations from granny file \"%s\".", grannyFilePath);
     m_importerAnimation->importAnimations(grannyFileInfo);
 }
 

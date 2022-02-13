@@ -1,6 +1,8 @@
 #include "gcl/importer/grannyformat.h"
 
-#include <QDebug>
+#include "gcl/utilities/logging.h"
+
+using namespace GCL::Utilities::Logging;
 
 template <typename T>
 T GetGrannyFunction(HMODULE hModule, const char* lpProcName)
@@ -21,13 +23,13 @@ T GetGrannyFunction(HMODULE hModule, const char* lpProcName)
 bool InitializeGrannyLibrary()
 {
     if (!ifstream("granny2.dll").is_open()) {
-        qFatal("Could not locate \"granny2.dll\" library.");
+        fatal("Could not locate \"granny2.dll\" library.");
         return false;
     }
 
     auto grannyDllHandle = LoadLibraryW(L"granny2.dll");
     if (!grannyDllHandle) {
-        qFatal("Could not load \"granny2.dll\" library.");
+        fatal("Could not load \"granny2.dll\" library.");
         return false;
     }
 
@@ -62,7 +64,7 @@ bool InitializeGrannyLibrary()
         GrannyCurveInitializeFormat = GetGrannyFunction<GrannyCurveInitializeFormat_t>(grannyDllHandle, "_GrannyCurveInitializeFormat@4");
         GrannyCurveDataDaIdentityType = GetGrannyFunction<GrannyCurveDataDaIdentityType_t>(grannyDllHandle, "GrannyCurveDataDaIdentityType");
     } catch (std::runtime_error& error) {
-        qFatal(error.what());
+        fatal(error.what());
         return false;
     }
 

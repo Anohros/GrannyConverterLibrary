@@ -5,7 +5,6 @@ This library converts scenes of granny2 files from `*.gr2` to `*.fbx`.
 
 ## External requirements
 - Windows - Unix based operation systems are not supported.
-- Qt Framework 5.15.2 (msvc2019 x86) - https://www.qt.io/download-qt-installer (Alternative: https://github.com/miurahr/aqtinstall/)
 - DevIL 1.8.0 SDK - http://openil.sourceforge.net/
 - FBX SDK 2019.5 - https://www.autodesk.com/developer-network/platform-technologies/fbx-sdk-2019-5
 - granny2
@@ -33,8 +32,6 @@ set(FBXSDK_INCLUDE "C:/Program\ Files/Autodesk/FBX/FBX\ SDK/2019.5/include")
 Download an application with a licensed version of granny2 and copy its `granny2.dll` to `external/granny2/granny2.dll`. The version of the `granny2.dll` should be at least 2.9 up to 2.12 - tested version is 2.11 (recommended version).
 
 ## Setup IDE
-Use Qt Creator for development and build.
-
-Setup Qt Framework 5.15.2 (msvc2019 x86).
+Use Qt Creator for development and build (recommended).
 
 Open CMakeLists.txt as project.

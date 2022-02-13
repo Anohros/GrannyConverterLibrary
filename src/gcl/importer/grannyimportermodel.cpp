@@ -1,8 +1,10 @@
 #include "gcl/importer/grannyimportermodel.h"
 
-#include <QDebug>
+#include "gcl/utilities/logging.h"
 
 namespace GCL::Importer {
+
+using namespace GCL::Utilities::Logging;
 
 GrannyImporterModel::GrannyImporterModel(Scene::SharedPtr scene)
     : m_scene(scene)
@@ -23,7 +25,7 @@ void GrannyImporterModel::importModels(GrannyFileInfo* grannyFileInfo) const
 
 Model::SharedPtr GrannyImporterModel::importModel(GrannyModel* grannyModel) const
 {
-    qInfo("Import granny model (name: \"%s\") as scene model.", grannyModel->Name);
+    info("Import granny model (name: \"%s\") as scene model.", grannyModel->Name);
 
     const Model::SharedPtr model = make_shared<Model>(grannyModel);
 
