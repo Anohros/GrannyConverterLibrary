@@ -5,7 +5,7 @@ namespace GCL::Utilities::Logging {
 #define DEFAULT_LOG_FILE "grannyconverter.log"
 
 ///
-/// \brief Logs a message tou stdout and a log file.
+/// \brief Logs a message to stdout and a log file.
 /// \param level
 /// \param file
 /// \param line
