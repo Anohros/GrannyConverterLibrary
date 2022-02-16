@@ -21,7 +21,7 @@ void convertImage(string sourceFilePath, string targetFilePath, bool flipImage)
     ilBindImage(ImgId);
     ilLoadImage(sourceFilePath.c_str());
 
-    ilConvertImage(IL_RGB, IL_UNSIGNED_BYTE);
+    ilConvertImage(IL_RGBA, IL_UNSIGNED_BYTE);
 
     if (flipImage) {
         iluFlipImage();
