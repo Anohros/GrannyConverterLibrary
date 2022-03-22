@@ -54,7 +54,7 @@ public:
     vector<Animation::SharedPtr> getAnimations();
 
     ///
-    /// \brief Append a animation to the scene.
+    /// \brief Append an animation to the scene.
     /// \param Animation to be added to the scene.
     ///
     void addAnimation(Animation::SharedPtr animation);

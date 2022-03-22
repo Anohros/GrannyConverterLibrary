@@ -107,7 +107,7 @@ struct GrannyCurve2 {
 };
 
 ///
-/// \brief Stores all data of a animation transform track.
+/// \brief Stores all data of an animation transform track.
 ///
 struct GrannyTransformTrack {
     char const* Name;
@@ -118,7 +118,7 @@ struct GrannyTransformTrack {
 };
 
 ///
-/// \brief Stores all data of a animation track group.
+/// \brief Stores all data of an animation track group.
 ///
 struct GrannyTrackGroup {
     char const* Name;
@@ -319,7 +319,7 @@ enum GrannyCurveDataFormat {
 };
 
 ///
-/// \brief Stores all data of a animation like name and tracks.
+/// \brief Stores all data of an animation like name and tracks.
 ///
 struct GrannyAnimation {
     char const* Name;
