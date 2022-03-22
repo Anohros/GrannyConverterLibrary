@@ -17,6 +17,7 @@
 #include "gcl/importer/grannyimportermaterial.h"
 #include "gcl/importer/grannyimportermodel.h"
 #include "gcl/importer/grannyimporterskeleton.h"
+#include "gcl/importer/grannyimportoptions.h"
 
 #include <vector>
 
@@ -36,10 +37,23 @@ public:
     GrannyImporter();
 
     ///
-    /// \brief Constructor with data initialization to reuse a already initialized scene.
+    /// \brief Constructor with data initialization to reuse an already initialized scene.
     /// \param scene Already initialized scene to be reused.
     ///
     GrannyImporter(Scene::SharedPtr scene);
+
+    ///
+    /// \brief Constructer with extended options.
+    /// \param options Import options which define the way how a scene needs to be imported.
+    ///
+    GrannyImporter(GrannyImportOptions options);
+
+    ///
+    /// \brief Constructer with extended options and data initialization to reuse an already initialized scene.
+    /// \param options Import options which define the way how a scene needs to be imported.
+    /// \param scene Already initialized scene to be reused.
+    ///
+    GrannyImporter(GrannyImportOptions options, Scene::SharedPtr scene);
 
     ///
     /// \brief Destructor
@@ -86,6 +100,11 @@ public:
     Scene::SharedPtr getScene() const;
 
 protected:
+    ///
+    /// \brief Import options which define the way how a scene needs to be imported.
+    ///
+    GrannyImportOptions m_options;
+
     ///
     /// \brief Scene of the importing granny file.
     ///

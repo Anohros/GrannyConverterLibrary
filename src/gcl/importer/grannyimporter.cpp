@@ -20,6 +20,20 @@ GrannyImporter::GrannyImporter(Scene::SharedPtr scene)
     initialize();
 }
 
+GrannyImporter::GrannyImporter(GrannyImportOptions options)
+    : m_options(options)
+    , m_scene(new Scene())
+{
+    initialize();
+}
+
+GrannyImporter::GrannyImporter(GrannyImportOptions options, Scene::SharedPtr scene)
+    : m_options(options)
+    , m_scene(scene)
+{
+    initialize();
+}
+
 GrannyImporter::~GrannyImporter()
 {
     for (const auto& grannyFile : m_importedGrannyFiles) {
@@ -37,7 +51,14 @@ void GrannyImporter::initialize()
     m_importerMaterial = new GrannyImporterMaterial(m_scene);
     m_importerModel = new GrannyImporterModel(m_scene);
     m_importerSkeleton = new GrannyImporterSkeleton(m_scene);
-    m_importerAnimation = new GrannyImporterAnimation(m_scene);
+
+    // If option for deboor animation importer is enabled then use
+    // deboor animation importer otherwise default animation importer.
+    if (m_options.importAnimationDeboor) {
+        m_importerAnimation = new GrannyImporterAnimationDeboor(m_scene);
+    } else {
+        m_importerAnimation = new GrannyImporterAnimation(m_scene);
+    }
 }
 
 bool GrannyImporter::importFromFile(const char* grannyFilePath)
