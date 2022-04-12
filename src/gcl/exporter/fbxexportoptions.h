@@ -53,11 +53,10 @@ struct FbxExportOptions {
     ///
     /// \brief Sets whether to convert scene axis coordinate system.
     ///
+    /// You can specifiy different coordinate systems.
     /// Default is 3ds max coordinate system (right-handed z-up).
-    /// You can specifiy different coordinate systems by
-    /// upper or lowercase the letters to change +/- the axis.
     ///
-    string convertAxis = "XyZ";
+    string convertAxis = "xzy";
 };
 
 } // namespace GCL::Exporter
