@@ -51,7 +51,6 @@ void FbxExporterMesh::exportMesh(Model::SharedPtr model, Mesh::SharedPtr mesh, b
 
                 grannyVertexCounter++;
             }
-
         } else {
             for (auto vertex : grannyVertices) {
                 for (int i = 0; i < 4; i++) {
@@ -61,37 +60,6 @@ void FbxExporterMesh::exportMesh(Model::SharedPtr model, Mesh::SharedPtr mesh, b
                 }
 
                 grannyVertexCounter++;
-            }
-        }
-
-        auto initialTransform = FbxAMatrix(
-            FbxDouble3(0, 0, 0),
-            FbxDouble3(0, 0, 0),
-            FbxDouble3(1, 1, 1));
-
-        if (model->getBones()[0]->getData().LocalTransform.Flags == 0) {
-            auto initialPlacement = model->getData()->InitialPlacement;
-
-            if (initialPlacement.Flags & GrannyTransformFlags::GrannyHasPosition) {
-                initialTransform.SetT(FbxDouble3(
-                    static_cast<double>(initialPlacement.Position[0]),
-                    static_cast<double>(initialPlacement.Position[1]),
-                    static_cast<double>(initialPlacement.Position[2])));
-            }
-
-            if (initialPlacement.Flags & GrannyTransformFlags::GrannyHasOrientation) {
-                initialTransform.SetQ(FbxQuaternion(
-                    static_cast<double>(initialPlacement.Orientation[0]),
-                    static_cast<double>(initialPlacement.Orientation[1]),
-                    static_cast<double>(initialPlacement.Orientation[2]),
-                    static_cast<double>(initialPlacement.Orientation[3])));
-            }
-
-            if (initialPlacement.Flags & GrannyTransformFlags::GrannyHasScaleShear) {
-                initialTransform.SetS(FbxDouble3(
-                    static_cast<double>(initialPlacement.ScaleShear[0][0]),
-                    static_cast<double>(initialPlacement.ScaleShear[1][1]),
-                    static_cast<double>(initialPlacement.ScaleShear[2][2])));
             }
         }
 
