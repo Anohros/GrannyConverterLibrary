@@ -45,8 +45,10 @@ void FbxExporter::initialize()
     // Initialize the fbx sdk.
     FbxSdkCommon::InitializeSdkObjects(m_fbxManager, m_fbxScene);
 
-    // Convert the fbx scene to z-up.
-    FbxAxisSystem::Max.ConvertScene(m_fbxScene);
+    // Convert the axis coordinate system.
+    FbxAxisSystem axisSystem;
+    FbxAxisSystem::ParseAxisSystem(m_options.convertAxis.c_str(), axisSystem);
+    axisSystem.ConvertScene(m_fbxScene);
 
     if (!m_exporterModuleFactory) {
         m_exporterModuleFactory = new FbxExporterModuleFactory();

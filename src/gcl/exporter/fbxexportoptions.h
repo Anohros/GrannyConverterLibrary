@@ -1,6 +1,10 @@
 #pragma once
 
+#include <string>
+
 namespace GCL::Exporter {
+
+using namespace std;
 
 ///
 /// \brief Enableable / disableable options for the export of a model.
@@ -45,6 +49,15 @@ struct FbxExportOptions {
     /// otherwise disable it if you do not want that.
     ///
     bool exportAnimation = false;
+
+    ///
+    /// \brief Sets whether to convert scene axis coordinate system.
+    ///
+    /// Default is 3ds max coordinate system (right-handed z-up).
+    /// You can specifiy different coordinate systems by
+    /// upper or lowercase the letters to change +/- the axis.
+    ///
+    string convertAxis = "XyZ";
 };
 
 } // namespace GCL::Exporter
