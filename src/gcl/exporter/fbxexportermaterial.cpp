@@ -59,7 +59,10 @@ void FbxExporterMaterial::exportMaterial(string outputFilepath, Material::Shared
         auto sourceTextureFilePath = string(texture->FromFileName);
         auto sourceTextureFileName = sourceTextureFilePath;
 
-        const auto fileNameBeginsOffset = sourceTextureFilePath.find_last_of('\\');
+        auto fileNameBeginsOffset = sourceTextureFilePath.find_last_of('\\');
+        if (fileNameBeginsOffset == string::npos) {
+            fileNameBeginsOffset = sourceTextureFilePath.find_last_of('/');
+        }
 
         if (fileNameBeginsOffset != string::npos) {
             sourceTextureFileName = sourceTextureFilePath.substr(fileNameBeginsOffset + 1);
@@ -81,10 +84,16 @@ void FbxExporterMaterial::exportMaterial(string outputFilepath, Material::Shared
             }
         }
 
+        auto outputFilepathFileSeparator = outputFilepath.find_last_of('\\');
+        if (outputFilepathFileSeparator == string::npos) {
+            outputFilepathFileSeparator = outputFilepath.find_last_of('/');
+        }
+        const auto targetTextureFilePath = outputFilepath.substr(0, outputFilepathFileSeparator + 1) + textureFileNameWithExtension;
+
         if (ifstream(sourceTextureFilePath.c_str()).good()) {
-            const auto fileSeparator = outputFilepath.find_last_of('\\');
-            const auto targetTextureFilePath = outputFilepath.substr(0, fileSeparator + 1) + textureFileNameWithExtension;
             GCL::Utilities::convertImage(sourceTextureFilePath, targetTextureFilePath);
+        } else {
+            GCL::Utilities::exportTexture(texture, targetTextureFilePath, true);
         }
 
         material->setNode(addMaterial(materialName, textureFileNameWithExtension));

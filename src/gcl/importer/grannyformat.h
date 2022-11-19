@@ -497,13 +497,23 @@ typedef int(__stdcall* GrannyFindCloseKnot_t)(
     float t,
     int StartinIndex);
 
-typedef bool(__stdcall* GrannyCurveIsKeyframed_t)(
-    GrannyCurve2 const* Curve);
-
-typedef void(__stdcall* GrannyCurveInitializeFormat_t)(
-    GrannyCurve2* Curve);
-
+typedef bool(__stdcall* GrannyCurveIsKeyframed_t)(GrannyCurve2 const* Curve);
+typedef void(__stdcall* GrannyCurveInitializeFormat_t)(GrannyCurve2* Curve);
+typedef void(__stdcall* GrannyCurveInitializeFormat_t)(GrannyCurve2* Curve);
 typedef GrannyDataTypeDefinition* GrannyCurveDataDaIdentityType_t;
+typedef bool(__stdcall* GrannyTextureHasAlpha_t)(GrannyTexture const* Texture);
+typedef GrannyPixelLayout* GrannyRGBA8888PixelFormat_t;
+typedef GrannyPixelLayout* GrannyRGB888PixelFormat_t;
+
+typedef void(__stdcall* GrannyCopyTextureImage_t)(
+    GrannyTexture const* Texture,
+    int ImageIndex,
+    int MIPIndex,
+    GrannyPixelLayout const* Layout,
+    int DestWidth,
+    int DestHeight,
+    int DestStride,
+    void* Pixels);
 
 // Declarations for required functions of granny2 dll.
 // Declarations will get assigned by InitializeGrannyLibrary function.
@@ -537,6 +547,10 @@ inline GrannyFindCloseKnot_t GrannyFindCloseKnot = nullptr;
 inline GrannyCurveIsKeyframed_t GrannyCurveIsKeyframed = nullptr;
 inline GrannyCurveInitializeFormat_t GrannyCurveInitializeFormat = nullptr;
 inline GrannyCurveDataDaIdentityType_t GrannyCurveDataDaIdentityType = nullptr;
+inline GrannyTextureHasAlpha_t GrannyTextureHasAlpha = nullptr;
+inline GrannyRGBA8888PixelFormat_t GrannyRGBA8888PixelFormat = nullptr;
+inline GrannyRGB888PixelFormat_t GrannyRGB888PixelFormat = nullptr;
+inline GrannyCopyTextureImage_t GrannyCopyTextureImage = nullptr;
 
 ///
 /// \brief Returns function pointer to a function from granny2 dll.

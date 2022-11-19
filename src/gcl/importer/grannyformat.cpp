@@ -63,6 +63,10 @@ bool InitializeGrannyLibrary()
         GrannyCurveIsKeyframed = GetGrannyFunction<GrannyCurveIsKeyframed_t>(grannyDllHandle, "_GrannyCurveIsKeyframed@4");
         GrannyCurveInitializeFormat = GetGrannyFunction<GrannyCurveInitializeFormat_t>(grannyDllHandle, "_GrannyCurveInitializeFormat@4");
         GrannyCurveDataDaIdentityType = GetGrannyFunction<GrannyCurveDataDaIdentityType_t>(grannyDllHandle, "GrannyCurveDataDaIdentityType");
+        GrannyTextureHasAlpha = GetGrannyFunction<GrannyTextureHasAlpha_t>(grannyDllHandle, "_GrannyTextureHasAlpha@4");
+        GrannyRGBA8888PixelFormat = *GetGrannyFunction<GrannyRGBA8888PixelFormat_t*>(grannyDllHandle, "GrannyRGBA8888PixelFormat");
+        GrannyRGB888PixelFormat = *GetGrannyFunction<GrannyRGB888PixelFormat_t*>(grannyDllHandle, "GrannyRGB888PixelFormat");
+        GrannyCopyTextureImage = GetGrannyFunction<GrannyCopyTextureImage_t>(grannyDllHandle, "_GrannyCopyTextureImage@32");
     } catch (std::runtime_error& error) {
         fatal(error.what());
         return false;

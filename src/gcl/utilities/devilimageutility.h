@@ -20,6 +20,7 @@ void shutdownDevilImageLibrary();
 /// \brief Converts a image using devil image library.
 /// \param sourceFilePath
 /// \param targetFilePath
+/// \param flipImage
 ///
 void convertImage(string sourceFilePath, string targetFilePath, bool flipImage = false);
 
