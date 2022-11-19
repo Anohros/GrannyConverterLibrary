@@ -16,9 +16,9 @@ void shutdownDevilImageLibrary()
 
 void convertImage(string sourceFilePath, string targetFilePath, bool flipImage)
 {
-    ILuint ImgId;
-    ilGenImages(1, &ImgId);
-    ilBindImage(ImgId);
+    ILuint imageId;
+    ilGenImages(1, &imageId);
+    ilBindImage(imageId);
     ilLoadImage(sourceFilePath.c_str());
 
     ilConvertImage(IL_RGBA, IL_UNSIGNED_BYTE);
@@ -28,7 +28,7 @@ void convertImage(string sourceFilePath, string targetFilePath, bool flipImage)
     }
 
     ilSaveImage(targetFilePath.c_str());
-    ilDeleteImage(ImgId);
+    ilDeleteImage(imageId);
 }
 
 } // namespace GCL::Utilities

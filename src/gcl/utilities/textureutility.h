@@ -11,4 +11,12 @@ namespace GCL::Utilities {
 ///
 GrannyTexture* getMaterialTexture(GrannyMaterial* grannyMaterial);
 
+///
+/// \brief Exports a embedded texture from granny2 to a file.
+/// \param grannyTexture Granny texture
+/// \param textureFilePath Export file path for the granny texture.
+/// \param flipImage If image should be flipped.
+///
+void exportTexture(GrannyTexture* grannyTexture, string textureFilePath, bool flipImage = false);
+
 } // namespace GCL::Utilities
