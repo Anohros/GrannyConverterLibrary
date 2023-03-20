@@ -60,6 +60,18 @@ public:
     void addAnimation(Animation::SharedPtr animation);
 
     ///
+    /// \brief Returns all imported file paths of the scene.
+    /// \return Imported files paths
+    ///
+    set<string> getImportedFilePaths();
+
+    ///
+    /// \brief Append a imported file path to the scene.
+    /// \param importedFilePath Imported file path to be added.
+    ///
+    void addImportedFilePath(string importedFilePath);
+
+    ///
     /// \brief Returns all search paths of the scene.
     /// \return Search paths to look up for scene relevant files e.g. textures.
     ///
@@ -86,6 +98,11 @@ protected:
     /// \brief Animations of the scene.
     ///
     vector<Animation::SharedPtr> m_animations;
+
+    ///
+    /// \brief Imported file paths of the scene.
+    ///
+    set<string> m_importedFilePaths;
 
     ///
     /// \brief Search paths to look up for scene relevant files e.g. textures.

@@ -73,7 +73,11 @@ bool GrannyImporter::importFromFile(const char* grannyFilePath)
     GrannyFile* grannyFile = GrannyReadEntireFile(grannyFilePath);
     GrannyFileInfo* grannyFileInfo = GrannyGetFileInfo(grannyFile);
 
+    // Add granny file to list of imported granny files.
     m_importedGrannyFiles.push_back(grannyFile);
+
+    // Add granny file path to the imported file paths of the scene.
+    m_scene->addImportedFilePath(grannyFilePath);
 
     // Add granny file base path as search path for textures.
     auto searchPath = filesystem::path(grannyFilePath).parent_path();
