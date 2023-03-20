@@ -11,10 +11,22 @@ GrannyTexture* getMaterialTexture(GrannyMaterial* grannyMaterial)
     GrannyTexture* texture = nullptr;
 
     if (grannyMaterial->MapCount) {
-        texture = grannyMaterial->Maps[0].Material->Texture;
+        GrannyMaterialMap* map = &grannyMaterial->Maps[0];
 
-        if (!texture && grannyMaterial->Maps[0].Material->MapCount) {
-            texture = grannyMaterial->Maps[0].Material->Maps[0].Material->Texture;
+        for (auto i = 0; i < grannyMaterial->MapCount; i++) {
+            auto currentMap = &grannyMaterial->Maps[i];
+            auto isColor = _stricmp(currentMap->Usage, "color") == 0 || _stricmp(currentMap->Usage, "Diffuse color") == 0;
+            auto isTexture = currentMap->Material->Texture != nullptr;
+            if (isColor && isTexture) {
+                map = currentMap;
+                break;
+            }
+        }
+
+        texture = map->Material->Texture;
+
+        if (!texture && map->Material->MapCount) {
+            texture = map->Material->Maps[0].Material->Texture;
         }
     } else {
         texture = grannyMaterial->Texture;
