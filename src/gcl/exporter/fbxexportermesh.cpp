@@ -101,59 +101,56 @@ FbxMesh* FbxExporterMesh::exportFbxMesh(Mesh::SharedPtr mesh)
 
     // Get vertices.
     auto grannyVertices = mesh->getRigidVertices();
-    unsigned VertCount(grannyVertices.size());
 
     // Create control points.
-    fbxMesh->InitControlPoints(static_cast<int>(VertCount));
-    FbxVector4* ControlPoints = fbxMesh->GetControlPoints();
-
-    // Get default layer or create.
-    FbxLayer* defaultLayer = fbxMesh->GetLayer(0);
-
-    if (defaultLayer == nullptr) {
-        fbxMesh->CreateLayer();
-        defaultLayer = fbxMesh->GetLayer(0);
-    }
-
-    // Create normal layer.
-    FbxLayerElementNormal* normalLayer = FbxLayerElementNormal::Create(fbxMesh, "");
-    normalLayer->SetMappingMode(FbxLayerElement::eByControlPoint);
-    normalLayer->SetReferenceMode(FbxLayerElement::eDirect);
-
-    // Create diffuse layer.
-    FbxLayerElementUV* diffuseLayer = FbxLayerElementUV::Create(fbxMesh, "DiffuseUV");
-    diffuseLayer->SetMappingMode(FbxLayerElement::eByControlPoint);
-    diffuseLayer->SetReferenceMode(FbxLayerElement::eDirect);
-    defaultLayer->SetUVs(diffuseLayer, FbxLayerElement::eTextureDiffuse);
+    unsigned verticesCount(grannyVertices.size());
+    fbxMesh->InitControlPoints(static_cast<int>(verticesCount));
+    FbxVector4* controlPoints = fbxMesh->GetControlPoints();
 
     for (unsigned i = 0; i < grannyVertices.size(); i++) {
-        ControlPoints[i] = FbxVector4(
+        controlPoints[i] = FbxVector4(
             static_cast<double>(grannyVertices[i].Position[0]),
             static_cast<double>(grannyVertices[i].Position[1]),
             static_cast<double>(grannyVertices[i].Position[2]));
+    }
 
+    // Create normal layer.
+    FbxLayerElementNormal* normalLayer = fbxMesh->CreateElementNormal();
+    normalLayer->SetMappingMode(FbxLayerElement::eByControlPoint);
+    normalLayer->SetReferenceMode(FbxLayerElement::eDirect);
+
+    for (unsigned i = 0; i < grannyVertices.size(); i++) {
         normalLayer->GetDirectArray().Add(FbxVector4(
             static_cast<double>(grannyVertices[i].Normal[0]),
             static_cast<double>(grannyVertices[i].Normal[1]),
             static_cast<double>(grannyVertices[i].Normal[2])));
-
-        diffuseLayer->GetDirectArray().Add(FbxVector2(
-            static_cast<double>(grannyVertices[i].UV[0]),
-            static_cast<double>(-grannyVertices[i].UV[1])));
     }
 
-    defaultLayer->SetNormals(normalLayer);
-    defaultLayer->SetUVs(diffuseLayer);
+    // Create uv-set 1.
+    FbxGeometryElementUV* uv1 = fbxMesh->CreateElementUV("UV1");
+    uv1->SetMappingMode(FbxLayerElement::eByControlPoint);
+    uv1->SetReferenceMode(FbxLayerElement::eDirect);
 
-    // Create material layer.
-    FbxLayerElementMaterial* materialLayer = FbxLayerElementMaterial::Create(fbxMesh, "");
-    materialLayer->SetMappingMode(FbxLayerElement::eByPolygon);
-    materialLayer->SetReferenceMode(FbxLayerElement::eIndexToDirect);
-    defaultLayer->SetMaterials(materialLayer);
+    for (unsigned i = 0; i < grannyVertices.size(); i++) {
+        uv1->GetDirectArray().Add(FbxVector2(
+            static_cast<double>(grannyVertices[i].UV1[0]),
+            static_cast<double>(1.0 - grannyVertices[i].UV1[1])));
+    }
 
+    // Create uv-set 2.
+    FbxGeometryElementUV* uv2 = fbxMesh->CreateElementUV("UV2");
+    uv2->SetMappingMode(FbxLayerElement::eByControlPoint);
+    uv2->SetReferenceMode(FbxLayerElement::eDirect);
+
+    for (unsigned i = 0; i < grannyVertices.size(); i++) {
+        uv2->GetDirectArray().Add(FbxVector2(
+            static_cast<double>(grannyVertices[i].UV2[0]),
+            static_cast<double>(1.0 - grannyVertices[i].UV2[1])));
+    }
+
+    // Create indices.
     const auto indexCount = GrannyGetMeshIndexCount(mesh->getData());
     const auto indexArray = new int[static_cast<unsigned>(indexCount)];
-
     GrannyCopyMeshIndices(mesh->getData(), 4, indexArray);
 
     // TODO: Refactor
