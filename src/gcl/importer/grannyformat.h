@@ -320,9 +320,9 @@ struct GrannyPWNT3432Vertex {
 #define GrannyVertexTextureCoordinatesName "TextureCoordinates"
 
 ///
-/// \brief Defines a 5 components based vertex structure PWNTT.
+/// \brief Defines a 5 components based vertex structure PWNT.
 ///
-/// Meaning of PWNTT:
+/// Meaning of PWNT:
 ///  P: Position
 ///  W: Weights
 ///  N: Normal
@@ -341,7 +341,7 @@ static GrannyDataTypeDefinition GrannyPWNT34322VertexType[] = {
 ///
 /// \brief Stores vertex data of a variant of 5 components based vertex structure.
 ///
-/// Meaning of PWNTT:
+/// Meaning of PWNT:
 ///  P: Position
 ///  W: Weights
 ///  N: Normal
