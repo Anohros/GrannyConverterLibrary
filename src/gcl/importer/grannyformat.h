@@ -46,6 +46,50 @@ struct GrannyVariant {
 };
 
 ///
+/// \brief Member types for custom data type definitions.
+///
+enum GrannyMemberType {
+    GrannyEndMember,
+    GrannyInlineMember,
+    GrannyReferenceMember,
+    GrannyReferenceToArrayMember,
+    GrannyArrayOfReferencesMember,
+    GrannyVariantReferenceMember,
+    GrannyUnsupportedMemberType_Remove,
+    GrannyReferenceToVariantArrayMember,
+    GrannyStringMember,
+    GrannyTransformMember,
+    GrannyReal32Member,
+    GrannyInt8Member,
+    GrannyUInt8Member,
+    GrannyBinormalInt8Member,
+    GrannyNormalUInt8Member,
+    GrannyInt16Member,
+    GrannyUInt16Member,
+    GrannyBinormalInt16Member,
+    GrannyNormalUInt16Member,
+    GrannyInt32Member,
+    GrannyUInt32Member,
+    GrannyReal16Member,
+    GrannyEmptyReferenceMember,
+    GrannyOnePastLastMemberType,
+    GrannyBool32Member = GrannyInt32Member,
+    GrannyMemberTypeForceInt = 0x7fffffff
+};
+
+///
+/// \brief Defines a custom data type .e.g. for extensions.
+///
+struct GrannyDataTypeDefinition {
+    GrannyMemberType Type;
+    char const* Name = "";
+    GrannyDataTypeDefinition* ReferenceType = nullptr;
+    int ArrayWidth = 0;
+    int Extra[3] = { 0, 0, 0 };
+    void* Ignored_Ignored = nullptr;
+};
+
+///
 /// \brief Stores all data of a texture.
 ///
 struct GrannyTexture {
@@ -212,7 +256,7 @@ struct GrannyTriTopology {
 /// \brief Stores all vertex data of a mesh.
 ///
 struct GrannyVertexData {
-    void* VertexType;
+    GrannyDataTypeDefinition* VertexType;
     int VertexCount;
     unsigned char* Vertices;
     int VertexComponentNameCount;
@@ -271,6 +315,45 @@ struct GrannyPWNT3432Vertex {
     unsigned char BoneIndices[4];
     float Normal[3];
     float UV[2];
+};
+
+#define GrannyVertexTextureCoordinatesName "TextureCoordinates"
+
+///
+/// \brief Defines a 5 components based vertex structure PWNTT.
+///
+/// Meaning of PWNTT:
+///  P: Position
+///  W: Weights
+///  N: Normal
+///  T: Texture coordinates for uv channel 1 and 2
+///
+static GrannyDataTypeDefinition GrannyPWNT34322VertexType[] = {
+    { GrannyReal32Member, "Position", 0, 3 },
+    { GrannyUInt8Member, "BoneWeights", 0, 4 },
+    { GrannyUInt8Member, "BoneIndices", 0, 4 },
+    { GrannyReal32Member, "Normal", 0, 3 },
+    { GrannyReal32Member, GrannyVertexTextureCoordinatesName "0", 0, 2 },
+    { GrannyReal32Member, GrannyVertexTextureCoordinatesName "1", 0, 2 },
+    { GrannyEndMember },
+};
+
+///
+/// \brief Stores vertex data of a variant of 5 components based vertex structure.
+///
+/// Meaning of PWNTT:
+///  P: Position
+///  W: Weights
+///  N: Normal
+///  T: Texture coordinates for uv channel 1 (UV1) and 2 (UV2)
+///
+struct GrannyPWNT34322Vertex {
+    float Position[3];
+    unsigned char BoneWeights[4];
+    unsigned char BoneIndices[4];
+    float Normal[3];
+    float UV1[2];
+    float UV2[2];
 };
 
 ///
@@ -346,18 +429,6 @@ enum GrannyTransformFlags {
 };
 
 ///
-/// \brief Stores type definitions .e.g. custom types for extensions.
-///
-struct GrannyDataTypeDefinition {
-    void* Type;
-    char const* Name;
-    GrannyDataTypeDefinition* ReferenceType;
-    void* ArrayWidth;
-    void* Extra[3];
-    void* Ignored_Ignored;
-};
-
-///
 /// \brief Stores all header and data blocks of a granny file.
 ///
 struct GrannyFile {
@@ -415,7 +486,7 @@ typedef GrannyFile*(__stdcall* GrannyReadEntireFile_t)(const char* FileName);
 typedef GrannyFileInfo*(__stdcall* GrannyGetFileInfo_t)(GrannyFile* File);
 typedef void(__stdcall* GrannyFreeFile_t)(GrannyFile* File);
 typedef int(__stdcall* GrannyGetMeshVertexCount_t)(GrannyMesh const* Mesh);
-typedef void(__stdcall* GrannyCopyMeshVertices_t)(GrannyMesh const* Mesh, int VertexType, void* DestVertices);
+typedef void(__stdcall* GrannyCopyMeshVertices_t)(GrannyMesh const* Mesh, GrannyDataTypeDefinition const* VertexType, void* DestVertices);
 typedef int(__stdcall* GrannyGetMeshIndexCount_t)(GrannyMesh const* Mesh);
 typedef void(__stdcall* GrannyCopyMeshIndices_t)(GrannyMesh const* Mesh, int BytesPerIndex, void* DestIndices);
 typedef void(__stdcall* GrannyBuildCompositeTransform4x4_t)(GrannyTransform const* Transform, float* Composite4x4);
@@ -521,7 +592,7 @@ typedef void(__stdcall* GrannyCopyTextureImage_t)(
 inline GrannyReadEntireFile_t GrannyReadEntireFile = nullptr;
 inline GrannyGetFileInfo_t GrannyGetFileInfo = nullptr;
 inline GrannyFreeFile_t GrannyFreeFile = nullptr;
-inline int GrannyPWNT3432VertexType = 0;
+inline GrannyDataTypeDefinition* GrannyPWNT3432VertexType = 0;
 inline GrannyGetMeshVertexCount_t GrannyGetMeshVertexCount = nullptr;
 inline GrannyGetMeshIndexCount_t GrannyGetMeshIndexCount = nullptr;
 inline GrannyCopyMeshVertices_t GrannyCopyMeshVertices = nullptr;

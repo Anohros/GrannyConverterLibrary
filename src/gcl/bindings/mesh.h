@@ -70,7 +70,7 @@ public:
     /// \brief Returns rigid vertices.
     /// \return Vertices
     ///
-    vector<GrannyPWNT3432Vertex> getRigidVertices();
+    vector<GrannyPWNT34322Vertex> getRigidVertices();
 
 protected:
     ///

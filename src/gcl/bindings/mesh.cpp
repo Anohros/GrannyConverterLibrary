@@ -43,15 +43,15 @@ bool Mesh::isRigid()
     return GrannyMeshIsRigid(m_data);
 }
 
-vector<GrannyPWNT3432Vertex> Mesh::getRigidVertices()
+vector<GrannyPWNT34322Vertex> Mesh::getRigidVertices()
 {
     unsigned grannyVertexCount = static_cast<unsigned>(GrannyGetMeshVertexCount(m_data));
-    GrannyPWNT3432Vertex* grannyVertices = new GrannyPWNT3432Vertex[grannyVertexCount];
+    GrannyPWNT34322Vertex* grannyVertices = new GrannyPWNT34322Vertex[grannyVertexCount];
 
-    vector<GrannyPWNT3432Vertex> rigidVertices;
+    vector<GrannyPWNT34322Vertex> rigidVertices;
     rigidVertices.reserve(grannyVertexCount);
 
-    GrannyCopyMeshVertices(m_data, GrannyPWNT3432VertexType, grannyVertices);
+    GrannyCopyMeshVertices(m_data, GrannyPWNT34322VertexType, grannyVertices);
 
     for (unsigned i = 0; i < grannyVertexCount; i++) {
         rigidVertices.push_back(grannyVertices[i]);
