@@ -330,7 +330,7 @@ struct GrannyPWNT3432Vertex {
 ///
 static GrannyDataTypeDefinition GrannyPWNT34322VertexType[] = {
     { GrannyReal32Member, "Position", 0, 3 },
-    { GrannyUInt8Member, "BoneWeights", 0, 4 },
+    { GrannyNormalUInt8Member, "BoneWeights", 0, 4 },
     { GrannyUInt8Member, "BoneIndices", 0, 4 },
     { GrannyReal32Member, "Normal", 0, 3 },
     { GrannyReal32Member, GrannyVertexTextureCoordinatesName "0", 0, 2 },
