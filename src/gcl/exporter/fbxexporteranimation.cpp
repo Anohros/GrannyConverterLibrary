@@ -7,26 +7,7 @@ namespace GCL::Exporter {
 
 void FbxExporterAnimation::exportAnimations()
 {
-    // Create a list with names of all model.
-    vector<string> modelList;
-
-    // Create bone map for easier access later.
-    map<string, FbxNode*> boneMap;
-
-    for (const auto& model : m_scene->getModels()) {
-        // Add model name to model list.
-        modelList.push_back(model->getData()->Name);
-
-        // Add bone to bone map.
-        auto bones = model->getBones();
-
-        if (bones.size() > 1) {
-            for (auto bone : bones) {
-                boneMap[bone->getData().Name] = bone->getNode();
-            }
-            break;
-        }
-    }
+    vector<string> modelNames;
 
     for (auto animation : m_scene->getAnimations()) {
         if (animation->isExcluded()) {
@@ -41,40 +22,54 @@ void FbxExporterAnimation::exportAnimations()
 
         animStack->AddMember(animLayer);
 
-        if (boneMap.size() == 0 && animation->getTracks().size() > 0) {
-            string groupName = animation->getTracks().at(0)->getName();
+        for (const auto& model : m_scene->getModels()) {
+            modelNames.push_back(model->getData()->Name);
 
-            for (auto track : animation->getTracks()) {
-                if (find(modelList.begin(), modelList.end(), track->getName()) != modelList.end()) {
-                    groupName = track->getName();
-                    break;
+            // Create bone map for easier access later.
+            map<string, FbxNode*> boneMap;
+            auto bones = model->getBones();
+            if (bones.size() > 1) {
+                for (auto bone : bones) {
+                    boneMap[bone->getData().Name] = bone->getNode();
                 }
             }
 
+            // Construct bone map here if previous generation resulted with nothing.
+            if (boneMap.size() == 0 && animation->getTracks().size() > 0) {
+                string groupName = animation->getTracks().at(0)->getName();
+
+                for (auto track : animation->getTracks()) {
+                    if (find(modelNames.begin(), modelNames.end(), track->getName()) != modelNames.end()) {
+                        groupName = track->getName();
+                        break;
+                    }
+                }
+
+                for (auto track : animation->getTracks()) {
+                    auto trackName = track->getName();
+                    auto trackNameC = trackName.c_str();
+                    auto boneNode = FbxNode::Create(m_fbxScene, trackNameC);
+                    auto skeleton = FbxSkeleton::Create(m_fbxScene, trackNameC);
+
+                    if (groupName == trackName) {
+                        skeleton->SetSkeletonType(FbxSkeleton::eRoot);
+                    } else {
+                        skeleton->SetSkeletonType(FbxSkeleton::eLimbNode);
+                    }
+
+                    boneNode->SetNodeAttribute(skeleton);
+                    boneMap[trackName] = boneNode;
+                }
+            }
+
+            // Export all tracks.
             for (auto track : animation->getTracks()) {
                 auto trackName = track->getName();
-                auto trackNameC = trackName.c_str();
-                auto boneNode = FbxNode::Create(m_fbxScene, trackNameC);
-                auto skeleton = FbxSkeleton::Create(m_fbxScene, trackNameC);
 
-                if (groupName == trackName) {
-                    skeleton->SetSkeletonType(FbxSkeleton::eRoot);
-                } else {
-                    skeleton->SetSkeletonType(FbxSkeleton::eLimbNode);
+                // Export curves if bone exist in current loaded skeleton.
+                if (boneMap[trackName]) {
+                    exportCurves(track, boneMap[trackName], animLayer);
                 }
-
-                boneNode->SetNodeAttribute(skeleton);
-                boneMap[trackName] = boneNode;
-            }
-        }
-
-        // Export all tracks.
-        for (auto track : animation->getTracks()) {
-            auto trackName = track->getName();
-
-            // Export curves if bone exist in current loaded skeleton.
-            if (boneMap[trackName]) {
-                exportCurves(track, boneMap[trackName], animLayer);
             }
         }
     }
