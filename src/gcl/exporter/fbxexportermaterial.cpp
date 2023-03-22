@@ -24,28 +24,86 @@ void FbxExporterMaterial::exportMaterials(string outputFilepath)
     }
 }
 
-FbxSurfaceMaterial* FbxExporterMaterial::addMaterial(const string materialName, const string textureFilePath)
+string FbxExporterMaterial::getTextureFilePath(string outputFilepath, GrannyTexture* texture)
 {
-    auto texture = FbxFileTexture::Create(m_fbxScene, materialName.c_str());
+    auto sourceTextureFilePath = string(texture->FromFileName);
+    auto sourceTextureFileName = sourceTextureFilePath;
 
+    auto fileNameBeginsOffset = sourceTextureFilePath.find_last_of('\\');
+    if (fileNameBeginsOffset == string::npos) {
+        fileNameBeginsOffset = sourceTextureFilePath.find_last_of('/');
+    }
+
+    if (fileNameBeginsOffset != string::npos) {
+        sourceTextureFileName = sourceTextureFilePath.substr(fileNameBeginsOffset + 1);
+    }
+
+    const auto textureFileNameWithoutExtension = sourceTextureFileName.substr(0, sourceTextureFileName.find_first_of('.'));
+    const auto textureFileNameWithExtension = sanitizeFileName(textureFileNameWithoutExtension).append(".png");
+
+    if (!ifstream(sourceTextureFilePath.c_str()).good()) {
+        if (ifstream(sourceTextureFileName.c_str()).good()) {
+            sourceTextureFilePath = sourceTextureFileName;
+        } else {
+            for (auto& searchPath : m_scene->getSearchPaths()) {
+                if (ifstream((searchPath + sourceTextureFileName).c_str()).good()) {
+                    sourceTextureFilePath = searchPath + sourceTextureFileName;
+                    break;
+                }
+            }
+        }
+    }
+
+    auto outputFilepathFileSeparator = outputFilepath.find_last_of('\\');
+    if (outputFilepathFileSeparator == string::npos) {
+        outputFilepathFileSeparator = outputFilepath.find_last_of('/');
+    }
+    const auto targetTextureFilePath = outputFilepath.substr(0, outputFilepathFileSeparator + 1) + textureFileNameWithExtension;
+
+    if (ifstream(sourceTextureFilePath.c_str()).good()) {
+        GCL::Utilities::convertImage(sourceTextureFilePath, targetTextureFilePath);
+    } else {
+        GCL::Utilities::exportTexture(texture, targetTextureFilePath, true);
+    }
+
+    return textureFileNameWithExtension;
+}
+
+FbxSurfaceMaterial* FbxExporterMaterial::addMaterial(
+    Material::SharedPtr material,
+    const string materialName,
+    const string outputFilepath,
+    const string textureFilePath)
+{
+    auto texture = FbxFileTexture::Create(m_fbxScene, "Diffuse Texture");
     if (!textureFilePath.empty()) {
         texture->SetFileName(textureFilePath.c_str());
     }
+    texture->SetMaterialUse(FbxFileTexture::eModelMaterial);
+    texture->UVSet.Set("UV1");
 
-    texture->SetTextureUse(FbxTexture::ETextureUse::eStandard);
-    texture->SetMappingType(FbxTexture::EMappingType::eUV);
-    texture->SetMaterialUse(FbxFileTexture::EMaterialUse::eModelMaterial);
-    texture->SetSwapUV(false);
-    texture->SetTranslation(0.0, 0.0);
-    texture->SetScale(1.0, 1.0);
-    texture->SetRotation(0.0, 0.0);
-    texture->SetPremultiplyAlpha(false);
+    FbxFileTexture* ambientTexture = nullptr;
+    if (material->getData()->MapCount > 1) {
+        const auto grannyAmbientTexture = GCL::Utilities::getMaterialTexture(material->getData()->Maps[1].Material);
+        if (grannyAmbientTexture != nullptr) {
+            ambientTexture = FbxFileTexture::Create(m_fbxScene, "Ambient Texture");
+            const string ambientTextureFilePath = getTextureFilePath(outputFilepath, grannyAmbientTexture);
+            if (!ambientTextureFilePath.empty()) {
+                ambientTexture->SetFileName(ambientTextureFilePath.c_str());
+            }
+            ambientTexture->SetMaterialUse(FbxFileTexture::eModelMaterial);
+            ambientTexture->UVSet.Set("UV2");
+        }
+    }
 
-    auto material = FbxSurfacePhong::Create(m_fbxScene, materialName.c_str());
-    material->Diffuse.ConnectSrcObject(texture);
-    material->SpecularFactor.Set(0);
+    auto phongMaterial = FbxSurfacePhong::Create(m_fbxScene, materialName.c_str());
+    if (ambientTexture != nullptr) {
+        phongMaterial->Ambient.ConnectSrcObject(ambientTexture);
+    }
+    phongMaterial->Diffuse.ConnectSrcObject(texture);
+    phongMaterial->ShadingModel.Set("Phong");
 
-    return material;
+    return phongMaterial;
 }
 
 void FbxExporterMaterial::exportMaterial(string outputFilepath, Material::SharedPtr material)
@@ -53,50 +111,15 @@ void FbxExporterMaterial::exportMaterial(string outputFilepath, Material::Shared
     const auto materialName = sanitizeMaterialName(string(material->getData()->Name));
     const auto texture = GCL::Utilities::getMaterialTexture(material->getData());
 
+    if (material->getData()->Texture) {
+        return;
+    }
+
     if (!texture) {
-        material->setNode(addMaterial(materialName));
+        material->setNode(addMaterial(material, materialName, outputFilepath));
     } else {
-        auto sourceTextureFilePath = string(texture->FromFileName);
-        auto sourceTextureFileName = sourceTextureFilePath;
-
-        auto fileNameBeginsOffset = sourceTextureFilePath.find_last_of('\\');
-        if (fileNameBeginsOffset == string::npos) {
-            fileNameBeginsOffset = sourceTextureFilePath.find_last_of('/');
-        }
-
-        if (fileNameBeginsOffset != string::npos) {
-            sourceTextureFileName = sourceTextureFilePath.substr(fileNameBeginsOffset + 1);
-        }
-
-        const auto textureFileNameWithoutExtension = sourceTextureFileName.substr(0, sourceTextureFileName.find_first_of('.'));
-        const auto textureFileNameWithExtension = sanitizeFileName(textureFileNameWithoutExtension).append(".png");
-
-        if (!ifstream(sourceTextureFilePath.c_str()).good()) {
-            if (ifstream(sourceTextureFileName.c_str()).good()) {
-                sourceTextureFilePath = sourceTextureFileName;
-            } else {
-                for (auto& searchPath : m_scene->getSearchPaths()) {
-                    if (ifstream((searchPath + sourceTextureFileName).c_str()).good()) {
-                        sourceTextureFilePath = searchPath + sourceTextureFileName;
-                        break;
-                    }
-                }
-            }
-        }
-
-        auto outputFilepathFileSeparator = outputFilepath.find_last_of('\\');
-        if (outputFilepathFileSeparator == string::npos) {
-            outputFilepathFileSeparator = outputFilepath.find_last_of('/');
-        }
-        const auto targetTextureFilePath = outputFilepath.substr(0, outputFilepathFileSeparator + 1) + textureFileNameWithExtension;
-
-        if (ifstream(sourceTextureFilePath.c_str()).good()) {
-            GCL::Utilities::convertImage(sourceTextureFilePath, targetTextureFilePath);
-        } else {
-            GCL::Utilities::exportTexture(texture, targetTextureFilePath, true);
-        }
-
-        material->setNode(addMaterial(materialName, textureFileNameWithExtension));
+        string textureFileNameWithExtension = getTextureFilePath(outputFilepath, texture);
+        material->setNode(addMaterial(material, materialName, outputFilepath, textureFileNameWithExtension));
     }
 }
 
