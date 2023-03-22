@@ -25,13 +25,13 @@ public:
     ///
     /// \brief Exports a fbx scene to a fbx file.
     /// \param fbxManager Fbx manager instance
-    /// \param document Fbx document
+    /// \param scene Fbx scene
     /// \param filename Fbx filename
     /// \param embedMedia Sets if fbx should embed media.
     /// \param ascii Sets if fbx should be exported as ascii.
     /// \return Returns whether export was successful or not.
     ///
-    static bool SaveScene(FbxManager* fbxManager, FbxDocument* document, const char* filename, bool embedMedia = false, bool ascii = false);
+    static bool SaveScene(FbxManager* fbxManager, FbxScene* scene, const char* filename, bool embedMedia = false, bool ascii = false);
 };
 
 } // namespace GCL::Utilities

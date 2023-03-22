@@ -32,7 +32,7 @@ void FbxSdkCommon::DestroySdkObjects(FbxManager* manager)
     manager->Destroy();
 }
 
-bool FbxSdkCommon::SaveScene(FbxManager* fbxManager, FbxDocument* document, const char* filename, bool embedMedia, bool ascii)
+bool FbxSdkCommon::SaveScene(FbxManager* fbxManager, FbxScene* scene, const char* filename, bool embedMedia, bool ascii)
 {
     FbxExporter* exporter = FbxExporter::Create(fbxManager, "");
 
@@ -68,6 +68,13 @@ bool FbxSdkCommon::SaveScene(FbxManager* fbxManager, FbxDocument* document, cons
         return false;
     }
 
+    // Compute edge smoothing from normals.
+    FbxGeometryConverter geometryConverter(fbxManager);
+    for (auto geometryIndex = 0; geometryIndex < scene->GetGeometryCount(); geometryIndex++) {
+        const auto mesh = static_cast<FbxMesh*>(scene->GetGeometry(geometryIndex));
+        geometryConverter.ComputeEdgeSmoothingFromNormals(mesh);
+    }
+
     // Change working directory to export location.
     wchar_t cwd[1024];
     _wgetcwd(cwd, 1024);
@@ -82,8 +89,7 @@ bool FbxSdkCommon::SaveScene(FbxManager* fbxManager, FbxDocument* document, cons
     _wchdir(wstring(sourceTextureDirname.begin(), sourceTextureDirname.end()).c_str());
 
     // Export scene to fbx file.
-    bool status = true;
-    status = exporter->Export(document);
+    bool status = exporter->Export(scene);
     exporter->Destroy();
 
     // Change working directory back to previous location.
