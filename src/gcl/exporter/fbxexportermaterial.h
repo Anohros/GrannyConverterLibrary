@@ -49,11 +49,20 @@ protected:
     void exportMaterial(string outputFilepath, Material::SharedPtr material);
 
     ///
+    /// \brief Returns the file path for a texture.
+    /// \param outputFilepath Output filepath of current model.
+    /// \param texture Texture of which the file path should be returned.
+    ///
+    string FbxExporterMaterial::getTextureFilePath(string outputFilepath, GrannyTexture* texture);
+
+    ///
     /// \brief Exports a material of the scene to the fbx scene - part of exportMaterial.
+    /// \param material Material which should be added.
     /// \param materialName Name of material which should be exported.
+    /// \param outputFilepath Output filepath of current model.
     /// \param textureFilePath Filepath of diffuse texture for current material.
     ///
-    FbxSurfaceMaterial* addMaterial(const string materialName, const string textureFilePath = "");
+    FbxSurfaceMaterial* addMaterial(Material::SharedPtr material, const string materialName, const string outputFilepath, const string textureFilePath = "");
 
     ///
     /// \brief Sanitizes a material name.
