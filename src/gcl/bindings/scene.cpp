@@ -32,14 +32,14 @@ void Scene::addAnimation(Animation::SharedPtr animation)
     m_animations.push_back(animation);
 }
 
-set<string> Scene::getImportedFilePaths()
+vector<string> Scene::getImportedFilePaths()
 {
     return m_importedFilePaths;
 }
 
 void Scene::addImportedFilePath(string importedFilePath)
 {
-    m_importedFilePaths.insert(importedFilePath);
+    m_importedFilePaths.push_back(importedFilePath);
 }
 
 set<string> Scene::getSearchPaths()
