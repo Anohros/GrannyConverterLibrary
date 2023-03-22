@@ -5,6 +5,7 @@
 #include "gcl/bindings/model.h"
 #include "gcl/importer/grannyformat.h"
 
+#include <algorithm>
 #include <set>
 #include <string>
 #include <vector>
@@ -63,7 +64,7 @@ public:
     /// \brief Returns all imported file paths of the scene.
     /// \return Imported files paths
     ///
-    set<string> getImportedFilePaths();
+    vector<string> getImportedFilePaths();
 
     ///
     /// \brief Append a imported file path to the scene.
@@ -102,7 +103,7 @@ protected:
     ///
     /// \brief Imported file paths of the scene.
     ///
-    set<string> m_importedFilePaths;
+    vector<string> m_importedFilePaths;
 
     ///
     /// \brief Search paths to look up for scene relevant files e.g. textures.
