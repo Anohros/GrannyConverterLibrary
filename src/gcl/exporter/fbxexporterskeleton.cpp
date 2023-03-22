@@ -123,43 +123,80 @@ void FbxExporterSkeleton::exportPoses(Model::SharedPtr model)
 
 void FbxExporterSkeleton::exportBindPose(Model::SharedPtr model)
 {
-    FbxNode* rootBone = model->getBones().at(0)->getNode();
+    auto rootBone = model->getBones().at(0)->getNode();
+    vector<FbxNode*> boneClusters;
 
-    auto bindPose = FbxPose::Create(m_fbxScene, "BindPose");
-    bindPose->SetIsBindPose(true);
+    if (rootBone && rootBone->GetNodeAttribute()) {
+        FbxGeometry* meshGeometry = nullptr;
+        auto meshSkinCount = 0;
+        auto boneClusterCount = 0;
 
-    for (auto mesh : model->getMeshes()) {
-        if (!mesh->isExcluded() && mesh->getNode()) {
-            bindPose->Add(mesh->getNode(), mesh->getNode()->EvaluateGlobalTransform());
+        switch (rootBone->GetNodeAttribute()->GetAttributeType()) {
+        default:
+            break;
+        case FbxNodeAttribute::eMesh:
+        case FbxNodeAttribute::eNurbs:
+        case FbxNodeAttribute::ePatch:
+            meshGeometry = static_cast<FbxGeometry*>(rootBone->GetNodeAttribute());
+            meshSkinCount = meshGeometry->GetDeformerCount(FbxDeformer::eSkin);
+            for (auto meshSkinIndex = 0; meshSkinIndex < meshSkinCount; meshSkinIndex++) {
+                auto meshSkin = static_cast<FbxSkin*>(meshGeometry->GetDeformer(meshSkinIndex, FbxDeformer::eSkin));
+                boneClusterCount += meshSkin->GetClusterCount();
+            }
+            break;
+        }
+
+        // If we found some clusters we must expand the node.
+        if (boneClusterCount) {
+            for (auto meshSkinIndex = 0; meshSkinIndex < meshSkinCount; meshSkinIndex++) {
+                auto meshSkin = static_cast<FbxSkin*>(meshGeometry->GetDeformer(meshSkinIndex, FbxDeformer::eSkin));
+                boneClusterCount = meshSkin->GetClusterCount();
+                for (auto boneClusterIndex = 0; boneClusterIndex < boneClusterCount; boneClusterIndex++) {
+                    auto boneCluster = meshSkin->GetCluster(boneClusterIndex)->GetLink();
+                    expandBoneCluster(boneClusters, boneCluster);
+                }
+            }
+            boneClusters.push_back(rootBone);
         }
     }
 
-    bindPose->Add(rootBone, rootBone->EvaluateGlobalTransform());
-    m_fbxScene->AddPose(bindPose);
+    if (!boneClusters.empty()) {
+        auto bindPoseName = string(rootBone->GetName()).append(" BindPose");
+        auto bindPose = FbxPose::Create(m_fbxScene, bindPoseName.c_str());
+        bindPose->SetIsBindPose(true);
+
+        for (const auto boneCluster : boneClusters) {
+            bindPose->Add(boneCluster, boneCluster->EvaluateGlobalTransform());
+        }
+
+        m_fbxScene->AddPose(bindPose);
+    }
+}
+
+void FbxExporterSkeleton::expandBoneCluster(vector<FbxNode*>& boneClusters, FbxNode* boneCluster)
+{
+    if (boneCluster) {
+        expandBoneCluster(boneClusters, boneCluster->GetParent());
+
+        if (find(boneClusters.begin(), boneClusters.end(), boneCluster) == boneClusters.end()) {
+            boneClusters.push_back(boneCluster);
+        }
+    }
 }
 
 void FbxExporterSkeleton::exportRestPose(Model::SharedPtr model)
 {
-    FbxNode* rootBone = model->getBones().at(0)->getNode();
-
-    auto restPose = FbxPose::Create(m_fbxScene, "RestPose");
+    auto rootBone = model->getBones().at(0)->getNode();
+    auto restPoseName = string(rootBone->GetName()).append(" RestPose");
+    auto restPose = FbxPose::Create(m_fbxScene, restPoseName.c_str());
     restPose->SetIsBindPose(false);
-
     FbxMatrix restPoseMatrix;
     FbxVector4
         restPoseTransform,
         restPoseRotation,
         restPoseScale(1.0, 1.0, 1.0);
-
     restPoseMatrix.SetTRS(restPoseTransform, restPoseRotation, restPoseScale);
-
-    for (auto mesh : model->getMeshes()) {
-        if (!mesh->isExcluded() && mesh->getNode()) {
-            restPose->Add(mesh->getNode(), restPoseMatrix);
-        }
-    }
-
-    restPose->Add(rootBone, rootBone->EvaluateGlobalTransform());
+    restPose->Add(rootBone, restPoseMatrix, true);
     m_fbxScene->AddPose(restPose);
 }
 

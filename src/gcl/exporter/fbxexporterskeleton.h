@@ -19,13 +19,13 @@ public:
     /// \brief Export the bones of a model to the fbx scene.
     /// \param model Model of which the bones need to be exported of to the fbx scene.
     ///
-    void exportBones(shared_ptr<Model> model);
+    void exportBones(Model::SharedPtr model);
 
     ///
     /// \brief Export the poses of a model to the fbx scene.
     /// \param model Model of which the poses need to be exported of to the fbx scene.
     ///
-    void exportPoses(shared_ptr<Model> model);
+    void exportPoses(Model::SharedPtr model);
 
 protected:
     ///
@@ -33,19 +33,26 @@ protected:
     /// \param model A model the bone is related to.
     /// \param bone A bone which needs to be exported.
     ///
-    void exportBone(shared_ptr<Model> model, shared_ptr<Bone> bone);
+    void exportBone(Model::SharedPtr model, Bone::SharedPtr bone);
 
     ///
     /// \brief Export the bind pose of a model to the fbx scene.
     /// \param model Model of which the bind pose needs to be exported of to the fbx scene.
     ///
-    void exportBindPose(shared_ptr<Model> model);
+    void exportBindPose(Model::SharedPtr model);
+
+    ///
+    /// \brief Expands a bone cluster to list bone clusters recursively.
+    /// \param boneClusters boneClusters
+    /// \param boneCluster boneCluster
+    ///
+    void expandBoneCluster(vector<FbxNode*>& boneClusters, FbxNode* boneCluster);
 
     ///
     /// \brief Export the rest pose of a model to the fbx scene.
     /// \param model Model of which the rest pose needs to be exported of to the fbx scene.
     ///
-    void exportRestPose(shared_ptr<Model> model);
+    void exportRestPose(Model::SharedPtr model);
 };
 
 } // namespace GCL::Exporter
