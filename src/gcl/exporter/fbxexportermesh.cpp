@@ -24,192 +24,243 @@ void FbxExporterMesh::exportMesh(Model::SharedPtr model, Mesh::SharedPtr mesh, b
     auto fbxMesh = exportFbxMesh(mesh);
 
     if (exportSkeleton && model->getBones().size() > 0) {
-        vector<FbxCluster*> clusters;
-        vector<BoneBinding::SharedPtr> bindings;
-        map<string, Bone::SharedPtr> boneMap;
-
-        for (auto bone : model->getBones()) {
-            boneMap[bone->getData().Name] = bone;
-        }
-
-        for (auto i = 0; i < mesh->getData()->BoneBindingCount; i++) {
-            auto boneName = mesh->getData()->BoneBindings[i].BoneName;
-            auto cluster = FbxCluster::Create(m_fbxScene, boneName);
-            auto binding = make_shared<BoneBinding>(boneMap[boneName], cluster);
-
-            bindings.push_back(binding);
-        }
-
-        auto grannyVertices = mesh->getRigidVertices();
-        auto grannyVertexCounter = 0;
-
-        if (mesh->isRigid()) {
-            for (unsigned i = 0; i < grannyVertices.size(); i++) {
-                for (auto binds : bindings) {
-                    binds->getCluster()->AddControlPointIndex(grannyVertexCounter, 255.0);
-                }
-
-                grannyVertexCounter++;
-            }
-        } else {
-            for (auto vertex : grannyVertices) {
-                for (int i = 0; i < 4; i++) {
-                    if (bindings[vertex.BoneIndices[i]] && vertex.BoneWeights[i]) {
-                        bindings[vertex.BoneIndices[i]]->getCluster()->AddControlPointIndex(grannyVertexCounter, static_cast<double>(vertex.BoneWeights[i] / 255.0));
-                    }
-                }
-
-                grannyVertexCounter++;
-            }
-        }
-
-        FbxAMatrix Mat = meshNode->EvaluateGlobalTransform();
-
-        auto skin = FbxSkin::Create(m_fbxScene, "MeshSkin");
-
-        // Set skinning type to rigid.
-        skin->SetSkinningType(FbxSkin::EType::eRigid);
-
-        for (auto binding : bindings) {
-            auto bone = binding->getBone();
-            if (bone) {
-                auto boneNode = bone->getNode();
-                if (boneNode) {
-                    auto cluster = binding->getCluster();
-
-                    // Set cluster bone link and linking mode.
-                    cluster->SetLink(boneNode);
-                    cluster->SetLinkMode(FbxCluster::ELinkMode::eNormalize);
-
-                    // Set cluster transform matrix.
-                    cluster->SetTransformMatrix(Mat);
-                    cluster->SetTransformLinkMatrix(boneNode->EvaluateGlobalTransform());
-
-                    skin->AddCluster(cluster);
-                }
-            }
-        }
-
-        fbxMesh->AddDeformer(skin);
+        createBoneWeightsAndApplyDeformation(model, mesh, meshNode, fbxMesh);
     }
+}
+
+void FbxExporterMesh::createBoneWeightsAndApplyDeformation(
+    Model::SharedPtr model,
+    Mesh::SharedPtr mesh,
+    FbxNode* meshNode,
+    FbxMesh* fbxMesh)
+{
+    map<string, Bone::SharedPtr> boneMap;
+    map<string, Bone::SharedPtr> boneMapBinded;
+    vector<BoneBinding::SharedPtr> boneBindings;
+
+    for (auto bone : model->getBones()) {
+        boneMap[bone->getData().Name] = bone;
+    }
+
+    for (auto boneBindingIndex = 0; boneBindingIndex < mesh->getData()->BoneBindingCount; boneBindingIndex++) {
+        auto boneName = mesh->getData()->BoneBindings[boneBindingIndex].BoneName;
+        auto boneCluster = FbxCluster::Create(m_fbxScene, boneName);
+        auto boneBinding = make_shared<BoneBinding>(boneMap[boneName], boneCluster);
+        boneMapBinded[boneName] = boneMap[boneName];
+        boneBindings.push_back(boneBinding);
+    }
+
+    auto vertices = mesh->getRigidVertices();
+
+    if (mesh->isRigid()) {
+        for (unsigned vertexIndex = 0; vertexIndex < vertices.size(); vertexIndex++) {
+            for (auto bineBinding : boneBindings) {
+                bineBinding->getCluster()->AddControlPointIndex(vertexIndex, 255.0);
+            }
+        }
+    } else {
+        auto vertexCounter = 0;
+        for (auto vertex : vertices) {
+            for (int boneIndicesIndex = 0; boneIndicesIndex < 4; boneIndicesIndex++) {
+                if (boneBindings[vertex.BoneIndices[boneIndicesIndex]] && vertex.BoneWeights[boneIndicesIndex]) {
+                    boneBindings[vertex.BoneIndices[boneIndicesIndex]]
+                        ->getCluster()
+                        ->AddControlPointIndex(vertexCounter, static_cast<double>(vertex.BoneWeights[boneIndicesIndex] / 255.0));
+                }
+            }
+
+            vertexCounter++;
+        }
+    }
+
+    // Map bones without bone binding.
+    for (auto bone : boneMap) {
+        auto boneName = bone.first;
+        if (!boneMapBinded[boneName]) {
+            auto boneCluster = FbxCluster::Create(m_fbxScene, boneName.c_str());
+            auto boneBinding = make_shared<BoneBinding>(boneMap[boneName], boneCluster);
+            boneBindings.push_back(boneBinding);
+            for (unsigned vertexIndex = 0; vertexIndex < vertices.size(); vertexIndex++) {
+                boneBinding->getCluster()->AddControlPointIndex(vertexIndex, 0);
+            }
+        }
+    }
+
+    createMeshDeformation(meshNode, fbxMesh, boneBindings);
+}
+
+void FbxExporterMesh::createMeshDeformation(FbxNode* meshNode, FbxMesh* mesh, vector<BoneBinding::SharedPtr> boneBindings)
+{
+    auto meshMatrix = meshNode->EvaluateGlobalTransform();
+    auto meshSkin = FbxSkin::Create(m_fbxScene, "MeshSkin");
+
+    // Set skinning type to rigid.
+    meshSkin->SetSkinningType(FbxSkin::EType::eRigid);
+
+    for (auto boneBinding : boneBindings) {
+        auto bone = boneBinding->getBone();
+        if (bone) {
+            auto boneNode = bone->getNode();
+            if (boneNode) {
+                auto cluster = boneBinding->getCluster();
+
+                // Set cluster bone link and linking mode.
+                cluster->SetLink(boneNode);
+                cluster->SetLinkMode(FbxCluster::ELinkMode::eNormalize);
+
+                // Set cluster transform matrix.
+                cluster->SetTransformMatrix(meshMatrix);
+                cluster->SetTransformLinkMatrix(boneNode->EvaluateGlobalTransform());
+
+                meshSkin->AddCluster(cluster);
+            }
+        }
+    }
+
+    mesh->AddDeformer(meshSkin);
 }
 
 FbxMesh* FbxExporterMesh::exportFbxMesh(Mesh::SharedPtr mesh)
 {
-    // Create the mesh and three data sources for the vertex positions, normals and texture coordinates.
-    FbxMesh* fbxMesh = FbxMesh::Create(m_fbxScene, mesh->getData()->Name);
+    auto fbxMesh = FbxMesh::Create(m_fbxScene, mesh->getData()->Name);
+    auto vertices = mesh->getRigidVertices();
 
-    // Get vertices.
-    auto grannyVertices = mesh->getRigidVertices();
+    createControlPoints(fbxMesh, vertices);
+    createMaterial(fbxMesh);
+    createNormal(fbxMesh, vertices);
+    createUV(fbxMesh, vertices);
 
-    // Create control points.
-    unsigned verticesCount(grannyVertices.size());
-    fbxMesh->InitControlPoints(static_cast<int>(verticesCount));
-    FbxVector4* controlPoints = fbxMesh->GetControlPoints();
-
-    for (unsigned i = 0; i < grannyVertices.size(); i++) {
-        controlPoints[i] = FbxVector4(
-            static_cast<double>(grannyVertices[i].Position[0]),
-            static_cast<double>(grannyVertices[i].Position[1]),
-            static_cast<double>(grannyVertices[i].Position[2]));
-    }
-
-    // Create normal layer.
-    FbxLayerElementNormal* normalLayer = fbxMesh->CreateElementNormal();
-    normalLayer->SetMappingMode(FbxLayerElement::eByControlPoint);
-    normalLayer->SetReferenceMode(FbxLayerElement::eDirect);
-
-    for (unsigned i = 0; i < grannyVertices.size(); i++) {
-        normalLayer->GetDirectArray().Add(FbxVector4(
-            static_cast<double>(grannyVertices[i].Normal[0]),
-            static_cast<double>(grannyVertices[i].Normal[1]),
-            static_cast<double>(grannyVertices[i].Normal[2])));
-    }
-
-    // Create uv-set 1.
-    FbxGeometryElementUV* uv1 = fbxMesh->CreateElementUV("UV1");
-    uv1->SetMappingMode(FbxLayerElement::eByControlPoint);
-    uv1->SetReferenceMode(FbxLayerElement::eDirect);
-
-    for (unsigned i = 0; i < grannyVertices.size(); i++) {
-        uv1->GetDirectArray().Add(FbxVector2(
-            static_cast<double>(grannyVertices[i].UV1[0]),
-            static_cast<double>(1.0 - grannyVertices[i].UV1[1])));
-    }
-
-    // Create uv-set 2.
-    FbxGeometryElementUV* uv2 = fbxMesh->CreateElementUV("UV2");
-    uv2->SetMappingMode(FbxLayerElement::eByControlPoint);
-    uv2->SetReferenceMode(FbxLayerElement::eDirect);
-
-    for (unsigned i = 0; i < grannyVertices.size(); i++) {
-        uv2->GetDirectArray().Add(FbxVector2(
-            static_cast<double>(grannyVertices[i].UV2[0]),
-            static_cast<double>(1.0 - grannyVertices[i].UV2[1])));
-    }
-
-    // Create indices.
     const auto indexCount = GrannyGetMeshIndexCount(mesh->getData());
     const auto indexArray = new int[static_cast<unsigned>(indexCount)];
     GrannyCopyMeshIndices(mesh->getData(), 4, indexArray);
 
-    // TODO: Refactor
-    vector<Material*> added;
+    bindMaterials(mesh);
 
-    for (auto i = 0; i < mesh->getData()->MaterialBindingCount; i++) {
-        const auto material = mesh->getData()->MaterialBindings[i].Material;
-
-        for (auto sceneMaterial : m_scene->getMaterials()) {
-            if (sceneMaterial->getData() == material && find(added.begin(), added.end(), sceneMaterial.get()) == added.end()) {
-                added.push_back(sceneMaterial.get());
-                mesh->getNode()->AddMaterial(sceneMaterial->getNode());
-                break;
-            }
-        }
-    }
-
-    // TODO: Refactor
-    for (auto i = 0; i < indexCount; i += 3) {
-        auto materialIndex = -1;
-
-        if (mesh->getData()->MaterialBindingCount) {
-            for (auto groupIndex = 0; groupIndex < mesh->getData()->PrimaryTopology->GroupCount; groupIndex++) {
-                auto group = mesh->getData()->PrimaryTopology->Groups[groupIndex];
-                auto groupTriOffset = i / 3;
-
-                if (groupTriOffset >= group.TriFirst && groupTriOffset < (group.TriFirst + group.TriCount)) {
-                    FbxSurfaceMaterial* currentMaterial = nullptr;
-
-                    for (auto sceneMaterial : m_scene->getMaterials()) {
-                        if (sceneMaterial->getData() == mesh->getData()->MaterialBindings[group.MaterialIndex].Material) {
-                            currentMaterial = sceneMaterial->getNode();
-                            break;
-                        }
-                    }
-
-                    for (auto r = 0; r < mesh->getNode()->GetMaterialCount(); r++) {
-                        if (mesh->getNode()->GetMaterial(r) == currentMaterial) {
-                            materialIndex = r;
-                            break;
-                        }
-                    }
-                    break;
-                }
-            }
-        }
-
-        fbxMesh->BeginPolygon(materialIndex);
-        fbxMesh->AddPolygon(indexArray[i]);
-        fbxMesh->AddPolygon(indexArray[i + 1]);
-        fbxMesh->AddPolygon(indexArray[i + 2]);
+    for (auto index = 0; index < indexCount; index += 3) {
+        fbxMesh->BeginPolygon(getMaterialForIndex(mesh, index));
+        fbxMesh->AddPolygon(indexArray[index]);
+        fbxMesh->AddPolygon(indexArray[index + 1]);
+        fbxMesh->AddPolygon(indexArray[index + 2]);
         fbxMesh->EndPolygon();
     }
 
     delete[] indexArray;
 
     mesh->getNode()->SetNodeAttribute(fbxMesh);
+    mesh->getNode()->SetShadingMode(FbxNode::eTextureShading);
 
     return fbxMesh;
+}
+
+void FbxExporterMesh::createControlPoints(FbxMesh* mesh, vector<GrannyPWNT34322Vertex> vertices)
+{
+    auto verticesCount(vertices.size());
+    mesh->InitControlPoints(static_cast<int>(verticesCount));
+
+    auto controlPoints = mesh->GetControlPoints();
+    for (unsigned vertexIndex = 0; vertexIndex < verticesCount; vertexIndex++) {
+        controlPoints[vertexIndex] = FbxVector4(
+            static_cast<double>(vertices[vertexIndex].Position[0]),
+            static_cast<double>(vertices[vertexIndex].Position[1]),
+            static_cast<double>(vertices[vertexIndex].Position[2]));
+    }
+}
+
+void FbxExporterMesh::createMaterial(FbxMesh* mesh)
+{
+    auto materialElement = mesh->CreateElementMaterial();
+    materialElement->SetMappingMode(FbxLayerElement::eAllSame);
+    materialElement->SetReferenceMode(FbxLayerElement::eIndexToDirect);
+    materialElement->GetIndexArray().Add(0);
+}
+
+void FbxExporterMesh::createNormal(FbxMesh* mesh, vector<GrannyPWNT34322Vertex> vertices)
+{
+    auto normalElement = mesh->CreateElementNormal();
+    normalElement->SetMappingMode(FbxLayerElement::eByControlPoint);
+    normalElement->SetReferenceMode(FbxLayerElement::eDirect);
+
+    for (unsigned vertexIndex = 0; vertexIndex < vertices.size(); vertexIndex++) {
+        normalElement->GetDirectArray().Add(FbxVector4(
+            static_cast<double>(vertices[vertexIndex].Normal[0]),
+            static_cast<double>(vertices[vertexIndex].Normal[1]),
+            static_cast<double>(vertices[vertexIndex].Normal[2])));
+    }
+}
+
+void FbxExporterMesh::createUV(FbxMesh* mesh, vector<GrannyPWNT34322Vertex> vertices)
+{
+    // Create uv-set 1.
+    FbxGeometryElementUV* uvSetElement1 = mesh->CreateElementUV("UV1");
+    uvSetElement1->SetMappingMode(FbxLayerElement::eByControlPoint);
+    uvSetElement1->SetReferenceMode(FbxLayerElement::eDirect);
+
+    for (unsigned vertexIndex = 0; vertexIndex < vertices.size(); vertexIndex++) {
+        uvSetElement1->GetDirectArray().Add(FbxVector2(
+            static_cast<double>(vertices[vertexIndex].UV1[0]),
+            static_cast<double>(1.0 - vertices[vertexIndex].UV1[1])));
+    }
+
+    // Create uv-set 2.
+    FbxGeometryElementUV* uvSetElement2 = mesh->CreateElementUV("UV2");
+    uvSetElement2->SetMappingMode(FbxLayerElement::eByControlPoint);
+    uvSetElement2->SetReferenceMode(FbxLayerElement::eDirect);
+
+    for (unsigned vertexIndex = 0; vertexIndex < vertices.size(); vertexIndex++) {
+        uvSetElement2->GetDirectArray().Add(FbxVector2(
+            static_cast<double>(vertices[vertexIndex].UV2[0]),
+            static_cast<double>(1.0 - vertices[vertexIndex].UV2[1])));
+    }
+}
+
+void FbxExporterMesh::bindMaterials(Mesh::SharedPtr mesh)
+{
+    // Store already added materials in a unique list to prevent duplications.
+    vector<Material*> unique;
+
+    for (auto i = 0; i < mesh->getData()->MaterialBindingCount; i++) {
+        const auto material = mesh->getData()->MaterialBindings[i].Material;
+
+        for (auto sceneMaterial : m_scene->getMaterials()) {
+            if (sceneMaterial->getData() == material && find(unique.begin(), unique.end(), sceneMaterial.get()) == unique.end()) {
+                unique.push_back(sceneMaterial.get());
+                mesh->getNode()->AddMaterial(sceneMaterial->getNode());
+                break;
+            }
+        }
+    }
+}
+
+int FbxExporterMesh::getMaterialForIndex(Mesh::SharedPtr mesh, int index)
+{
+    if (mesh->getData()->MaterialBindingCount == 0) {
+        return -1;
+    }
+
+    for (auto groupIndex = 0; groupIndex < mesh->getData()->PrimaryTopology->GroupCount; groupIndex++) {
+        auto group = mesh->getData()->PrimaryTopology->Groups[groupIndex];
+        auto groupTriOffset = index / 3;
+
+        if (groupTriOffset >= group.TriFirst && groupTriOffset < (group.TriFirst + group.TriCount)) {
+            FbxSurfaceMaterial* currentMaterial = nullptr;
+
+            for (auto sceneMaterial : m_scene->getMaterials()) {
+                if (sceneMaterial->getData() == mesh->getData()->MaterialBindings[group.MaterialIndex].Material) {
+                    currentMaterial = sceneMaterial->getNode();
+                    break;
+                }
+            }
+
+            for (auto materialIndex = 0; materialIndex < mesh->getNode()->GetMaterialCount(); materialIndex++) {
+                if (mesh->getNode()->GetMaterial(materialIndex) == currentMaterial) {
+                    return materialIndex;
+                }
+            }
+            break;
+        }
+    }
+
+    return -1;
 }
 
 string FbxExporterMesh::sanitizeMaterialName(string name)
