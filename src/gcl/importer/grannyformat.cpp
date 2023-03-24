@@ -37,6 +37,7 @@ bool InitializeGrannyLibrary()
         GrannyReadEntireFile = GetGrannyFunction<GrannyReadEntireFile_t>(grannyDllHandle, "_GrannyReadEntireFile@4");
         GrannyGetFileInfo = GetGrannyFunction<GrannyGetFileInfo_t>(grannyDllHandle, "_GrannyGetFileInfo@4");
         GrannyFreeFile = GetGrannyFunction<GrannyFreeFile_t>(grannyDllHandle, "_GrannyFreeFile@4");
+        GrannyGetTotalTypeSize = GetGrannyFunction<GrannyGetTotalTypeSize_t>(grannyDllHandle, "_GrannyGetTotalTypeSize@4");
         GrannyPWNT3432VertexType = reinterpret_cast<GrannyDataTypeDefinition*>(*GetGrannyFunction<int*>(grannyDllHandle, "GrannyPWNT3432VertexType"));
         GrannyGetMeshVertexCount = GetGrannyFunction<GrannyGetMeshVertexCount_t>(grannyDllHandle, "_GrannyGetMeshVertexCount@4");
         GrannyGetMeshIndexCount = GetGrannyFunction<GrannyGetMeshIndexCount_t>(grannyDllHandle, "_GrannyGetMeshIndexCount@4");

@@ -85,10 +85,11 @@ protected:
 
     ///
     /// \brief Create uv geometry elements (uv-sets) for the mesh.
+    /// \param mesh The mesh which need its uv-set to be created.
     /// \param fbxMesh The fbx mesh of the mesh.
     /// \param vertices The vertices of the mesh.
     ///
-    void createUV(FbxMesh* mesh, vector<GrannyPWNT34322Vertex> vertices);
+    void createUV(Mesh::SharedPtr mesh, FbxMesh* fbxMesh, vector<GrannyPWNT34322Vertex> vertices);
 
     ///
     /// \brief Binds the materials from the scene to a mesh.

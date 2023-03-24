@@ -128,7 +128,7 @@ FbxMesh* FbxExporterMesh::exportFbxMesh(Mesh::SharedPtr mesh)
     createControlPoints(fbxMesh, vertices);
     createMaterial(fbxMesh);
     createNormal(fbxMesh, vertices);
-    createUV(fbxMesh, vertices);
+    createUV(mesh, fbxMesh, vertices);
 
     const auto indexCount = GrannyGetMeshIndexCount(mesh->getData());
     const auto indexArray = new int[static_cast<unsigned>(indexCount)];
@@ -169,7 +169,7 @@ void FbxExporterMesh::createControlPoints(FbxMesh* mesh, vector<GrannyPWNT34322V
 void FbxExporterMesh::createMaterial(FbxMesh* mesh)
 {
     auto materialElement = mesh->CreateElementMaterial();
-    materialElement->SetMappingMode(FbxLayerElement::eAllSame);
+    materialElement->SetMappingMode(FbxLayerElement::eByPolygon);
     materialElement->SetReferenceMode(FbxLayerElement::eIndexToDirect);
     materialElement->GetIndexArray().Add(0);
 }
@@ -188,10 +188,10 @@ void FbxExporterMesh::createNormal(FbxMesh* mesh, vector<GrannyPWNT34322Vertex> 
     }
 }
 
-void FbxExporterMesh::createUV(FbxMesh* mesh, vector<GrannyPWNT34322Vertex> vertices)
+void FbxExporterMesh::createUV(Mesh::SharedPtr mesh, FbxMesh* fbxMesh, vector<GrannyPWNT34322Vertex> vertices)
 {
     // Create uv-set 1.
-    FbxGeometryElementUV* uvSetElement1 = mesh->CreateElementUV("UV1");
+    FbxGeometryElementUV* uvSetElement1 = fbxMesh->CreateElementUV("UV1");
     uvSetElement1->SetMappingMode(FbxLayerElement::eByControlPoint);
     uvSetElement1->SetReferenceMode(FbxLayerElement::eDirect);
 
@@ -201,8 +201,29 @@ void FbxExporterMesh::createUV(FbxMesh* mesh, vector<GrannyPWNT34322Vertex> vert
             static_cast<double>(1.0 - vertices[vertexIndex].UV1[1])));
     }
 
+    auto typeCount = GrannyGetTotalTypeSize(mesh->getData()->PrimaryVertexData->VertexType) / sizeof(GrannyDataTypeDefinition);
+    auto textureCoordinateTypesCount = 0;
+    for (unsigned typeIndex = 0; typeIndex < typeCount; typeIndex++) {
+        const auto typeName = mesh->getData()->PrimaryVertexData->VertexType[typeIndex].Name;
+        if (typeName == nullptr) {
+            continue;
+        }
+        const auto isTextureCoordinateType = _strnicmp(
+                                                 mesh->getData()->PrimaryVertexData->VertexType[typeIndex].Name,
+                                                 GrannyVertexTextureCoordinatesName,
+                                                 strlen(GrannyVertexTextureCoordinatesName))
+            == 0;
+        if (isTextureCoordinateType) {
+            textureCoordinateTypesCount++;
+        }
+    }
+
+    if (textureCoordinateTypesCount < 2) {
+        return;
+    }
+
     // Create uv-set 2.
-    FbxGeometryElementUV* uvSetElement2 = mesh->CreateElementUV("UV2");
+    FbxGeometryElementUV* uvSetElement2 = fbxMesh->CreateElementUV("UV2");
     uvSetElement2->SetMappingMode(FbxLayerElement::eByControlPoint);
     uvSetElement2->SetReferenceMode(FbxLayerElement::eDirect);
 
@@ -218,8 +239,8 @@ void FbxExporterMesh::bindMaterials(Mesh::SharedPtr mesh)
     // Store already added materials in a unique list to prevent duplications.
     vector<Material*> unique;
 
-    for (auto i = 0; i < mesh->getData()->MaterialBindingCount; i++) {
-        const auto material = mesh->getData()->MaterialBindings[i].Material;
+    for (auto materialBindingIndex = 0; materialBindingIndex < mesh->getData()->MaterialBindingCount; materialBindingIndex++) {
+        const auto material = mesh->getData()->MaterialBindings[materialBindingIndex].Material;
 
         for (auto sceneMaterial : m_scene->getMaterials()) {
             if (sceneMaterial->getData() == material && find(unique.begin(), unique.end(), sceneMaterial.get()) == unique.end()) {

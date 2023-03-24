@@ -484,7 +484,8 @@ enum GrannyTransformFileFlags {
 
 typedef GrannyFile*(__stdcall* GrannyReadEntireFile_t)(const char* FileName);
 typedef GrannyFileInfo*(__stdcall* GrannyGetFileInfo_t)(GrannyFile* File);
-typedef void(__stdcall* GrannyFreeFile_t)(GrannyFile* File);
+typedef void(__stdcall* GrannyFreeFile_t)(GrannyFile const* File);
+typedef int(__stdcall* GrannyGetTotalTypeSize_t)(GrannyDataTypeDefinition* TypeDefinition);
 typedef int(__stdcall* GrannyGetMeshVertexCount_t)(GrannyMesh const* Mesh);
 typedef void(__stdcall* GrannyCopyMeshVertices_t)(GrannyMesh const* Mesh, GrannyDataTypeDefinition const* VertexType, void* DestVertices);
 typedef int(__stdcall* GrannyGetMeshIndexCount_t)(GrannyMesh const* Mesh);
@@ -593,6 +594,7 @@ inline GrannyReadEntireFile_t GrannyReadEntireFile = nullptr;
 inline GrannyGetFileInfo_t GrannyGetFileInfo = nullptr;
 inline GrannyFreeFile_t GrannyFreeFile = nullptr;
 inline GrannyDataTypeDefinition* GrannyPWNT3432VertexType = 0;
+inline GrannyGetTotalTypeSize_t GrannyGetTotalTypeSize = nullptr;
 inline GrannyGetMeshVertexCount_t GrannyGetMeshVertexCount = nullptr;
 inline GrannyGetMeshIndexCount_t GrannyGetMeshIndexCount = nullptr;
 inline GrannyCopyMeshVertices_t GrannyCopyMeshVertices = nullptr;
