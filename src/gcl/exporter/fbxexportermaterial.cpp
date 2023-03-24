@@ -100,8 +100,12 @@ FbxSurfaceMaterial* FbxExporterMaterial::addMaterial(
     if (ambientTexture != nullptr) {
         phongMaterial->Ambient.ConnectSrcObject(ambientTexture);
     }
+    phongMaterial->AmbientFactor.Set(1.0);
     phongMaterial->Diffuse.ConnectSrcObject(texture);
+    phongMaterial->TransparencyFactor.Set(0.0);
     phongMaterial->ShadingModel.Set("Phong");
+    phongMaterial->Shininess.Set(0.0);
+    phongMaterial->SpecularFactor.Set(0.0);
 
     return phongMaterial;
 }
