@@ -45,10 +45,43 @@ string FbxExporterMaterial::getTextureFilePath(string outputFilepath, GrannyText
         if (ifstream(sourceTextureFileName.c_str()).good()) {
             sourceTextureFilePath = sourceTextureFileName;
         } else {
+            bool foundTexture = false;
+
             for (auto& searchPath : m_scene->getSearchPaths()) {
-                if (ifstream((searchPath + sourceTextureFileName).c_str()).good()) {
-                    sourceTextureFilePath = searchPath + sourceTextureFileName;
+                const auto lookupPath = searchPath + sourceTextureFileName;
+                if (ifstream(lookupPath.c_str()).good()) {
+                    sourceTextureFilePath = lookupPath;
+                    foundTexture = true;
                     break;
+                }
+            }
+
+            const auto parentImportedPath = filesystem::path(m_scene->getImportedFilePaths().front())
+                                                .parent_path()
+                                                .parent_path();
+
+            if (!foundTexture) {
+                for (const auto& entry : filesystem::directory_iterator(parentImportedPath)) {
+                    const auto lookupPath = (entry.path() / sourceTextureFileName).u8string();
+                    if (ifstream(lookupPath.c_str()).good()) {
+                        sourceTextureFilePath = lookupPath;
+                        foundTexture = true;
+                        break;
+                    }
+                }
+            }
+
+            if (!foundTexture) {
+                const auto deeperParentImportedPath = parentImportedPath
+                                                          .parent_path()
+                                                          .parent_path();
+                for (const auto& entry : filesystem::recursive_directory_iterator(deeperParentImportedPath)) {
+                    const auto lookupPath = (entry.path() / sourceTextureFileName).u8string();
+                    if (ifstream(lookupPath.c_str()).good()) {
+                        sourceTextureFilePath = lookupPath;
+                        foundTexture = true;
+                        break;
+                    }
                 }
             }
         }
