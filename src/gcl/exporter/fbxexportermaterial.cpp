@@ -150,8 +150,8 @@ FbxSurfaceMaterial* FbxExporterMaterial::addMaterial(
 
 void FbxExporterMaterial::exportMaterial(string outputFilepath, Material::SharedPtr material)
 {
-    const auto materialName = sanitizeMaterialName(string(material->getData()->Name));
     const auto texture = GCL::Utilities::getMaterialTexture(material->getData());
+    const auto materialName = sanitizeMaterialName(string(material->getData()->Name), texture->FromFileName);
 
     if (material->getData()->Texture) {
         return;

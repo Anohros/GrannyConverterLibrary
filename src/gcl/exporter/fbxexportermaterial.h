@@ -54,7 +54,7 @@ protected:
     /// \param outputFilepath Output filepath of current model.
     /// \param texture Texture of which the file path should be returned.
     ///
-    string FbxExporterMaterial::getTextureFilePath(string outputFilepath, GrannyTexture* texture);
+    string getTextureFilePath(string outputFilepath, GrannyTexture* texture);
 
     ///
     /// \brief Exports a material of the scene to the fbx scene - part of exportMaterial.
@@ -67,12 +67,13 @@ protected:
 
     ///
     /// \brief Sanitizes a material name.
-    /// \param name
+    /// \param materialName
+    /// \param textureName
     /// \return
     ///
-    virtual string sanitizeMaterialName(string name)
+    virtual string sanitizeMaterialName(string materialName, string textureName = "")
     {
-        return GCL::Utilities::sanitizeName(name);
+        return GCL::Utilities::sanitizeName(materialName);
     }
 
     ///
