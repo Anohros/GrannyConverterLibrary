@@ -61,7 +61,7 @@ string FbxExporterMaterial::getTextureFilePath(string outputFilepath, GrannyText
                                                 .parent_path();
 
             if (!foundTexture) {
-                for (const auto& entry : filesystem::directory_iterator(parentImportedPath)) {
+                for (const auto& entry : filesystem::directory_iterator(parentImportedPath, filesystem::directory_options::skip_permission_denied)) {
                     const auto lookupPath = (entry.path() / sourceTextureFileName).u8string();
                     if (ifstream(lookupPath.c_str()).good()) {
                         sourceTextureFilePath = lookupPath;
@@ -75,12 +75,17 @@ string FbxExporterMaterial::getTextureFilePath(string outputFilepath, GrannyText
                 const auto deeperParentImportedPath = parentImportedPath
                                                           .parent_path()
                                                           .parent_path();
-                for (const auto& entry : filesystem::recursive_directory_iterator(deeperParentImportedPath)) {
-                    const auto lookupPath = (entry.path() / sourceTextureFileName).u8string();
-                    if (ifstream(lookupPath.c_str()).good()) {
-                        sourceTextureFilePath = lookupPath;
-                        foundTexture = true;
-                        break;
+                // Do not scan root path and program files as parent paths.
+                if (deeperParentImportedPath.root_path().string() != deeperParentImportedPath.string()) {
+                    if (!regex_match(deeperParentImportedPath.string(), regex("\\\\(Program Files \\(x86\\)|Program Files)\\\\"))) {
+                        for (const auto& entry : filesystem::recursive_directory_iterator(deeperParentImportedPath, filesystem::directory_options::skip_permission_denied)) {
+                            const auto lookupPath = (entry.path() / sourceTextureFileName).u8string();
+                            if (ifstream(lookupPath.c_str()).good()) {
+                                sourceTextureFilePath = lookupPath;
+                                foundTexture = true;
+                                break;
+                            }
+                        }
                     }
                 }
             }
