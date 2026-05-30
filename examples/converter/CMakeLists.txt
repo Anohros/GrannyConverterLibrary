@@ -30,7 +30,7 @@ add_custom_command(TARGET ConverterExample POST_BUILD
 )
 
 # Expected location of the granny2 dll.
-set(GRANNY_DLL "${PROJECT_SOURCE_DIR}/../../external/granny2/granny2.dll")
+set(GRANNY_DLL "${PROJECT_SOURCE_DIR}/../../external/granny2/granny2_x64.dll")
 
 # Copy granny2 dll.
 if(EXISTS ${GRANNY_DLL})
