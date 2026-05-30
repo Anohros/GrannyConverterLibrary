@@ -5,6 +5,8 @@
 
 using namespace std;
 
+#pragma pack(push, 4)
+
 // Granny specific data structures.
 
 typedef float GrannyTriple[3];
@@ -78,7 +80,7 @@ enum GrannyMemberType {
 };
 
 ///
-/// \brief Defines a custom data type .e.g. for extensions.
+/// \brief Defines a custom data type e.g. for extensions.
 ///
 struct GrannyDataTypeDefinition {
     GrannyMemberType Type;
@@ -91,6 +93,8 @@ struct GrannyDataTypeDefinition {
 
 ///
 /// \brief Stores all data of a texture.
+///
+/// A texture contains image data with multiple MIP levels and image formats for rendering.
 ///
 struct GrannyTexture {
     char const* FromFileName;
@@ -109,6 +113,9 @@ struct GrannyMaterialMap;
 
 ///
 /// \brief Stores all data of a material.
+///
+/// A material defines the visual properties of a mesh including textures, colors, and rendering
+/// parameters.
 ///
 struct GrannyMaterial {
     char const* Name;
@@ -138,9 +145,9 @@ struct GrannyMaterialBinding {
 ///
 struct GrannyTransform {
     unsigned int Flags;
-    float Position[3];
-    float Orientation[4];
-    float ScaleShear[3][3];
+    GrannyTriple Position;
+    GrannyQuad Orientation;
+    GrannyTriple ScaleShear[3];
 };
 
 ///
@@ -166,17 +173,17 @@ struct GrannyTransformTrack {
 ///
 struct GrannyTrackGroup {
     char const* Name;
-    void* VectorTrackCount;
+    int VectorTrackCount;
     void* VectorTracks;
     int TransformTrackCount;
     GrannyTransformTrack* TransformTracks;
-    void* TransformLODErrorCount;
-    void* TransformLODErrors;
-    void* TextTrackCount;
+    int TransformLODErrorCount;
+    float* TransformLODErrors;
+    int TextTrackCount;
     void* TextTracks;
     GrannyTransform InitialPlacement;
     int Flags;
-    void* LoopTranslation;
+    GrannyTriple LoopTranslation;
     void* PeriodicLoop;
     GrannyVariant ExtendedData;
 };
@@ -206,6 +213,9 @@ struct GrannyBone {
 
 ///
 /// \brief Stores all data of a skeleton.
+///
+/// A skeleton contains a collection of bones that define the hierarchical structure
+/// for skinning and animation of 3D models.
 ///
 struct GrannySkeleton {
     char const* Name;
@@ -255,6 +265,9 @@ struct GrannyTriTopology {
 ///
 /// \brief Stores all vertex data of a mesh.
 ///
+/// Vertex data contains the actual vertex information including positions, normals, texture
+/// coordinates, and other vertex attributes defined by the vertex type.
+///
 struct GrannyVertexData {
     GrannyDataTypeDefinition* VertexType;
     int VertexCount;
@@ -267,6 +280,8 @@ struct GrannyVertexData {
 
 ///
 /// \brief Stores all data of a mesh.
+///
+/// A mesh contains vertex data, triangle topology, and material bindings for rendering.
 ///
 struct GrannyMesh {
     char const* Name;
@@ -290,6 +305,8 @@ struct GrannyModelMeshBinding {
 
 ///
 /// \brief Stores all data of a model.
+///
+/// A model contains a collection of meshes and their bindings to skeletons for animation.
 ///
 struct GrannyModel {
     char const* Name;
@@ -435,7 +452,7 @@ struct GrannyFile {
     void* IsByteReversed;
     void* Header;
     void* SourceMagicValue;
-    void* SectionCount;
+    int SectionCount;
     void** Sections;
     bool* Marshalled;
     bool* IsUserMemory;
@@ -567,7 +584,6 @@ typedef int(__stdcall* GrannyFindCloseKnot_t)(
 
 typedef bool(__stdcall* GrannyCurveIsKeyframed_t)(GrannyCurve2 const* Curve);
 typedef void(__stdcall* GrannyCurveInitializeFormat_t)(GrannyCurve2* Curve);
-typedef void(__stdcall* GrannyCurveInitializeFormat_t)(GrannyCurve2* Curve);
 typedef GrannyDataTypeDefinition* GrannyCurveDataDaIdentityType_t;
 typedef bool(__stdcall* GrannyTextureHasAlpha_t)(GrannyTexture const* Texture);
 typedef GrannyPixelLayout* GrannyRGBA8888PixelFormat_t;
@@ -582,6 +598,8 @@ typedef void(__stdcall* GrannyCopyTextureImage_t)(
     int DestHeight,
     int DestStride,
     void* Pixels);
+
+#pragma pack(pop)
 
 // Declarations for required functions of granny2 dll.
 // Declarations will get assigned by InitializeGrannyLibrary function.

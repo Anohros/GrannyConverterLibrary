@@ -59,7 +59,7 @@ string FbxExporterMaterial::getTextureFilePath(string outputFilepath, GrannyText
                                                 .parent_path()
                                                 .parent_path();
 
-            if (!foundTexture) {
+            if (!foundTexture && filesystem::exists(parentImportedPath)) {
                 for (const auto& entry : filesystem::directory_iterator(
                          parentImportedPath,
                          filesystem::directory_options::skip_permission_denied)) {
@@ -77,7 +77,8 @@ string FbxExporterMaterial::getTextureFilePath(string outputFilepath, GrannyText
                                                           .parent_path();
                 // Do not scan root path and program files as parent paths.
                 if (deeperParentImportedPath.root_path().string() !=
-                    deeperParentImportedPath.string()) {
+                        deeperParentImportedPath.string() &&
+                    filesystem::exists(deeperParentImportedPath)) {
                     if (!regex_match(
                             deeperParentImportedPath.string(),
                             regex("\\\\(Program Files \\(x86\\)|Program Files)\\\\"))) {

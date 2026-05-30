@@ -12,7 +12,7 @@ T GetGrannyFunction(HMODULE hModule, const char* lpProcName) {
         snprintf(
             errorMessage,
             sizeof(errorMessage),
-            "Granny function \"%s\" not available in \"granny2.dll\" library.",
+            "Granny function \"%s\" not available in \"granny2_x64.dll\" library.",
             lpProcName);
         throw std::runtime_error(errorMessage);
     }
@@ -20,55 +20,54 @@ T GetGrannyFunction(HMODULE hModule, const char* lpProcName) {
 }
 
 bool InitializeGrannyLibrary() {
-    if (!ifstream("granny2.dll").is_open()) {
-        fatal("Could not locate \"granny2.dll\" library.");
+    if (!ifstream("granny2_x64.dll").is_open()) {
+        fatal("Could not locate \"granny2_x64.dll\" library.");
         return false;
     }
 
-    auto grannyDllHandle = LoadLibraryW(L"granny2.dll");
+    auto grannyDllHandle = LoadLibraryW(L"granny2_x64.dll");
     if (!grannyDllHandle) {
-        fatal("Could not load \"granny2.dll\" library.");
+        fatal("Could not load \"granny2_x64.dll\" library.");
         return false;
     }
 
     try {
         GrannyReadEntireFile = GetGrannyFunction<GrannyReadEntireFile_t>(
-            grannyDllHandle, "_GrannyReadEntireFile@4");
+            grannyDllHandle, "GrannyReadEntireFile");
         GrannyGetFileInfo = GetGrannyFunction<GrannyGetFileInfo_t>(
-            grannyDllHandle, "_GrannyGetFileInfo@4");
-        GrannyFreeFile = GetGrannyFunction<GrannyFreeFile_t>(grannyDllHandle, "_GrannyFreeFile@4");
+            grannyDllHandle, "GrannyGetFileInfo");
+        GrannyFreeFile = GetGrannyFunction<GrannyFreeFile_t>(grannyDllHandle, "GrannyFreeFile");
         GrannyGetTotalTypeSize = GetGrannyFunction<GrannyGetTotalTypeSize_t>(
-            grannyDllHandle, "_GrannyGetTotalTypeSize@4");
+            grannyDllHandle, "GrannyGetTotalTypeSize");
         GrannyPWNT3432VertexType = reinterpret_cast<GrannyDataTypeDefinition*>(
             *GetGrannyFunction<int*>(grannyDllHandle, "GrannyPWNT3432VertexType"));
         GrannyGetMeshVertexCount = GetGrannyFunction<GrannyGetMeshVertexCount_t>(
-            grannyDllHandle, "_GrannyGetMeshVertexCount@4");
+            grannyDllHandle, "GrannyGetMeshVertexCount");
         GrannyGetMeshIndexCount = GetGrannyFunction<GrannyGetMeshIndexCount_t>(
-            grannyDllHandle, "_GrannyGetMeshIndexCount@4");
+            grannyDllHandle, "GrannyGetMeshIndexCount");
         GrannyCopyMeshVertices = GetGrannyFunction<GrannyCopyMeshVertices_t>(
-            grannyDllHandle, "_GrannyCopyMeshVertices@12");
+            grannyDllHandle, "GrannyCopyMeshVertices");
         GrannyCopyMeshIndices = GetGrannyFunction<GrannyCopyMeshIndices_t>(
-            grannyDllHandle, "_GrannyCopyMeshIndices@12");
+            grannyDllHandle, "GrannyCopyMeshIndices");
         GrannyBuildCompositeTransform4x4 = GetGrannyFunction<GrannyBuildCompositeTransform4x4_t>(
-            grannyDllHandle, "_GrannyBuildCompositeTransform4x4@8");
+            grannyDllHandle, "GrannyBuildCompositeTransform4x4");
         GrannyMeshIsRigid = GetGrannyFunction<GrannyMeshIsRigid_t>(
-            grannyDllHandle, "_GrannyMeshIsRigid@4");
+            grannyDllHandle, "GrannyMeshIsRigid");
         GrannyComputeBasisConversion = GetGrannyFunction<GrannyComputeBasisConversion_t>(
-            grannyDllHandle, "_GrannyComputeBasisConversion@36");
+            grannyDllHandle, "GrannyComputeBasisConversion");
         GrannyTransformFile = GetGrannyFunction<GrannyTransformFile_t>(
-            grannyDllHandle, "_GrannyTransformFile@28");
+            grannyDllHandle, "GrannyTransformFile");
         GrannyCurveMakeStaticDaK32fC32f = GetGrannyFunction<GrannyCurveMakeStaticDaK32fC32f_t>(
-            grannyDllHandle, "_GrannyCurveMakeStaticDaK32fC32f@28");
+            grannyDllHandle, "GrannyCurveMakeStaticDaK32fC32f");
         GrannyCurveConvertToDaK32fC32f = GetGrannyFunction<GrannyCurveConvertToDaK32fC32f_t>(
-            grannyDllHandle, "_GrannyCurveConvertToDaK32fC32f@8");
-        GrannyFreeCurve = GetGrannyFunction<GrannyFreeCurve_t>(
-            grannyDllHandle, "_GrannyFreeCurve@4");
+            grannyDllHandle, "GrannyCurveConvertToDaK32fC32f");
+        GrannyFreeCurve = GetGrannyFunction<GrannyFreeCurve_t>(grannyDllHandle, "GrannyFreeCurve");
         GrannyCurveGetKnotCount = GetGrannyFunction<GrannyCurveGetKnotCount_t>(
-            grannyDllHandle, "_GrannyCurveGetKnotCount@4");
+            grannyDllHandle, "GrannyCurveGetKnotCount");
         GrannyCurveGetDimension = GetGrannyFunction<GrannyCurveGetDimension_t>(
-            grannyDllHandle, "_GrannyCurveGetDimension@4");
+            grannyDllHandle, "GrannyCurveGetDimension");
         GrannyCurveGetDegree = GetGrannyFunction<GrannyCurveGetDegree_t>(
-            grannyDllHandle, "_GrannyCurveGetDegree@4");
+            grannyDllHandle, "GrannyCurveGetDegree");
         GrannyCurveIdentityPosition = GetGrannyFunction<GrannyCurveIdentityPosition_t>(
             grannyDllHandle, "GrannyCurveIdentityPosition");
         GrannyCurveIdentityOrientation = GetGrannyFunction<GrannyCurveIdentityOrientation_t>(
@@ -78,26 +77,26 @@ bool InitializeGrannyLibrary() {
         GrannyCurveIdentityScale = GetGrannyFunction<GrannyCurveIdentityScale_t>(
             grannyDllHandle, "GrannyCurveIdentityScale");
         GrannyEvaluateCurveAtT = GetGrannyFunction<GrannyEvaluateCurveAtT_t>(
-            grannyDllHandle, "_GrannyEvaluateCurveAtT@36");
+            grannyDllHandle, "GrannyEvaluateCurveAtT");
         GrannyEvaluateCurveAtKnotIndex = GetGrannyFunction<GrannyEvaluateCurveAtKnotIndex_t>(
-            grannyDllHandle, "_GrannyEvaluateCurveAtKnotIndex@40");
-        GrannyFindKnot = GetGrannyFunction<GrannyFindKnot_t>(grannyDllHandle, "_GrannyFindKnot@12");
+            grannyDllHandle, "GrannyEvaluateCurveAtKnotIndex");
+        GrannyFindKnot = GetGrannyFunction<GrannyFindKnot_t>(grannyDllHandle, "GrannyFindKnot");
         GrannyFindCloseKnot = GetGrannyFunction<GrannyFindCloseKnot_t>(
-            grannyDllHandle, "_GrannyFindCloseKnot@16");
+            grannyDllHandle, "GrannyFindCloseKnot");
         GrannyCurveIsKeyframed = GetGrannyFunction<GrannyCurveIsKeyframed_t>(
-            grannyDllHandle, "_GrannyCurveIsKeyframed@4");
+            grannyDllHandle, "GrannyCurveIsKeyframed");
         GrannyCurveInitializeFormat = GetGrannyFunction<GrannyCurveInitializeFormat_t>(
-            grannyDllHandle, "_GrannyCurveInitializeFormat@4");
+            grannyDllHandle, "GrannyCurveInitializeFormat");
         GrannyCurveDataDaIdentityType = GetGrannyFunction<GrannyCurveDataDaIdentityType_t>(
             grannyDllHandle, "GrannyCurveDataDaIdentityType");
         GrannyTextureHasAlpha = GetGrannyFunction<GrannyTextureHasAlpha_t>(
-            grannyDllHandle, "_GrannyTextureHasAlpha@4");
+            grannyDllHandle, "GrannyTextureHasAlpha");
         GrannyRGBA8888PixelFormat = *GetGrannyFunction<GrannyRGBA8888PixelFormat_t*>(
             grannyDllHandle, "GrannyRGBA8888PixelFormat");
         GrannyRGB888PixelFormat = *GetGrannyFunction<GrannyRGB888PixelFormat_t*>(
             grannyDllHandle, "GrannyRGB888PixelFormat");
         GrannyCopyTextureImage = GetGrannyFunction<GrannyCopyTextureImage_t>(
-            grannyDllHandle, "_GrannyCopyTextureImage@32");
+            grannyDllHandle, "GrannyCopyTextureImage");
     } catch (std::runtime_error& error) {
         fatal(error.what());
         return false;
