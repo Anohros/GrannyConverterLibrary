@@ -2,50 +2,39 @@
 
 namespace GCL::Bindings {
 
-Track::Track(GrannyTransformTrack data)
-    : m_data(data)
-    , m_node(nullptr)
-{
+Track::Track(GrannyTransformTrack data) : m_data(data), m_node(nullptr) {
 }
 
-string Track::getName()
-{
+string Track::getName() {
     return m_name;
 }
 
-void Track::setName(string name)
-{
+void Track::setName(string name) {
     m_name = name;
 }
 
-vector<CurvePositionKey> Track::getPositionKeys()
-{
+vector<CurvePositionKey> Track::getPositionKeys() {
     return m_positionKeys;
 }
 
-vector<CurveRotationKey> Track::getRotationKeys()
-{
+vector<CurveRotationKey> Track::getRotationKeys() {
     return m_rotationKeys;
 }
 
-vector<CurveScaleKey> Track::getScaleKeys()
-{
+vector<CurveScaleKey> Track::getScaleKeys() {
     return m_scaleKeys;
 }
 
-void Track::addPositionKey(CurvePositionKey key)
-{
+void Track::addPositionKey(CurvePositionKey key) {
     m_positionKeys.push_back(key);
 }
 
-void Track::addRotationKey(CurveRotationKey key)
-{
+void Track::addRotationKey(CurveRotationKey key) {
     m_rotationKeys.push_back(key);
 }
 
-void Track::addScaleKey(CurveScaleKey key)
-{
+void Track::addScaleKey(CurveScaleKey key) {
     m_scaleKeys.push_back(key);
 }
 
-} // namespace GCL::Bindings
+}  // namespace GCL::Bindings

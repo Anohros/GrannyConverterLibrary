@@ -1,10 +1,10 @@
 #pragma once
 
-#include "gcl/importer/grannyformat.h"
+#include <vector>
 
 #include <fbxsdk.h>
 
-#include <vector>
+#include "gcl/importer/grannyformat.h"
 
 namespace GCL::Bindings {
 
@@ -60,4 +60,4 @@ protected:
     FbxDouble3 m_value;
 };
 
-} // namespace GCL::Bindings
+}  // namespace GCL::Bindings

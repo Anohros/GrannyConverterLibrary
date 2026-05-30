@@ -55,4 +55,4 @@ protected:
     void exportRestPose(Model::SharedPtr model);
 };
 
-} // namespace GCL::Exporter
+}  // namespace GCL::Exporter

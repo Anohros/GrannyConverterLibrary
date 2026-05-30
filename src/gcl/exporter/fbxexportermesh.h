@@ -21,7 +21,8 @@ public:
     ///
     /// \brief Destructor
     ///
-    virtual ~FbxExporterMesh() { }
+    virtual ~FbxExporterMesh() {
+    }
 
     ///
     /// \brief Export the meshes of the given model to the fbx scene.
@@ -45,7 +46,8 @@ protected:
     /// \param mesh The fbx mesh of the mesh.
     /// \param boneBindings The bone bindings of the mesh.
     ///
-    void createMeshDeformation(FbxNode* meshNode, FbxMesh* mesh, vector<BoneBinding::SharedPtr> boneBindings);
+    void createMeshDeformation(
+        FbxNode* meshNode, FbxMesh* mesh, vector<BoneBinding::SharedPtr> boneBindings);
 
     ///
     /// \brief Applies the bone weights and bone deformation for a mesh.
@@ -54,7 +56,8 @@ protected:
     /// \param meshNode The fbx node of the mesh.
     /// \param fbxMesh The fbx mesh of the mesh.
     ///
-    void createBoneWeightsAndApplyDeformation(Model::SharedPtr model, Mesh::SharedPtr mesh, FbxNode* meshNode, FbxMesh* fbxMesh);
+    void createBoneWeightsAndApplyDeformation(
+        Model::SharedPtr model, Mesh::SharedPtr mesh, FbxNode* meshNode, FbxMesh* fbxMesh);
 
     ///
     /// \brief Export a mesh to a fbx mesh.
@@ -112,4 +115,4 @@ protected:
     virtual string sanitizeMaterialName(string name);
 };
 
-} // namespace GCL::Exporter
+}  // namespace GCL::Exporter

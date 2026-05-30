@@ -1,13 +1,13 @@
 #pragma once
 
+#include <fbxsdk.h>
+
 #include "gcl/bindings/abstractcurvekey.h"
 #include "gcl/bindings/scene.h"
 #include "gcl/bindings/track.h"
 #include "gcl/exporter/fbxexportermodule.h"
 #include "gcl/importer/grannyformat.h"
 #include "gcl/utilities/fbxsdkcommon.h"
-
-#include <fbxsdk.h>
 
 namespace GCL::Exporter {
 
@@ -49,4 +49,4 @@ public:
         FbxAnimCurve* animCurveZ);
 };
 
-} // namespace GCL::Exporter
+}  // namespace GCL::Exporter

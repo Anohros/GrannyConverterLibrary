@@ -1,9 +1,9 @@
 #pragma once
 
+#include <fbxsdk.h>
+
 #include "gcl/bindings/scene.h"
 #include "gcl/importer/grannyformat.h"
-
-#include <fbxsdk.h>
 
 namespace GCL::Exporter {
 
@@ -39,4 +39,4 @@ protected:
     FbxScene* m_fbxScene = nullptr;
 };
 
-} // namespace GCL::Exporter
+}  // namespace GCL::Exporter

@@ -1,14 +1,14 @@
 #pragma once
 
+#include <iostream>
+#include <vector>
+
+#include <fbxsdk.h>
+
 #include "gcl/bindings/curvepositionkey.h"
 #include "gcl/bindings/curverotationkey.h"
 #include "gcl/bindings/curvescalekey.h"
 #include "gcl/importer/grannyformat.h"
-
-#include <fbxsdk.h>
-
-#include <iostream>
-#include <vector>
 
 namespace GCL::Bindings {
 
@@ -110,4 +110,4 @@ protected:
     vector<CurveScaleKey> m_scaleKeys;
 };
 
-} // namespace GCL::Bindings
+}  // namespace GCL::Bindings

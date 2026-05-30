@@ -4,18 +4,15 @@
 
 namespace GCL::Utilities {
 
-void initializeDevilImageLibrary()
-{
+void initializeDevilImageLibrary() {
     ilInit();
 }
 
-void shutdownDevilImageLibrary()
-{
+void shutdownDevilImageLibrary() {
     ilShutDown();
 }
 
-void convertImage(string sourceFilePath, string targetFilePath, bool flipImage)
-{
+void convertImage(string sourceFilePath, string targetFilePath, bool flipImage) {
     ILuint imageId;
     ilGenImages(1, &imageId);
     ilBindImage(imageId);
@@ -31,4 +28,4 @@ void convertImage(string sourceFilePath, string targetFilePath, bool flipImage)
     ilDeleteImage(imageId);
 }
 
-} // namespace GCL::Utilities
+}  // namespace GCL::Utilities

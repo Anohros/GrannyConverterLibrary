@@ -1,11 +1,11 @@
 #pragma once
 
-#include "gcl/importer/grannyformat.h"
+#include <memory>
+#include <vector>
 
 #include <fbxsdk.h>
 
-#include <memory>
-#include <vector>
+#include "gcl/importer/grannyformat.h"
 
 namespace GCL::Bindings {
 
@@ -110,4 +110,4 @@ protected:
     vector<FbxCluster*> m_clusters;
 };
 
-} // namespace GCL::Bindings
+}  // namespace GCL::Bindings

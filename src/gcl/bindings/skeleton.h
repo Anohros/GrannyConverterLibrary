@@ -1,11 +1,11 @@
 #pragma once
 
-#include "gcl/bindings/bone.h"
-#include "gcl/importer/grannyformat.h"
+#include <vector>
 
 #include <fbxsdk.h>
 
-#include <vector>
+#include "gcl/bindings/bone.h"
+#include "gcl/importer/grannyformat.h"
 
 namespace GCL::Bindings {
 
@@ -75,4 +75,4 @@ protected:
     vector<Bone::SharedPtr> m_bones;
 };
 
-} // namespace GCL::Bindings
+}  // namespace GCL::Bindings

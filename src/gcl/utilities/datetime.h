@@ -25,4 +25,4 @@ string nowTime(const char* format = DEFAULT_FORMAT);
 ///
 string nowTimeMs(const char* format = DEFAULT_FORMAT);
 
-} // namespace GCL::Utilities::Datetime
+}  // namespace GCL::Utilities::Datetime

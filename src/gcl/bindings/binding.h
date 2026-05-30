@@ -21,24 +21,21 @@ public:
     /// \brief Returns if binding is excluded.
     /// \return Exclusion flag
     ///
-    bool isExcluded() const
-    {
+    bool isExcluded() const {
         return m_excluded;
     }
 
     ///
     /// \brief Exclude this binding.
     ///
-    void exclude()
-    {
+    void exclude() {
         m_excluded = true;
     }
 
     ///
     /// \brief Include this binding.
     ///
-    void include()
-    {
+    void include() {
         m_excluded = false;
     }
 
@@ -49,4 +46,4 @@ protected:
     bool m_excluded = false;
 };
 
-} // namespace GCL::Bindings
+}  // namespace GCL::Bindings

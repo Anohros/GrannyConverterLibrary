@@ -4,8 +4,7 @@
 
 namespace GCL::Utilities {
 
-void toUpper(string& input)
-{
+void toUpper(string& input) {
     locale locale;
 
     for (auto& chr : input) {
@@ -13,8 +12,7 @@ void toUpper(string& input)
     }
 }
 
-void toLower(string& input)
-{
+void toLower(string& input) {
     locale locale;
 
     for (auto& chr : input) {
@@ -22,16 +20,14 @@ void toLower(string& input)
     }
 }
 
-void toUpperFirst(string& input)
-{
+void toUpperFirst(string& input) {
     locale locale;
     input[0] = toupper(input[0], locale);
 }
 
-void toLowerFirst(string& input)
-{
+void toLowerFirst(string& input) {
     locale locale;
     input[0] = tolower(input[0], locale);
 }
 
-} // namespace GCL::Utilities
+}  // namespace GCL::Utilities

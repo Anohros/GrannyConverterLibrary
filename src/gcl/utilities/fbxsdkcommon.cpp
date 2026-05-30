@@ -8,8 +8,7 @@ namespace GCL::Utilities {
 using namespace std;
 using namespace GCL::Utilities::Logging;
 
-void FbxSdkCommon::InitializeSdkObjects(FbxManager*& manager, FbxScene*& scene)
-{
+void FbxSdkCommon::InitializeSdkObjects(FbxManager*& manager, FbxScene*& scene) {
     manager = FbxManager::Create();
 
     if (!manager) {
@@ -27,13 +26,12 @@ void FbxSdkCommon::InitializeSdkObjects(FbxManager*& manager, FbxScene*& scene)
     }
 }
 
-void FbxSdkCommon::DestroySdkObjects(FbxManager* manager)
-{
+void FbxSdkCommon::DestroySdkObjects(FbxManager* manager) {
     manager->Destroy();
 }
 
-bool FbxSdkCommon::SaveScene(FbxManager* fbxManager, FbxScene* scene, const char* filename, bool embedMedia, bool ascii)
-{
+bool FbxSdkCommon::SaveScene(
+    FbxManager* fbxManager, FbxScene* scene, const char* filename, bool embedMedia, bool ascii) {
     FbxExporter* exporter = FbxExporter::Create(fbxManager, "");
 
     if (!exporter->SetFileExportVersion(FBX_2019_00_COMPATIBLE, FbxSceneRenamer::eNone)) {
@@ -98,4 +96,4 @@ bool FbxSdkCommon::SaveScene(FbxManager* fbxManager, FbxScene* scene, const char
     return status;
 }
 
-} // namespace GCL::Utilities
+}  // namespace GCL::Utilities

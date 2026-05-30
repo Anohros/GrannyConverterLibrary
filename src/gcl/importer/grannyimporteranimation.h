@@ -50,7 +50,8 @@ protected:
     /// \param grannyTransformTrack Granny transform track
     /// \return Animation tracks of animation.
     ///
-    virtual Track::SharedPtr importTrack(Animation::SharedPtr animation, GrannyTransformTrack grannyTransformTrack) const;
+    virtual Track::SharedPtr importTrack(
+        Animation::SharedPtr animation, GrannyTransformTrack grannyTransformTrack) const;
 
     ///
     /// \brief Imports a scale keys from scale curve.
@@ -65,7 +66,10 @@ protected:
     /// \param track Track
     /// \param grannyTransformTrack Granny transform track
     ///
-    void importPositionCurve(Animation::SharedPtr animation, Track::SharedPtr track, GrannyTransformTrack grannyTransformTrack) const;
+    void importPositionCurve(
+        Animation::SharedPtr animation,
+        Track::SharedPtr track,
+        GrannyTransformTrack grannyTransformTrack) const;
 
     ///
     /// \brief Imports a rotation keys from scale curve.
@@ -73,7 +77,10 @@ protected:
     /// \param track Track
     /// \param grannyTransformTrack Granny transform track
     ///
-    void importRotationCurve(Animation::SharedPtr animation, Track::SharedPtr track, GrannyTransformTrack grannyTransformTrack) const;
+    void importRotationCurve(
+        Animation::SharedPtr animation,
+        Track::SharedPtr track,
+        GrannyTransformTrack grannyTransformTrack) const;
 
     ///
     /// \brief Calculcates time to a 30 frames per second rate.
@@ -89,4 +96,4 @@ protected:
     Scene::SharedPtr m_scene;
 };
 
-} // namespace GCL::Importer
+}  // namespace GCL::Importer

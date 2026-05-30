@@ -42,4 +42,4 @@ unsigned filesize(fstream& file);
 ///
 vector<char> binarydata(fstream& file);
 
-} // namespace GCL::Utilities::FileStreamUtility
+}  // namespace GCL::Utilities::FileStreamUtility

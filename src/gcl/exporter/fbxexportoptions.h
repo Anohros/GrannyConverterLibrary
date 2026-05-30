@@ -59,4 +59,4 @@ struct FbxExportOptions {
     string convertAxis = "xzy";
 };
 
-} // namespace GCL::Exporter
+}  // namespace GCL::Exporter

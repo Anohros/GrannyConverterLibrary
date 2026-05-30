@@ -1,13 +1,13 @@
 #pragma once
 
+#include <vector>
+
+#include <fbxsdk.h>
+
 #include "gcl/bindings/binding.h"
 #include "gcl/bindings/bone.h"
 #include "gcl/bindings/mesh.h"
 #include "gcl/importer/grannyformat.h"
-
-#include <fbxsdk.h>
-
-#include <vector>
 
 namespace GCL::Bindings {
 
@@ -88,4 +88,4 @@ protected:
     FbxMatrix m_transform;
 };
 
-} // namespace GCL::Bindings
+}  // namespace GCL::Bindings

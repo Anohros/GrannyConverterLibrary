@@ -1,41 +1,32 @@
 #include "gcl/importer/grannyimporter.h"
 
-#include "gcl/utilities/logging.h"
-
 #include <filesystem>
+
+#include "gcl/utilities/logging.h"
 
 namespace GCL::Importer {
 
 using namespace GCL::Utilities::Logging;
 
-GrannyImporter::GrannyImporter()
-    : m_scene(new Scene())
-{
+GrannyImporter::GrannyImporter() : m_scene(new Scene()) {
     initialize();
 }
 
-GrannyImporter::GrannyImporter(Scene::SharedPtr scene)
-    : m_scene(scene)
-{
+GrannyImporter::GrannyImporter(Scene::SharedPtr scene) : m_scene(scene) {
     initialize();
 }
 
 GrannyImporter::GrannyImporter(GrannyImportOptions options)
-    : m_options(options)
-    , m_scene(new Scene())
-{
+    : m_options(options), m_scene(new Scene()) {
     initialize();
 }
 
 GrannyImporter::GrannyImporter(GrannyImportOptions options, Scene::SharedPtr scene)
-    : m_options(options)
-    , m_scene(scene)
-{
+    : m_options(options), m_scene(scene) {
     initialize();
 }
 
-GrannyImporter::~GrannyImporter()
-{
+GrannyImporter::~GrannyImporter() {
     for (const auto& grannyFile : m_importedGrannyFiles) {
         GrannyFreeFile(grannyFile);
     }
@@ -46,8 +37,7 @@ GrannyImporter::~GrannyImporter()
     delete m_importerAnimation;
 }
 
-void GrannyImporter::initialize()
-{
+void GrannyImporter::initialize() {
     m_importerMaterial = new GrannyImporterMaterial(m_scene);
     m_importerModel = new GrannyImporterModel(m_scene);
     m_importerSkeleton = new GrannyImporterSkeleton(m_scene);
@@ -61,8 +51,7 @@ void GrannyImporter::initialize()
     }
 }
 
-bool GrannyImporter::importFromFile(const char* grannyFilePath)
-{
+bool GrannyImporter::importFromFile(const char* grannyFilePath) {
     if (!ifstream(grannyFilePath).is_open()) {
         warning("Skip import from file. File \"%s\" was not found.", grannyFilePath);
         return false;
@@ -102,8 +91,7 @@ bool GrannyImporter::importFromFile(const char* grannyFilePath)
     return true;
 }
 
-void GrannyImporter::importMaterials(GrannyFileInfo* grannyFileInfo, const char* grannyFilePath)
-{
+void GrannyImporter::importMaterials(GrannyFileInfo* grannyFileInfo, const char* grannyFilePath) {
     // Load materials from granny file only if it has at least one material.
     if (!grannyFileInfo->MaterialCount) {
         debug("Skip load materials because granny file \"%s\" has no materials.", grannyFilePath);
@@ -114,8 +102,7 @@ void GrannyImporter::importMaterials(GrannyFileInfo* grannyFileInfo, const char*
     m_importerMaterial->importMaterials(grannyFileInfo);
 }
 
-void GrannyImporter::importModels(GrannyFileInfo* grannyFileInfo, const char* grannyFilePath)
-{
+void GrannyImporter::importModels(GrannyFileInfo* grannyFileInfo, const char* grannyFilePath) {
     // Load models from granny file only if it has at least one model.
     if (!grannyFileInfo->ModelCount) {
         debug("Skip load models because granny file (file: \"%s\") has no models.", grannyFilePath);
@@ -126,11 +113,12 @@ void GrannyImporter::importModels(GrannyFileInfo* grannyFileInfo, const char* gr
     m_importerModel->importModels(grannyFileInfo);
 }
 
-void GrannyImporter::importAnimations(GrannyFileInfo* grannyFileInfo, const char* grannyFilePath)
-{
+void GrannyImporter::importAnimations(GrannyFileInfo* grannyFileInfo, const char* grannyFilePath) {
     // Load animations from granny file only if it has at least one animation.
     if (!grannyFileInfo->AnimationCount) {
-        debug("Skip load animations because granny file (file: \"%s\") has no animations.", grannyFilePath);
+        debug(
+            "Skip load animations because granny file (file: \"%s\") has no animations.",
+            grannyFilePath);
         return;
     }
 
@@ -138,9 +126,8 @@ void GrannyImporter::importAnimations(GrannyFileInfo* grannyFileInfo, const char
     m_importerAnimation->importAnimations(grannyFileInfo);
 }
 
-Scene::SharedPtr GrannyImporter::getScene() const
-{
+Scene::SharedPtr GrannyImporter::getScene() const {
     return m_scene;
 }
 
-} // namespace GCL::Importer
+}  // namespace GCL::Importer

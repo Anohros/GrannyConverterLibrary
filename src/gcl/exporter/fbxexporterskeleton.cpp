@@ -2,24 +2,19 @@
 
 namespace GCL::Exporter {
 
-void FbxExporterSkeleton::exportBones(Model::SharedPtr model)
-{
+void FbxExporterSkeleton::exportBones(Model::SharedPtr model) {
     for (auto bone : model->getBones()) {
         exportBone(model, bone);
     }
 }
 
-void FbxExporterSkeleton::exportBone(Model::SharedPtr model, Bone::SharedPtr bone)
-{
+void FbxExporterSkeleton::exportBone(Model::SharedPtr model, Bone::SharedPtr bone) {
     auto grannyBone = bone->getData();
     auto parentIndex = grannyBone.ParentIndex;
 
     // Set bone transformation.
     auto localTransform = bone->getData().LocalTransform;
-    auto boneTransform = FbxAMatrix(
-        FbxDouble3(0, 0, 0),
-        FbxDouble3(0, 0, 0),
-        FbxDouble3(1, 1, 1));
+    auto boneTransform = FbxAMatrix(FbxDouble3(0, 0, 0), FbxDouble3(0, 0, 0), FbxDouble3(1, 1, 1));
 
     if (localTransform.Flags & GrannyTransformFlags::GrannyHasPosition) {
         boneTransform.SetT(FbxVector4(
@@ -47,9 +42,7 @@ void FbxExporterSkeleton::exportBone(Model::SharedPtr model, Bone::SharedPtr bon
     if (parentIndex == GrannyNoParentBone) {
         auto initialPlacement = model->getData()->InitialPlacement;
         auto initialTransform = FbxAMatrix(
-            FbxDouble3(0, 0, 0),
-            FbxDouble3(0, 0, 0),
-            FbxDouble3(1, 1, 1));
+            FbxDouble3(0, 0, 0), FbxDouble3(0, 0, 0), FbxDouble3(1, 1, 1));
 
         if (initialPlacement.Flags & GrannyTransformFlags::GrannyHasPosition) {
             initialTransform.SetT(FbxDouble3(
@@ -115,14 +108,12 @@ void FbxExporterSkeleton::exportBone(Model::SharedPtr model, Bone::SharedPtr bon
     }
 }
 
-void FbxExporterSkeleton::exportPoses(Model::SharedPtr model)
-{
+void FbxExporterSkeleton::exportPoses(Model::SharedPtr model) {
     exportBindPose(model);
     exportRestPose(model);
 }
 
-void FbxExporterSkeleton::exportBindPose(Model::SharedPtr model)
-{
+void FbxExporterSkeleton::exportBindPose(Model::SharedPtr model) {
     auto rootBone = model->getBones().at(0)->getNode();
     vector<FbxNode*> boneClusters;
 
@@ -132,26 +123,29 @@ void FbxExporterSkeleton::exportBindPose(Model::SharedPtr model)
         auto boneClusterCount = 0;
 
         switch (rootBone->GetNodeAttribute()->GetAttributeType()) {
-        default:
-            break;
-        case FbxNodeAttribute::eMesh:
-        case FbxNodeAttribute::eNurbs:
-        case FbxNodeAttribute::ePatch:
-            meshGeometry = static_cast<FbxGeometry*>(rootBone->GetNodeAttribute());
-            meshSkinCount = meshGeometry->GetDeformerCount(FbxDeformer::eSkin);
-            for (auto meshSkinIndex = 0; meshSkinIndex < meshSkinCount; meshSkinIndex++) {
-                auto meshSkin = static_cast<FbxSkin*>(meshGeometry->GetDeformer(meshSkinIndex, FbxDeformer::eSkin));
-                boneClusterCount += meshSkin->GetClusterCount();
-            }
-            break;
+            default:
+                break;
+            case FbxNodeAttribute::eMesh:
+            case FbxNodeAttribute::eNurbs:
+            case FbxNodeAttribute::ePatch:
+                meshGeometry = static_cast<FbxGeometry*>(rootBone->GetNodeAttribute());
+                meshSkinCount = meshGeometry->GetDeformerCount(FbxDeformer::eSkin);
+                for (auto meshSkinIndex = 0; meshSkinIndex < meshSkinCount; meshSkinIndex++) {
+                    auto meshSkin = static_cast<FbxSkin*>(
+                        meshGeometry->GetDeformer(meshSkinIndex, FbxDeformer::eSkin));
+                    boneClusterCount += meshSkin->GetClusterCount();
+                }
+                break;
         }
 
         // If we found some clusters we must expand the node.
         if (boneClusterCount) {
             for (auto meshSkinIndex = 0; meshSkinIndex < meshSkinCount; meshSkinIndex++) {
-                auto meshSkin = static_cast<FbxSkin*>(meshGeometry->GetDeformer(meshSkinIndex, FbxDeformer::eSkin));
+                auto meshSkin = static_cast<FbxSkin*>(
+                    meshGeometry->GetDeformer(meshSkinIndex, FbxDeformer::eSkin));
                 boneClusterCount = meshSkin->GetClusterCount();
-                for (auto boneClusterIndex = 0; boneClusterIndex < boneClusterCount; boneClusterIndex++) {
+                for (auto boneClusterIndex = 0; boneClusterIndex < boneClusterCount;
+                     boneClusterIndex++) {
                     auto boneCluster = meshSkin->GetCluster(boneClusterIndex)->GetLink();
                     expandBoneCluster(boneClusters, boneCluster);
                 }
@@ -173,8 +167,7 @@ void FbxExporterSkeleton::exportBindPose(Model::SharedPtr model)
     }
 }
 
-void FbxExporterSkeleton::expandBoneCluster(vector<FbxNode*>& boneClusters, FbxNode* boneCluster)
-{
+void FbxExporterSkeleton::expandBoneCluster(vector<FbxNode*>& boneClusters, FbxNode* boneCluster) {
     if (boneCluster) {
         expandBoneCluster(boneClusters, boneCluster->GetParent());
 
@@ -184,20 +177,16 @@ void FbxExporterSkeleton::expandBoneCluster(vector<FbxNode*>& boneClusters, FbxN
     }
 }
 
-void FbxExporterSkeleton::exportRestPose(Model::SharedPtr model)
-{
+void FbxExporterSkeleton::exportRestPose(Model::SharedPtr model) {
     auto rootBone = model->getBones().at(0)->getNode();
     auto restPoseName = string(rootBone->GetName()).append(" RestPose");
     auto restPose = FbxPose::Create(m_fbxScene, restPoseName.c_str());
     restPose->SetIsBindPose(false);
     FbxMatrix restPoseMatrix;
-    FbxVector4
-        restPoseTransform,
-        restPoseRotation,
-        restPoseScale(1.0, 1.0, 1.0);
+    FbxVector4 restPoseTransform, restPoseRotation, restPoseScale(1.0, 1.0, 1.0);
     restPoseMatrix.SetTRS(restPoseTransform, restPoseRotation, restPoseScale);
     restPose->Add(rootBone, restPoseMatrix, true);
     m_fbxScene->AddPose(restPose);
 }
 
-} // namespace GCL::Exporter
+}  // namespace GCL::Exporter

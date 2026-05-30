@@ -6,8 +6,7 @@
 
 namespace GCL::Utilities {
 
-GrannyTexture* getMaterialTexture(GrannyMaterial* grannyMaterial)
-{
+GrannyTexture* getMaterialTexture(GrannyMaterial* grannyMaterial) {
     GrannyTexture* texture = nullptr;
 
     if (grannyMaterial->MapCount) {
@@ -15,7 +14,8 @@ GrannyTexture* getMaterialTexture(GrannyMaterial* grannyMaterial)
 
         for (auto i = 0; i < grannyMaterial->MapCount; i++) {
             auto currentMap = &grannyMaterial->Maps[i];
-            auto isColor = _stricmp(currentMap->Usage, "color") == 0 || _stricmp(currentMap->Usage, "Diffuse color") == 0;
+            auto isColor = _stricmp(currentMap->Usage, "color") == 0 ||
+                           _stricmp(currentMap->Usage, "Diffuse color") == 0;
             auto isTexture = currentMap->Material->Texture != nullptr;
             if (isColor && isTexture) {
                 map = currentMap;
@@ -35,8 +35,7 @@ GrannyTexture* getMaterialTexture(GrannyMaterial* grannyMaterial)
     return texture;
 }
 
-void exportTexture(GrannyTexture* grannyTexture, string textureFilePath, bool flipImage)
-{
+void exportTexture(GrannyTexture* grannyTexture, string textureFilePath, bool flipImage) {
     int bytesPerPixel;
     GrannyPixelLayout const* grannyPixelLayout;
     ILenum ilFormat;
@@ -85,4 +84,4 @@ void exportTexture(GrannyTexture* grannyTexture, string textureFilePath, bool fl
     ilDeleteImages(1, &imageId);
 }
 
-} // namespace GCL::Utilities
+}  // namespace GCL::Utilities

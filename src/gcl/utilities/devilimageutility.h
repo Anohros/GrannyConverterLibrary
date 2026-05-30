@@ -24,4 +24,4 @@ void shutdownDevilImageLibrary();
 ///
 void convertImage(string sourceFilePath, string targetFilePath, bool flipImage = false);
 
-} // namespace GCL::Utilities
+}  // namespace GCL::Utilities

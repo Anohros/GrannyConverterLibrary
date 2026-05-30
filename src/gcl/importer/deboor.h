@@ -1,11 +1,11 @@
 #pragma once
 
-#include "gcl/importer/grannyformat.h"
+#include <memory>
+#include <vector>
 
 #include <fbxsdk.h>
 
-#include <memory>
-#include <vector>
+#include "gcl/importer/grannyformat.h"
 
 namespace GCL::Importer {
 
@@ -30,7 +30,8 @@ vector<float> padded_knots(const vector<float>& knots, unsigned degree);
 /// \param controls
 /// \return
 ///
-FbxDouble3 de_boor_position(unsigned degree, float time, const vector<float>& knots, const vector<FbxDouble3>& controls);
+FbxDouble3 de_boor_position(
+    unsigned degree, float time, const vector<float>& knots, const vector<FbxDouble3>& controls);
 
 ///
 /// \brief de_boor_position
@@ -40,7 +41,8 @@ FbxDouble3 de_boor_position(unsigned degree, float time, const vector<float>& kn
 /// \param controls
 /// \return
 ///
-FbxDouble3 de_boor_position(unsigned degree, float time, vector<float>& knots, vector<FbxDouble3>& controls);
+FbxDouble3 de_boor_position(
+    unsigned degree, float time, vector<float>& knots, vector<FbxDouble3>& controls);
 
 ///
 /// \brief de_boor_rotation
@@ -50,7 +52,8 @@ FbxDouble3 de_boor_position(unsigned degree, float time, vector<float>& knots, v
 /// \param controls
 /// \return
 ///
-FbxQuaternion de_boor_rotation(unsigned degree, float time, const vector<float>& knots, const vector<FbxQuaternion>& controls);
+FbxQuaternion de_boor_rotation(
+    unsigned degree, float time, const vector<float>& knots, const vector<FbxQuaternion>& controls);
 
 ///
 /// \brief de_boor_rotation
@@ -60,6 +63,7 @@ FbxQuaternion de_boor_rotation(unsigned degree, float time, const vector<float>&
 /// \param controls
 /// \return
 ///
-FbxQuaternion de_boor_rotation(unsigned degree, float time, vector<float>& knots, vector<FbxQuaternion>& controls);
+FbxQuaternion de_boor_rotation(
+    unsigned degree, float time, vector<float>& knots, vector<FbxQuaternion>& controls);
 
-} // namespace GCL::Importer
+}  // namespace GCL::Importer

@@ -36,7 +36,10 @@ public:
     /// \param options Export options to define what aspects of the scene needs to be exported.
     /// \param scene A scene to be exported.
     ///
-    FbxExporter(ExporterModuleFactoryInterface* exporterModuleFactory, FbxExportOptions options, Scene::SharedPtr scene);
+    FbxExporter(
+        ExporterModuleFactoryInterface* exporterModuleFactory,
+        FbxExportOptions options,
+        Scene::SharedPtr scene);
 
     ///
     /// \brief Destructor
@@ -56,7 +59,8 @@ public:
 
     ///
     /// \brief Export the models of the scene to the fbx scene.
-    /// \param outputFilepath Output path where the fbx file will be exported to. It is required for material export.
+    /// \param outputFilepath Output path where the fbx file will be exported to. It is required for
+    /// material export.
     ///
     void exportModels(string outputFilepath);
 
@@ -64,8 +68,7 @@ public:
     /// \brief Returns a scene.
     /// \return Scene
     ///
-    Scene::SharedPtr getScene()
-    {
+    Scene::SharedPtr getScene() {
         return m_scene;
     }
 
@@ -73,8 +76,7 @@ public:
     /// \brief Returns fbx scene.
     /// \return Fbx scene
     ///
-    FbxScene* getFbxScene()
-    {
+    FbxScene* getFbxScene() {
         return m_fbxScene;
     }
 
@@ -125,4 +127,4 @@ protected:
     FbxScene* m_fbxScene = nullptr;
 };
 
-} // namespace GCL::Exporter
+}  // namespace GCL::Exporter

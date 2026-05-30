@@ -1,5 +1,7 @@
 #pragma once
 
+#include <vector>
+
 #include "gcl/bindings/animation.h"
 #include "gcl/bindings/bone.h"
 #include "gcl/bindings/curvepositionkey.h"
@@ -18,8 +20,6 @@
 #include "gcl/importer/grannyimportermodel.h"
 #include "gcl/importer/grannyimporterskeleton.h"
 #include "gcl/importer/grannyimportoptions.h"
-
-#include <vector>
 
 namespace GCL::Importer {
 
@@ -49,7 +49,8 @@ public:
     GrannyImporter(GrannyImportOptions options);
 
     ///
-    /// \brief Constructer with extended options and data initialization to reuse an already initialized scene.
+    /// \brief Constructer with extended options and data initialization to reuse an already
+    /// initialized scene.
     /// \param options Import options which define the way how a scene needs to be imported.
     /// \param scene Already initialized scene to be reused.
     ///
@@ -136,4 +137,4 @@ protected:
     vector<GrannyFile*> m_importedGrannyFiles;
 };
 
-} // namespace GCL::Importer
+}  // namespace GCL::Importer

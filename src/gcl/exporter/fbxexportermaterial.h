@@ -1,18 +1,18 @@
 #pragma once
 
+#include <fstream>
+#include <map>
+#include <regex>
+#include <string>
+
+#include <fbxsdk.h>
+
 #include "gcl/bindings/scene.h"
 #include "gcl/exporter/fbxexportermodule.h"
 #include "gcl/importer/grannyformat.h"
 #include "gcl/utilities/devilimageutility.h"
 #include "gcl/utilities/materialutility.h"
 #include "gcl/utilities/textureutility.h"
-
-#include <fbxsdk.h>
-
-#include <fstream>
-#include <map>
-#include <regex>
-#include <string>
 
 namespace GCL::Exporter {
 
@@ -63,7 +63,11 @@ protected:
     /// \param outputFilepath Output filepath of current model.
     /// \param textureFilePath Filepath of diffuse texture for current material.
     ///
-    FbxSurfaceMaterial* addMaterial(Material::SharedPtr material, const string materialName, const string outputFilepath, const string textureFilePath = "");
+    FbxSurfaceMaterial* addMaterial(
+        Material::SharedPtr material,
+        const string materialName,
+        const string outputFilepath,
+        const string textureFilePath = "");
 
     ///
     /// \brief Sanitizes a material name.
@@ -71,8 +75,7 @@ protected:
     /// \param textureName
     /// \return
     ///
-    virtual string sanitizeMaterialName(string materialName, string textureName = "")
-    {
+    virtual string sanitizeMaterialName(string materialName, string textureName = "") {
         return GCL::Utilities::sanitizeName(materialName);
     }
 
@@ -81,8 +84,7 @@ protected:
     /// \param name
     /// \return
     ///
-    virtual string sanitizeFileName(string name)
-    {
+    virtual string sanitizeFileName(string name) {
         return GCL::Utilities::sanitizeName(name);
     }
 
@@ -93,4 +95,4 @@ protected:
     map<string, FbxSurfacePhong*> m_fbxMaterials;
 };
 
-} // namespace GCL::Exporter
+}  // namespace GCL::Exporter

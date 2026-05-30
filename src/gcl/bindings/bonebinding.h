@@ -1,8 +1,8 @@
 #pragma once
 
-#include "gcl/bindings/bone.h"
-
 #include <fbxsdk.h>
+
+#include "gcl/bindings/bone.h"
 
 namespace GCL::Bindings {
 
@@ -23,18 +23,14 @@ public:
     /// \param bone Bone
     /// \param cluster Fbx cluster
     ///
-    BoneBinding(Bone::SharedPtr bone, FbxCluster* cluster)
-        : m_bone(bone)
-        , m_cluster(cluster)
-    {
+    BoneBinding(Bone::SharedPtr bone, FbxCluster* cluster) : m_bone(bone), m_cluster(cluster) {
     }
 
     ///
     /// \brief Returns the bone of the binding.
     /// \return Bone
     ///
-    Bone::SharedPtr getBone()
-    {
+    Bone::SharedPtr getBone() {
         return m_bone;
     }
 
@@ -42,8 +38,7 @@ public:
     /// \brief Returns the clusters.
     /// \return Fbx cluster
     ///
-    FbxCluster* getCluster()
-    {
+    FbxCluster* getCluster() {
         return m_cluster;
     }
 
@@ -59,4 +54,4 @@ protected:
     FbxCluster* m_cluster = nullptr;
 };
 
-} // namespace GCL::Bindings
+}  // namespace GCL::Bindings

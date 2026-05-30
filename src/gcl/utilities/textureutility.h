@@ -19,4 +19,4 @@ GrannyTexture* getMaterialTexture(GrannyMaterial* grannyMaterial);
 ///
 void exportTexture(GrannyTexture* grannyTexture, string textureFilePath, bool flipImage = false);
 
-} // namespace GCL::Utilities
+}  // namespace GCL::Utilities

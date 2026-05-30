@@ -1,13 +1,13 @@
 #pragma once
 
-#include "gcl/bindings/binding.h"
-#include "gcl/bindings/bonebinding.h"
-#include "gcl/importer/grannyformat.h"
+#include <Windows.h>
+#include <vector>
 
 #include <fbxsdk.h>
 
-#include <Windows.h>
-#include <vector>
+#include "gcl/bindings/binding.h"
+#include "gcl/bindings/bonebinding.h"
+#include "gcl/importer/grannyformat.h"
 
 namespace GCL::Bindings {
 
@@ -19,8 +19,8 @@ using namespace std;
 class Mesh : public Binding<Mesh> {
 public:
     ///
-    /// \brief Constructer
-    /// \param data Granny data of the mesh.
+    /// \brief Constructor
+    /// \param data Granny data of the mesh
     ///
     Mesh(GrannyMesh* data);
 
@@ -89,4 +89,4 @@ protected:
     vector<BoneBinding::SharedPtr> m_boneBindings;
 };
 
-} // namespace GCL::Bindings
+}  // namespace GCL::Bindings

@@ -1,14 +1,14 @@
 #pragma once
 
-#include "gcl/bindings/animation.h"
-#include "gcl/bindings/material.h"
-#include "gcl/bindings/model.h"
-#include "gcl/importer/grannyformat.h"
-
 #include <algorithm>
 #include <set>
 #include <string>
 #include <vector>
+
+#include "gcl/bindings/animation.h"
+#include "gcl/bindings/material.h"
+#include "gcl/bindings/model.h"
+#include "gcl/importer/grannyformat.h"
 
 namespace GCL::Bindings {
 
@@ -111,4 +111,4 @@ protected:
     set<string> m_searchPaths;
 };
 
-} // namespace GCL::Bindings
+}  // namespace GCL::Bindings

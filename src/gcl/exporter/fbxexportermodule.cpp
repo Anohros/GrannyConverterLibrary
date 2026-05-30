@@ -3,13 +3,10 @@
 namespace GCL::Exporter {
 
 FbxExporterModule::FbxExporterModule(Scene::SharedPtr scene, FbxScene* fbxScene)
-    : m_scene(scene)
-    , m_fbxScene(fbxScene)
-{
+    : m_scene(scene), m_fbxScene(fbxScene) {
 }
 
-FbxExporterModule::~FbxExporterModule()
-{
+FbxExporterModule::~FbxExporterModule() {
 }
 
-} // namespace GCL::Exporter
+}  // namespace GCL::Exporter

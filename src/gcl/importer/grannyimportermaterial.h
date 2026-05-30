@@ -38,4 +38,4 @@ protected:
     Scene::SharedPtr m_scene;
 };
 
-} // namespace GCL::Importer
+}  // namespace GCL::Importer

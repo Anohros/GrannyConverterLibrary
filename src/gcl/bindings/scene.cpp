@@ -2,54 +2,44 @@
 
 namespace GCL::Bindings {
 
-vector<Material::SharedPtr> Scene::getMaterials()
-{
+vector<Material::SharedPtr> Scene::getMaterials() {
     return m_materials;
 }
 
-void Scene::addMaterial(Material::SharedPtr material)
-{
+void Scene::addMaterial(Material::SharedPtr material) {
     m_materials.push_back(material);
 }
 
-vector<Model::SharedPtr> Scene::getModels()
-{
+vector<Model::SharedPtr> Scene::getModels() {
     return m_models;
 }
 
-void Scene::addModel(Model::SharedPtr model)
-{
+void Scene::addModel(Model::SharedPtr model) {
     m_models.push_back(model);
 }
 
-vector<Animation::SharedPtr> Scene::getAnimations()
-{
+vector<Animation::SharedPtr> Scene::getAnimations() {
     return m_animations;
 }
 
-void Scene::addAnimation(Animation::SharedPtr animation)
-{
+void Scene::addAnimation(Animation::SharedPtr animation) {
     m_animations.push_back(animation);
 }
 
-vector<string> Scene::getImportedFilePaths()
-{
+vector<string> Scene::getImportedFilePaths() {
     return m_importedFilePaths;
 }
 
-void Scene::addImportedFilePath(string importedFilePath)
-{
+void Scene::addImportedFilePath(string importedFilePath) {
     m_importedFilePaths.push_back(importedFilePath);
 }
 
-set<string> Scene::getSearchPaths()
-{
+set<string> Scene::getSearchPaths() {
     return m_searchPaths;
 }
 
-void Scene::addSearchPath(string searchPath)
-{
+void Scene::addSearchPath(string searchPath) {
     m_searchPaths.insert(searchPath);
 }
 
-} // namespace GCL::Bindings
+}  // namespace GCL::Bindings

@@ -2,17 +2,13 @@
 
 namespace GCL::Importer {
 
-GrannyImporterSkeleton::GrannyImporterSkeleton(Scene::SharedPtr scene)
-    : m_scene(scene)
-{
+GrannyImporterSkeleton::GrannyImporterSkeleton(Scene::SharedPtr scene) : m_scene(scene) {
 }
 
-GrannyImporterSkeleton::~GrannyImporterSkeleton()
-{
+GrannyImporterSkeleton::~GrannyImporterSkeleton() {
 }
 
-vector<Bone::SharedPtr> GrannyImporterSkeleton::loadBones(GrannyModel* grannyModel) const
-{
+vector<Bone::SharedPtr> GrannyImporterSkeleton::loadBones(GrannyModel* grannyModel) const {
     unsigned boneCount = static_cast<unsigned>(grannyModel->Skeleton->BoneCount);
 
     vector<Bone::SharedPtr> bones;
@@ -26,4 +22,4 @@ vector<Bone::SharedPtr> GrannyImporterSkeleton::loadBones(GrannyModel* grannyMod
     return bones;
 }
 
-} // namespace GCL::Importer
+}  // namespace GCL::Importer

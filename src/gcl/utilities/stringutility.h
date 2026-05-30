@@ -34,4 +34,4 @@ void toUpperFirst(string& input);
 ///
 void toLowerFirst(string& input);
 
-} // namespace GCL::Utilities
+}  // namespace GCL::Utilities

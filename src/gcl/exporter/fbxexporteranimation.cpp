@@ -5,8 +5,7 @@
 
 namespace GCL::Exporter {
 
-void FbxExporterAnimation::exportAnimations()
-{
+void FbxExporterAnimation::exportAnimations() {
     vector<string> modelNames;
 
     for (auto animation : m_scene->getAnimations()) {
@@ -39,7 +38,8 @@ void FbxExporterAnimation::exportAnimations()
                 string groupName = animation->getTracks().at(0)->getName();
 
                 for (auto track : animation->getTracks()) {
-                    if (find(modelNames.begin(), modelNames.end(), track->getName()) != modelNames.end()) {
+                    if (find(modelNames.begin(), modelNames.end(), track->getName()) !=
+                        modelNames.end()) {
                         groupName = track->getName();
                         break;
                     }
@@ -75,14 +75,17 @@ void FbxExporterAnimation::exportAnimations()
     }
 }
 
-void FbxExporterAnimation::exportCurves(Track::SharedPtr track, FbxNode* boneNode, FbxAnimLayer* animLayer)
-{
+void FbxExporterAnimation::exportCurves(
+    Track::SharedPtr track, FbxNode* boneNode, FbxAnimLayer* animLayer) {
     // Export position curve.
 
     {
-        auto animCurveX = boneNode->LclTranslation.GetCurve(animLayer, FBXSDK_CURVENODE_COMPONENT_X, true);
-        auto animCurveY = boneNode->LclTranslation.GetCurve(animLayer, FBXSDK_CURVENODE_COMPONENT_Y, true);
-        auto animCurveZ = boneNode->LclTranslation.GetCurve(animLayer, FBXSDK_CURVENODE_COMPONENT_Z, true);
+        auto animCurveX = boneNode->LclTranslation.GetCurve(
+            animLayer, FBXSDK_CURVENODE_COMPONENT_X, true);
+        auto animCurveY = boneNode->LclTranslation.GetCurve(
+            animLayer, FBXSDK_CURVENODE_COMPONENT_Y, true);
+        auto animCurveZ = boneNode->LclTranslation.GetCurve(
+            animLayer, FBXSDK_CURVENODE_COMPONENT_Z, true);
 
         for (auto key : track->getPositionKeys()) {
             exportCurveKey(key, animCurveX, animCurveY, animCurveZ);
@@ -92,9 +95,12 @@ void FbxExporterAnimation::exportCurves(Track::SharedPtr track, FbxNode* boneNod
     // Export rotation curve.
 
     {
-        auto animCurveX = boneNode->LclRotation.GetCurve(animLayer, FBXSDK_CURVENODE_COMPONENT_X, true);
-        auto animCurveY = boneNode->LclRotation.GetCurve(animLayer, FBXSDK_CURVENODE_COMPONENT_Y, true);
-        auto animCurveZ = boneNode->LclRotation.GetCurve(animLayer, FBXSDK_CURVENODE_COMPONENT_Z, true);
+        auto animCurveX = boneNode->LclRotation.GetCurve(
+            animLayer, FBXSDK_CURVENODE_COMPONENT_X, true);
+        auto animCurveY = boneNode->LclRotation.GetCurve(
+            animLayer, FBXSDK_CURVENODE_COMPONENT_Y, true);
+        auto animCurveZ = boneNode->LclRotation.GetCurve(
+            animLayer, FBXSDK_CURVENODE_COMPONENT_Z, true);
 
         for (auto key : track->getRotationKeys()) {
             exportCurveKey(key, animCurveX, animCurveY, animCurveZ);
@@ -104,9 +110,12 @@ void FbxExporterAnimation::exportCurves(Track::SharedPtr track, FbxNode* boneNod
     // Export scale curve.
 
     {
-        auto animCurveX = boneNode->LclScaling.GetCurve(animLayer, FBXSDK_CURVENODE_COMPONENT_X, true);
-        auto animCurveY = boneNode->LclScaling.GetCurve(animLayer, FBXSDK_CURVENODE_COMPONENT_Y, true);
-        auto animCurveZ = boneNode->LclScaling.GetCurve(animLayer, FBXSDK_CURVENODE_COMPONENT_Z, true);
+        auto animCurveX = boneNode->LclScaling.GetCurve(
+            animLayer, FBXSDK_CURVENODE_COMPONENT_X, true);
+        auto animCurveY = boneNode->LclScaling.GetCurve(
+            animLayer, FBXSDK_CURVENODE_COMPONENT_Y, true);
+        auto animCurveZ = boneNode->LclScaling.GetCurve(
+            animLayer, FBXSDK_CURVENODE_COMPONENT_Z, true);
 
         for (auto key : track->getScaleKeys()) {
             exportCurveKey(key, animCurveX, animCurveY, animCurveZ);
@@ -145,8 +154,7 @@ void FbxExporterAnimation::exportCurveKey(
     AbstractCurveKey key,
     FbxAnimCurve* animCurveX,
     FbxAnimCurve* animCurveY,
-    FbxAnimCurve* animCurveZ)
-{
+    FbxAnimCurve* animCurveZ) {
     auto keyValue = key.getValue();
 
     animCurveX->KeyModifyBegin();
@@ -176,4 +184,4 @@ void FbxExporterAnimation::exportCurveKey(
     animCurveZ->KeyModifyEnd();
 }
 
-} // namespace GCL::Exporter
+}  // namespace GCL::Exporter

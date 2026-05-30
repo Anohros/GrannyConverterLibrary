@@ -6,29 +6,25 @@ namespace GCL::Exporter {
 
 using namespace GCL::Utilities;
 
-FbxExporter::FbxExporter(Scene::SharedPtr scene)
-    : m_scene(scene)
-{
+FbxExporter::FbxExporter(Scene::SharedPtr scene) : m_scene(scene) {
     initialize();
 }
 
 FbxExporter::FbxExporter(FbxExportOptions options, Scene::SharedPtr scene)
-    : m_options(options)
-    , m_scene(scene)
-{
+    : m_options(options), m_scene(scene) {
     initialize();
 }
 
-FbxExporter::FbxExporter(ExporterModuleFactoryInterface* exportModuleFactory, FbxExportOptions options, Scene::SharedPtr scene)
-    : m_options(options)
-    , m_scene(scene)
-{
+FbxExporter::FbxExporter(
+    ExporterModuleFactoryInterface* exportModuleFactory,
+    FbxExportOptions options,
+    Scene::SharedPtr scene)
+    : m_options(options), m_scene(scene) {
     m_exporterModuleFactory = exportModuleFactory;
     initialize();
 }
 
-FbxExporter::~FbxExporter()
-{
+FbxExporter::~FbxExporter() {
     FbxSdkCommon::DestroySdkObjects(m_fbxManager);
 
     if (m_exporterModuleFactory) {
@@ -40,8 +36,7 @@ FbxExporter::~FbxExporter()
     delete m_exporterAnimation;
 }
 
-void FbxExporter::initialize()
-{
+void FbxExporter::initialize() {
     // Initialize the fbx sdk.
     FbxSdkCommon::InitializeSdkObjects(m_fbxManager, m_fbxScene);
 
@@ -57,18 +52,17 @@ void FbxExporter::initialize()
     m_exporterMaterial = m_exporterModuleFactory->createExporterModuleMaterial(m_scene, m_fbxScene);
     m_exporterMesh = m_exporterModuleFactory->createExporterModuleMesh(m_scene, m_fbxScene);
     m_exporterSkeleton = m_exporterModuleFactory->createExporterModuleSkeleton(m_scene, m_fbxScene);
-    m_exporterAnimation = m_exporterModuleFactory->createExporterModuleAnimation(m_scene, m_fbxScene);
+    m_exporterAnimation = m_exporterModuleFactory->createExporterModuleAnimation(
+        m_scene, m_fbxScene);
 }
 
-void FbxExporter::exportToFile(string outputFilepath)
-{
+void FbxExporter::exportToFile(string outputFilepath) {
     exportModels(outputFilepath);
 
     FbxSdkCommon::SaveScene(m_fbxManager, m_fbxScene, outputFilepath.c_str(), false, false);
 }
 
-void FbxExporter::exportModels(string outputFilepath)
-{
+void FbxExporter::exportModels(string outputFilepath) {
     if (m_options.exportMaterials) {
         m_exporterMaterial->exportMaterials(outputFilepath);
     }
@@ -107,4 +101,4 @@ void FbxExporter::exportModels(string outputFilepath)
     }
 }
 
-} // namespace GCL::Exporter
+}  // namespace GCL::Exporter

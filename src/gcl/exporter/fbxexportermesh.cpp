@@ -5,8 +5,7 @@
 
 namespace GCL::Exporter {
 
-void FbxExporterMesh::exportMeshes(Model::SharedPtr model, bool exportSkeleton)
-{
+void FbxExporterMesh::exportMeshes(Model::SharedPtr model, bool exportSkeleton) {
     for (auto mesh : model->getMeshes()) {
         if (!mesh->isExcluded()) {
             exportMesh(model, mesh, exportSkeleton);
@@ -14,8 +13,8 @@ void FbxExporterMesh::exportMeshes(Model::SharedPtr model, bool exportSkeleton)
     }
 }
 
-void FbxExporterMesh::exportMesh(Model::SharedPtr model, Mesh::SharedPtr mesh, bool exportSkeleton)
-{
+void FbxExporterMesh::exportMesh(
+    Model::SharedPtr model, Mesh::SharedPtr mesh, bool exportSkeleton) {
     auto meshNode = FbxNode::Create(m_fbxScene, mesh->getData()->Name);
     mesh->setNode(meshNode);
 
@@ -29,11 +28,7 @@ void FbxExporterMesh::exportMesh(Model::SharedPtr model, Mesh::SharedPtr mesh, b
 }
 
 void FbxExporterMesh::createBoneWeightsAndApplyDeformation(
-    Model::SharedPtr model,
-    Mesh::SharedPtr mesh,
-    FbxNode* meshNode,
-    FbxMesh* fbxMesh)
-{
+    Model::SharedPtr model, Mesh::SharedPtr mesh, FbxNode* meshNode, FbxMesh* fbxMesh) {
     map<string, Bone::SharedPtr> boneMap;
     map<string, Bone::SharedPtr> boneMapBinded;
     vector<BoneBinding::SharedPtr> boneBindings;
@@ -42,7 +37,8 @@ void FbxExporterMesh::createBoneWeightsAndApplyDeformation(
         boneMap[bone->getData().Name] = bone;
     }
 
-    for (auto boneBindingIndex = 0; boneBindingIndex < mesh->getData()->BoneBindingCount; boneBindingIndex++) {
+    for (auto boneBindingIndex = 0; boneBindingIndex < mesh->getData()->BoneBindingCount;
+         boneBindingIndex++) {
         auto boneName = mesh->getData()->BoneBindings[boneBindingIndex].BoneName;
         auto boneCluster = FbxCluster::Create(m_fbxScene, boneName);
         auto boneBinding = make_shared<BoneBinding>(boneMap[boneName], boneCluster);
@@ -62,10 +58,13 @@ void FbxExporterMesh::createBoneWeightsAndApplyDeformation(
         auto vertexCounter = 0;
         for (auto vertex : vertices) {
             for (int boneIndicesIndex = 0; boneIndicesIndex < 4; boneIndicesIndex++) {
-                if (boneBindings[vertex.BoneIndices[boneIndicesIndex]] && vertex.BoneWeights[boneIndicesIndex]) {
+                if (boneBindings[vertex.BoneIndices[boneIndicesIndex]] &&
+                    vertex.BoneWeights[boneIndicesIndex]) {
                     boneBindings[vertex.BoneIndices[boneIndicesIndex]]
                         ->getCluster()
-                        ->AddControlPointIndex(vertexCounter, static_cast<double>(vertex.BoneWeights[boneIndicesIndex] / 255.0));
+                        ->AddControlPointIndex(
+                            vertexCounter,
+                            static_cast<double>(vertex.BoneWeights[boneIndicesIndex] / 255.0));
                 }
             }
 
@@ -89,8 +88,8 @@ void FbxExporterMesh::createBoneWeightsAndApplyDeformation(
     createMeshDeformation(meshNode, fbxMesh, boneBindings);
 }
 
-void FbxExporterMesh::createMeshDeformation(FbxNode* meshNode, FbxMesh* mesh, vector<BoneBinding::SharedPtr> boneBindings)
-{
+void FbxExporterMesh::createMeshDeformation(
+    FbxNode* meshNode, FbxMesh* mesh, vector<BoneBinding::SharedPtr> boneBindings) {
     auto meshMatrix = meshNode->EvaluateGlobalTransform();
     auto meshSkin = FbxSkin::Create(m_fbxScene, "MeshSkin");
 
@@ -120,8 +119,7 @@ void FbxExporterMesh::createMeshDeformation(FbxNode* meshNode, FbxMesh* mesh, ve
     mesh->AddDeformer(meshSkin);
 }
 
-FbxMesh* FbxExporterMesh::exportFbxMesh(Mesh::SharedPtr mesh)
-{
+FbxMesh* FbxExporterMesh::exportFbxMesh(Mesh::SharedPtr mesh) {
     auto fbxMesh = FbxMesh::Create(m_fbxScene, mesh->getData()->Name);
     auto vertices = mesh->getRigidVertices();
 
@@ -152,8 +150,7 @@ FbxMesh* FbxExporterMesh::exportFbxMesh(Mesh::SharedPtr mesh)
     return fbxMesh;
 }
 
-void FbxExporterMesh::createControlPoints(FbxMesh* mesh, vector<GrannyPWNT34322Vertex> vertices)
-{
+void FbxExporterMesh::createControlPoints(FbxMesh* mesh, vector<GrannyPWNT34322Vertex> vertices) {
     auto verticesCount(vertices.size());
     mesh->InitControlPoints(static_cast<int>(verticesCount));
 
@@ -166,16 +163,14 @@ void FbxExporterMesh::createControlPoints(FbxMesh* mesh, vector<GrannyPWNT34322V
     }
 }
 
-void FbxExporterMesh::createMaterial(FbxMesh* mesh)
-{
+void FbxExporterMesh::createMaterial(FbxMesh* mesh) {
     auto materialElement = mesh->CreateElementMaterial();
     materialElement->SetMappingMode(FbxLayerElement::eByPolygon);
     materialElement->SetReferenceMode(FbxLayerElement::eIndexToDirect);
     materialElement->GetIndexArray().Add(0);
 }
 
-void FbxExporterMesh::createNormal(FbxMesh* mesh, vector<GrannyPWNT34322Vertex> vertices)
-{
+void FbxExporterMesh::createNormal(FbxMesh* mesh, vector<GrannyPWNT34322Vertex> vertices) {
     auto normalElement = mesh->CreateElementNormal();
     normalElement->SetMappingMode(FbxLayerElement::eByControlPoint);
     normalElement->SetReferenceMode(FbxLayerElement::eDirect);
@@ -188,8 +183,8 @@ void FbxExporterMesh::createNormal(FbxMesh* mesh, vector<GrannyPWNT34322Vertex> 
     }
 }
 
-void FbxExporterMesh::createUV(Mesh::SharedPtr mesh, FbxMesh* fbxMesh, vector<GrannyPWNT34322Vertex> vertices)
-{
+void FbxExporterMesh::createUV(
+    Mesh::SharedPtr mesh, FbxMesh* fbxMesh, vector<GrannyPWNT34322Vertex> vertices) {
     // Create uv-set 1.
     FbxGeometryElementUV* uvSetElement1 = fbxMesh->CreateElementUV("UV1");
     uvSetElement1->SetMappingMode(FbxLayerElement::eByControlPoint);
@@ -201,7 +196,8 @@ void FbxExporterMesh::createUV(Mesh::SharedPtr mesh, FbxMesh* fbxMesh, vector<Gr
             static_cast<double>(1.0 - vertices[vertexIndex].UV1[1])));
     }
 
-    auto typeCount = GrannyGetTotalTypeSize(mesh->getData()->PrimaryVertexData->VertexType) / sizeof(GrannyDataTypeDefinition);
+    auto typeCount = GrannyGetTotalTypeSize(mesh->getData()->PrimaryVertexData->VertexType) /
+                     sizeof(GrannyDataTypeDefinition);
     auto textureCoordinateTypesCount = 0;
     for (unsigned typeIndex = 0; typeIndex < typeCount; typeIndex++) {
         const auto typeName = mesh->getData()->PrimaryVertexData->VertexType[typeIndex].Name;
@@ -209,10 +205,11 @@ void FbxExporterMesh::createUV(Mesh::SharedPtr mesh, FbxMesh* fbxMesh, vector<Gr
             continue;
         }
         const auto isTextureCoordinateType = _strnicmp(
-                                                 mesh->getData()->PrimaryVertexData->VertexType[typeIndex].Name,
+                                                 mesh->getData()
+                                                     ->PrimaryVertexData->VertexType[typeIndex]
+                                                     .Name,
                                                  GrannyVertexTextureCoordinatesName,
-                                                 strlen(GrannyVertexTextureCoordinatesName))
-            == 0;
+                                                 strlen(GrannyVertexTextureCoordinatesName)) == 0;
         if (isTextureCoordinateType) {
             textureCoordinateTypesCount++;
         }
@@ -234,16 +231,18 @@ void FbxExporterMesh::createUV(Mesh::SharedPtr mesh, FbxMesh* fbxMesh, vector<Gr
     }
 }
 
-void FbxExporterMesh::bindMaterials(Mesh::SharedPtr mesh)
-{
+void FbxExporterMesh::bindMaterials(Mesh::SharedPtr mesh) {
     // Store already added materials in a unique list to prevent duplications.
     vector<Material*> unique;
 
-    for (auto materialBindingIndex = 0; materialBindingIndex < mesh->getData()->MaterialBindingCount; materialBindingIndex++) {
+    for (auto materialBindingIndex = 0;
+         materialBindingIndex < mesh->getData()->MaterialBindingCount;
+         materialBindingIndex++) {
         const auto material = mesh->getData()->MaterialBindings[materialBindingIndex].Material;
 
         for (auto sceneMaterial : m_scene->getMaterials()) {
-            if (sceneMaterial->getData() == material && find(unique.begin(), unique.end(), sceneMaterial.get()) == unique.end()) {
+            if (sceneMaterial->getData() == material &&
+                find(unique.begin(), unique.end(), sceneMaterial.get()) == unique.end()) {
                 unique.push_back(sceneMaterial.get());
                 mesh->getNode()->AddMaterial(sceneMaterial->getNode());
                 break;
@@ -252,27 +251,30 @@ void FbxExporterMesh::bindMaterials(Mesh::SharedPtr mesh)
     }
 }
 
-int FbxExporterMesh::getMaterialForIndex(Mesh::SharedPtr mesh, int index)
-{
+int FbxExporterMesh::getMaterialForIndex(Mesh::SharedPtr mesh, int index) {
     if (mesh->getData()->MaterialBindingCount == 0) {
         return -1;
     }
 
-    for (auto groupIndex = 0; groupIndex < mesh->getData()->PrimaryTopology->GroupCount; groupIndex++) {
+    for (auto groupIndex = 0; groupIndex < mesh->getData()->PrimaryTopology->GroupCount;
+         groupIndex++) {
         auto group = mesh->getData()->PrimaryTopology->Groups[groupIndex];
         auto groupTriOffset = index / 3;
 
-        if (groupTriOffset >= group.TriFirst && groupTriOffset < (group.TriFirst + group.TriCount)) {
+        if (groupTriOffset >= group.TriFirst &&
+            groupTriOffset < (group.TriFirst + group.TriCount)) {
             FbxSurfaceMaterial* currentMaterial = nullptr;
 
             for (auto sceneMaterial : m_scene->getMaterials()) {
-                if (sceneMaterial->getData() == mesh->getData()->MaterialBindings[group.MaterialIndex].Material) {
+                if (sceneMaterial->getData() ==
+                    mesh->getData()->MaterialBindings[group.MaterialIndex].Material) {
                     currentMaterial = sceneMaterial->getNode();
                     break;
                 }
             }
 
-            for (auto materialIndex = 0; materialIndex < mesh->getNode()->GetMaterialCount(); materialIndex++) {
+            for (auto materialIndex = 0; materialIndex < mesh->getNode()->GetMaterialCount();
+                 materialIndex++) {
                 if (mesh->getNode()->GetMaterial(materialIndex) == currentMaterial) {
                     return materialIndex;
                 }
@@ -284,9 +286,8 @@ int FbxExporterMesh::getMaterialForIndex(Mesh::SharedPtr mesh, int index)
     return -1;
 }
 
-string FbxExporterMesh::sanitizeMaterialName(string name)
-{
+string FbxExporterMesh::sanitizeMaterialName(string name) {
     return sanitizeName(name);
 }
 
-} // namespace GCL::Exporter
+}  // namespace GCL::Exporter

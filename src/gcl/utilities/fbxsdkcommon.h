@@ -31,7 +31,12 @@ public:
     /// \param ascii Sets if fbx should be exported as ascii.
     /// \return Returns whether export was successful or not.
     ///
-    static bool SaveScene(FbxManager* fbxManager, FbxScene* scene, const char* filename, bool embedMedia = false, bool ascii = false);
+    static bool SaveScene(
+        FbxManager* fbxManager,
+        FbxScene* scene,
+        const char* filename,
+        bool embedMedia = false,
+        bool ascii = false);
 };
 
-} // namespace GCL::Utilities
+}  // namespace GCL::Utilities

@@ -1,11 +1,11 @@
 #pragma once
 
+#include <vector>
+
 #include "gcl/bindings/bone.h"
 #include "gcl/bindings/mesh.h"
 #include "gcl/bindings/scene.h"
 #include "gcl/importer/grannyformat.h"
-
-#include <vector>
 
 namespace GCL::Importer {
 
@@ -63,4 +63,4 @@ protected:
     Scene::SharedPtr m_scene;
 };
 
-} // namespace GCL::Importer
+}  // namespace GCL::Importer

@@ -85,7 +85,7 @@ struct GrannyDataTypeDefinition {
     char const* Name = "";
     GrannyDataTypeDefinition* ReferenceType = nullptr;
     int ArrayWidth = 0;
-    int Extra[3] = { 0, 0, 0 };
+    int Extra[3] = {0, 0, 0};
     void* Ignored_Ignored = nullptr;
 };
 
@@ -329,13 +329,13 @@ struct GrannyPWNT3432Vertex {
 ///  T: Texture coordinates for uv channel 1 and 2
 ///
 static GrannyDataTypeDefinition GrannyPWNT34322VertexType[] = {
-    { GrannyReal32Member, "Position", 0, 3 },
-    { GrannyNormalUInt8Member, "BoneWeights", 0, 4 },
-    { GrannyUInt8Member, "BoneIndices", 0, 4 },
-    { GrannyReal32Member, "Normal", 0, 3 },
-    { GrannyReal32Member, GrannyVertexTextureCoordinatesName "0", 0, 2 },
-    { GrannyReal32Member, GrannyVertexTextureCoordinatesName "1", 0, 2 },
-    { GrannyEndMember },
+    {GrannyReal32Member, "Position", 0, 3},
+    {GrannyNormalUInt8Member, "BoneWeights", 0, 4},
+    {GrannyUInt8Member, "BoneIndices", 0, 4},
+    {GrannyReal32Member, "Normal", 0, 3},
+    {GrannyReal32Member, GrannyVertexTextureCoordinatesName "0", 0, 2},
+    {GrannyReal32Member, GrannyVertexTextureCoordinatesName "1", 0, 2},
+    {GrannyEndMember},
 };
 
 ///
@@ -487,10 +487,13 @@ typedef GrannyFileInfo*(__stdcall* GrannyGetFileInfo_t)(GrannyFile* File);
 typedef void(__stdcall* GrannyFreeFile_t)(GrannyFile const* File);
 typedef int(__stdcall* GrannyGetTotalTypeSize_t)(GrannyDataTypeDefinition* TypeDefinition);
 typedef int(__stdcall* GrannyGetMeshVertexCount_t)(GrannyMesh const* Mesh);
-typedef void(__stdcall* GrannyCopyMeshVertices_t)(GrannyMesh const* Mesh, GrannyDataTypeDefinition const* VertexType, void* DestVertices);
+typedef void(__stdcall* GrannyCopyMeshVertices_t)(
+    GrannyMesh const* Mesh, GrannyDataTypeDefinition const* VertexType, void* DestVertices);
 typedef int(__stdcall* GrannyGetMeshIndexCount_t)(GrannyMesh const* Mesh);
-typedef void(__stdcall* GrannyCopyMeshIndices_t)(GrannyMesh const* Mesh, int BytesPerIndex, void* DestIndices);
-typedef void(__stdcall* GrannyBuildCompositeTransform4x4_t)(GrannyTransform const* Transform, float* Composite4x4);
+typedef void(__stdcall* GrannyCopyMeshIndices_t)(
+    GrannyMesh const* Mesh, int BytesPerIndex, void* DestIndices);
+typedef void(__stdcall* GrannyBuildCompositeTransform4x4_t)(
+    GrannyTransform const* Transform, float* Composite4x4);
 typedef bool(__stdcall* GrannyMeshIsRigid_t)(GrannyMesh const* Mesh);
 
 typedef bool(__stdcall* GrannyComputeBasisConversion_t)(
@@ -523,8 +526,7 @@ typedef void(__stdcall* GrannyCurveMakeStaticDaK32fC32f_t)(
     float const* Controls);
 
 typedef GrannyCurve2*(__stdcall* GrannyCurveConvertToDaK32fC32f_t)(
-    GrannyCurve2 const* SrcCurve,
-    float const* IdentityVector);
+    GrannyCurve2 const* SrcCurve, float const* IdentityVector);
 
 typedef void(__stdcall* GrannyFreeCurve_t)(GrannyCurve2* Curve);
 typedef int(__stdcall* GrannyCurveGetKnotCount_t)(GrannyCurve2 const* Curve);
@@ -558,16 +560,10 @@ typedef void(__stdcall* GrannyEvaluateCurveAtKnotIndex_t)(
     float* Result,
     float const* IdentityVector);
 
-typedef int(__stdcall* GrannyFindKnot_t)(
-    int KnotCount,
-    float* Knots,
-    float t);
+typedef int(__stdcall* GrannyFindKnot_t)(int KnotCount, float* Knots, float t);
 
 typedef int(__stdcall* GrannyFindCloseKnot_t)(
-    int KnotCount,
-    float* Knots,
-    float t,
-    int StartinIndex);
+    int KnotCount, float* Knots, float t, int StartinIndex);
 
 typedef bool(__stdcall* GrannyCurveIsKeyframed_t)(GrannyCurve2 const* Curve);
 typedef void(__stdcall* GrannyCurveInitializeFormat_t)(GrannyCurve2* Curve);

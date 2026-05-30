@@ -13,4 +13,4 @@ using namespace std;
 ///
 string sanitizeName(string name);
 
-} // namespace GCL::Utilities
+}  // namespace GCL::Utilities

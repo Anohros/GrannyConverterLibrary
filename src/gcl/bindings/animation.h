@@ -1,12 +1,12 @@
 #pragma once
 
-#include "gcl/bindings/binding.h"
-#include "gcl/bindings/track.h"
-#include "gcl/importer/grannyformat.h"
+#include <vector>
 
 #include <fbxsdk.h>
 
-#include <vector>
+#include "gcl/bindings/binding.h"
+#include "gcl/bindings/track.h"
+#include "gcl/importer/grannyformat.h"
 
 namespace GCL::Bindings {
 
@@ -58,4 +58,4 @@ protected:
     vector<Track::SharedPtr> m_tracks;
 };
 
-} // namespace GCL::Bindings
+}  // namespace GCL::Bindings

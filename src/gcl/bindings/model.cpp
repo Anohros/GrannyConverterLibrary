@@ -2,38 +2,30 @@
 
 namespace GCL::Bindings {
 
-Model::Model(GrannyModel* data)
-    : m_data(data)
-{
+Model::Model(GrannyModel* data) : m_data(data) {
 }
 
-GrannyModel* Model::getData()
-{
+GrannyModel* Model::getData() {
     return m_data;
 }
 
-vector<Mesh::SharedPtr> Model::getMeshes()
-{
+vector<Mesh::SharedPtr> Model::getMeshes() {
     return m_meshes;
 }
 
-vector<Bone::SharedPtr> Model::getBones()
-{
+vector<Bone::SharedPtr> Model::getBones() {
     return m_bones;
 }
 
-void Model::setMeshes(vector<Mesh::SharedPtr> meshes)
-{
+void Model::setMeshes(vector<Mesh::SharedPtr> meshes) {
     m_meshes.swap(meshes);
 }
 
-void Model::setBones(vector<Bone::SharedPtr> bones)
-{
+void Model::setBones(vector<Bone::SharedPtr> bones) {
     m_bones = bones;
 }
 
-bool Model::hasRigidMeshes()
-{
+bool Model::hasRigidMeshes() {
     for (auto mesh : m_meshes) {
         if (mesh->isRigid()) {
             return true;
@@ -43,9 +35,8 @@ bool Model::hasRigidMeshes()
     return false;
 }
 
-void Model::setTransform(FbxMatrix transform)
-{
+void Model::setTransform(FbxMatrix transform) {
     m_transform = transform;
 }
 
-} // namespace GCL::Bindings
+}  // namespace GCL::Bindings
