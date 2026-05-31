@@ -9,9 +9,6 @@
 
 namespace GCL::Exporter {
 
-using namespace std;
-using namespace GCL::Bindings;
-
 ///
 /// \brief Granny exporter - exports a scene to a filmbox file.
 ///
@@ -21,14 +18,14 @@ public:
     /// \brief Constructer with data initialization.
     /// \param scene A scene to be exported.
     ///
-    FbxExporter(Scene::SharedPtr scene);
+    FbxExporter(Bindings::Scene::SharedPtr scene);
 
     ///
     /// \brief Constructer with extended options and data initialization.
     /// \param options Export options to define what aspects of the scene needs to be exported.
     /// \param scene A scene to be exported.
     ///
-    FbxExporter(FbxExportOptions options, Scene::SharedPtr scene);
+    FbxExporter(FbxExportOptions options, Bindings::Scene::SharedPtr scene);
 
     ///
     /// \brief Constructer with extended options and data initialization.
@@ -39,7 +36,7 @@ public:
     FbxExporter(
         ExporterModuleFactoryInterface* exporterModuleFactory,
         FbxExportOptions options,
-        Scene::SharedPtr scene
+        Bindings::Scene::SharedPtr scene
     );
 
     ///
@@ -56,20 +53,20 @@ public:
     /// \brief Export the scene to a filmbox file.
     /// \param outputFilepath
     ///
-    void exportToFile(string outputFilepath);
+    void exportToFile(std::string outputFilepath);
 
     ///
     /// \brief Export the models of the scene to the fbx scene.
     /// \param outputFilepath Output path where the fbx file will be exported to. It is required for
     /// material export.
     ///
-    void exportModels(string outputFilepath);
+    void exportModels(std::string outputFilepath);
 
     ///
     /// \brief Returns a scene.
     /// \return Scene
     ///
-    Scene::SharedPtr getScene() {
+    Bindings::Scene::SharedPtr getScene() {
         return scene_;
     }
 
@@ -115,7 +112,7 @@ protected:
     ///
     /// \brief Scene of the importing granny file.
     ///
-    Scene::SharedPtr scene_;
+    Bindings::Scene::SharedPtr scene_;
 
     ///
     /// \brief Fbx manager for the export by the fbx sdk.

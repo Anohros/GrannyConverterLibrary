@@ -9,9 +9,6 @@
 
 namespace GCL::Exporter {
 
-using namespace std;
-using namespace GCL::Bindings;
-
 ///
 /// \brief The ExporterModuleFactoryInterface interface.
 ///
@@ -20,8 +17,7 @@ public:
     ///
     /// \brief Destructor
     ///
-    virtual ~ExporterModuleFactoryInterface() {
-    }
+    virtual ~ExporterModuleFactoryInterface() = default;
 
     ///
     /// \brief Returns material exporter module.
@@ -30,7 +26,7 @@ public:
     /// \return Exporter module for materials.
     ///
     virtual FbxExporterMaterial* createExporterModuleMaterial(
-        Scene::SharedPtr scene, FbxScene* fbxScene
+        Bindings::Scene::SharedPtr scene, FbxScene* fbxScene
     ) = 0;
 
     ///
@@ -40,7 +36,7 @@ public:
     /// \return Exporter module for meshes.
     ///
     virtual FbxExporterMesh* createExporterModuleMesh(
-        Scene::SharedPtr scene, FbxScene* fbxScene
+        Bindings::Scene::SharedPtr scene, FbxScene* fbxScene
     ) = 0;
 
     ///
@@ -50,7 +46,7 @@ public:
     /// \return Exporter module for skeletons.
     ///
     virtual FbxExporterSkeleton* createExporterModuleSkeleton(
-        Scene::SharedPtr scene, FbxScene* fbxScene
+        Bindings::Scene::SharedPtr scene, FbxScene* fbxScene
     ) = 0;
 
     ///
@@ -60,7 +56,7 @@ public:
     /// \return Exporter module for animations.
     ///
     virtual FbxExporterAnimation* createExporterModuleAnimation(
-        Scene::SharedPtr scene, FbxScene* fbxScene
+        Bindings::Scene::SharedPtr scene, FbxScene* fbxScene
     ) = 0;
 };
 
@@ -76,7 +72,7 @@ public:
     /// \return Exporter module for materials.
     ///
     FbxExporterMaterial* createExporterModuleMaterial(
-        Scene::SharedPtr scene, FbxScene* fbxScene
+        Bindings::Scene::SharedPtr scene, FbxScene* fbxScene
     ) override;
 
     ///
@@ -85,7 +81,9 @@ public:
     /// \param fbxScene Fbx scene which has to be used for the export.
     /// \return Exporter module for meshes.
     ///
-    FbxExporterMesh* createExporterModuleMesh(Scene::SharedPtr scene, FbxScene* fbxScene) override;
+    FbxExporterMesh* createExporterModuleMesh(
+        Bindings::Scene::SharedPtr scene, FbxScene* fbxScene
+    ) override;
 
     ///
     /// \brief Returns skeleton exporter module.
@@ -94,7 +92,7 @@ public:
     /// \return Exporter module for skeletons.
     ///
     FbxExporterSkeleton* createExporterModuleSkeleton(
-        Scene::SharedPtr scene, FbxScene* fbxScene
+        Bindings::Scene::SharedPtr scene, FbxScene* fbxScene
     ) override;
 
     ///
@@ -104,7 +102,7 @@ public:
     /// \return Exporter module for animations.
     ///
     FbxExporterAnimation* createExporterModuleAnimation(
-        Scene::SharedPtr scene, FbxScene* fbxScene
+        Bindings::Scene::SharedPtr scene, FbxScene* fbxScene
     ) override;
 };
 

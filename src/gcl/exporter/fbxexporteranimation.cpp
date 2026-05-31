@@ -6,7 +6,7 @@
 namespace GCL::Exporter {
 
 void FbxExporterAnimation::exportAnimations() {
-    vector<string> modelNames;
+    std::vector<std::string> modelNames;
 
     for (auto animation : scene_->getAnimations()) {
         if (animation->isExcluded()) {
@@ -25,7 +25,7 @@ void FbxExporterAnimation::exportAnimations() {
             modelNames.push_back(model->getData()->Name);
 
             // Create bone map for easier access later.
-            map<string, FbxNode*> boneMap;
+            std::map<std::string, FbxNode*> boneMap;
             auto bones = model->getBones();
             if (bones.size() > 1) {
                 for (auto bone : bones) {
@@ -35,7 +35,7 @@ void FbxExporterAnimation::exportAnimations() {
 
             // Construct bone map here if previous generation resulted with nothing.
             if (boneMap.size() == 0 && animation->getTracks().size() > 0) {
-                string groupName = animation->getTracks().at(0)->getName();
+                std::string groupName = animation->getTracks().at(0)->getName();
 
                 for (auto track : animation->getTracks()) {
                     if (find(modelNames.begin(), modelNames.end(), track->getName()) !=
@@ -76,7 +76,7 @@ void FbxExporterAnimation::exportAnimations() {
 }
 
 void FbxExporterAnimation::exportCurves(
-    Track::SharedPtr track, FbxNode* boneNode, FbxAnimLayer* animLayer
+    Bindings::Track::SharedPtr track, FbxNode* boneNode, FbxAnimLayer* animLayer
 ) {
     // Export position curve.
 
@@ -152,7 +152,7 @@ void FbxExporterAnimation::exportCurves(
 }
 
 void FbxExporterAnimation::exportCurveKey(
-    AbstractCurveKey key,
+    Bindings::AbstractCurveKey key,
     FbxAnimCurve* animCurveX,
     FbxAnimCurve* animCurveY,
     FbxAnimCurve* animCurveZ

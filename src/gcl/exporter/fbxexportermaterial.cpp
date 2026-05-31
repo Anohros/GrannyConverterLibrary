@@ -1,11 +1,12 @@
 #include "gcl/exporter/fbxexportermaterial.h"
 
 #include <filesystem>
+#include <utility>
 
 namespace GCL::Exporter {
 
-FbxExporterMaterial::FbxExporterMaterial(Scene::SharedPtr scene, FbxScene* fbxScene)
-    : FbxExporterModule(scene, fbxScene) {
+FbxExporterMaterial::FbxExporterMaterial(Bindings::Scene::SharedPtr scene, FbxScene* fbxScene)
+    : FbxExporterModule(std::move(scene), fbxScene) {
     GCL::Utilities::initializeDevilImageLibrary();
 }
 
@@ -13,24 +14,26 @@ FbxExporterMaterial::~FbxExporterMaterial() {
     GCL::Utilities::shutdownDevilImageLibrary();
 }
 
-void FbxExporterMaterial::exportMaterials(string outputFilepath) {
-    for (auto material : scene_->getMaterials()) {
+void FbxExporterMaterial::exportMaterials(const std::string& outputFilepath) {
+    for (auto& material : scene_->getMaterials()) {
         if (!material->isExcluded()) {
             exportMaterial(outputFilepath, material);
         }
     }
 }
 
-string FbxExporterMaterial::getTextureFilePath(string outputFilepath, GrannyTexture* texture) {
-    auto sourceTextureFilePath = string(texture->FromFileName);
+std::string FbxExporterMaterial::getTextureFilePath(
+    std::string outputFilepath, GrannyTexture* texture
+) {
+    auto sourceTextureFilePath = std::string(texture->FromFileName);
     auto sourceTextureFileName = sourceTextureFilePath;
 
     auto fileNameBeginsOffset = sourceTextureFilePath.find_last_of('\\');
-    if (fileNameBeginsOffset == string::npos) {
+    if (fileNameBeginsOffset == std::string::npos) {
         fileNameBeginsOffset = sourceTextureFilePath.find_last_of('/');
     }
 
-    if (fileNameBeginsOffset != string::npos) {
+    if (fileNameBeginsOffset != std::string::npos) {
         sourceTextureFileName = sourceTextureFilePath.substr(fileNameBeginsOffset + 1);
     }
 
@@ -39,31 +42,33 @@ string FbxExporterMaterial::getTextureFilePath(string outputFilepath, GrannyText
     const auto textureFileNameWithExtension =
         sanitizeFileName(textureFileNameWithoutExtension).append(".png");
 
-    if (!ifstream(sourceTextureFilePath.c_str()).good()) {
-        if (ifstream(sourceTextureFileName.c_str()).good()) {
+    if (!std::ifstream(sourceTextureFilePath.c_str()).good()) {
+        if (std::ifstream(sourceTextureFileName.c_str()).good()) {
             sourceTextureFilePath = sourceTextureFileName;
         } else {
             bool foundTexture = false;
 
             for (auto& searchPath : scene_->getSearchPaths()) {
                 const auto lookupPath = searchPath + sourceTextureFileName;
-                if (ifstream(lookupPath.c_str()).good()) {
+                if (std::ifstream(lookupPath.c_str()).good()) {
                     sourceTextureFilePath = lookupPath;
                     foundTexture = true;
                     break;
                 }
             }
 
-            const auto parentImportedPath = filesystem::path(scene_->getImportedFilePaths().front())
-                                                .parent_path()
-                                                .parent_path();
+            const auto parentImportedPath =
+                std::filesystem::path(scene_->getImportedFilePaths().front())
+                    .parent_path()
+                    .parent_path();
 
-            if (!foundTexture && filesystem::exists(parentImportedPath)) {
-                for (const auto& entry : filesystem::directory_iterator(
-                         parentImportedPath, filesystem::directory_options::skip_permission_denied
+            if (!foundTexture && std::filesystem::exists(parentImportedPath)) {
+                for (const auto& entry : std::filesystem::directory_iterator(
+                         parentImportedPath,
+                         std::filesystem::directory_options::skip_permission_denied
                      )) {
                     const auto lookupPath = (entry.path() / sourceTextureFileName).u8string();
-                    if (ifstream(lookupPath.c_str()).good()) {
+                    if (std::ifstream(lookupPath.c_str()).good()) {
                         sourceTextureFilePath = lookupPath;
                         foundTexture = true;
                         break;
@@ -77,18 +82,18 @@ string FbxExporterMaterial::getTextureFilePath(string outputFilepath, GrannyText
                 // Do not scan root path and program files as parent paths.
                 if (deeperParentImportedPath.root_path().string() !=
                         deeperParentImportedPath.string() &&
-                    filesystem::exists(deeperParentImportedPath)) {
-                    if (!regex_match(
+                    std::filesystem::exists(deeperParentImportedPath)) {
+                    if (!std::regex_match(
                             deeperParentImportedPath.string(),
-                            regex("\\\\(Program Files \\(x86\\)|Program Files)\\\\")
+                            std::regex("\\\\(Program Files \\(x86\\)|Program Files)\\\\")
                         )) {
-                        for (const auto& entry : filesystem::recursive_directory_iterator(
+                        for (const auto& entry : std::filesystem::recursive_directory_iterator(
                                  deeperParentImportedPath,
-                                 filesystem::directory_options::skip_permission_denied
+                                 std::filesystem::directory_options::skip_permission_denied
                              )) {
                             const auto lookupPath =
                                 (entry.path() / sourceTextureFileName).u8string();
-                            if (ifstream(lookupPath.c_str()).good()) {
+                            if (std::ifstream(lookupPath.c_str()).good()) {
                                 sourceTextureFilePath = lookupPath;
                                 foundTexture = true;
                                 break;
@@ -101,13 +106,13 @@ string FbxExporterMaterial::getTextureFilePath(string outputFilepath, GrannyText
     }
 
     auto outputFilepathFileSeparator = outputFilepath.find_last_of('\\');
-    if (outputFilepathFileSeparator == string::npos) {
+    if (outputFilepathFileSeparator == std::string::npos) {
         outputFilepathFileSeparator = outputFilepath.find_last_of('/');
     }
     const auto targetTextureFilePath =
         outputFilepath.substr(0, outputFilepathFileSeparator + 1) + textureFileNameWithExtension;
 
-    if (ifstream(sourceTextureFilePath.c_str()).good()) {
+    if (std::ifstream(sourceTextureFilePath.c_str()).good()) {
         GCL::Utilities::convertImage(sourceTextureFilePath, targetTextureFilePath);
     } else {
         GCL::Utilities::exportTexture(texture, targetTextureFilePath, true);
@@ -117,10 +122,10 @@ string FbxExporterMaterial::getTextureFilePath(string outputFilepath, GrannyText
 }
 
 FbxSurfaceMaterial* FbxExporterMaterial::addMaterial(
-    Material::SharedPtr material,
-    const string materialName,
-    const string outputFilepath,
-    const string textureFilePath
+    Bindings::Material::SharedPtr material,
+    std::string materialName,
+    std::string outputFilepath,
+    std::string textureFilePath
 ) {
     auto texture = FbxFileTexture::Create(fbx_scene_, "Diffuse Texture");
     if (!textureFilePath.empty()) {
@@ -135,7 +140,7 @@ FbxSurfaceMaterial* FbxExporterMaterial::addMaterial(
             GCL::Utilities::getMaterialTexture(material->getData()->Maps[1].Material);
         if (grannyAmbientTexture != nullptr) {
             ambientTexture = FbxFileTexture::Create(fbx_scene_, "Ambient Texture");
-            const string ambientTextureFilePath =
+            const std::string ambientTextureFilePath =
                 getTextureFilePath(outputFilepath, grannyAmbientTexture);
             if (!ambientTextureFilePath.empty()) {
                 ambientTexture->SetFileName(ambientTextureFilePath.c_str());
@@ -159,21 +164,24 @@ FbxSurfaceMaterial* FbxExporterMaterial::addMaterial(
     return phongMaterial;
 }
 
-void FbxExporterMaterial::exportMaterial(string outputFilepath, Material::SharedPtr material) {
-    const auto texture = GCL::Utilities::getMaterialTexture(material->getData());
-    const auto materialName =
-        sanitizeMaterialName(string(material->getData()->Name), texture->FromFileName);
+void FbxExporterMaterial::exportMaterial(
+    std::string outputFilepath, const Bindings::Material::SharedPtr& material
+) {
+    const auto* texture = GCL::Utilities::getMaterialTexture(material->getData());
+    const auto material_name =
+        sanitizeMaterialName(material->getData()->Name, texture ? texture->FromFileName : "");
 
     if (material->getData()->Texture) {
         return;
     }
 
     if (!texture) {
-        material->setNode(addMaterial(material, materialName, outputFilepath));
+        material->setNode(addMaterial(material, material_name, outputFilepath));
     } else {
-        string textureFileNameWithExtension = getTextureFilePath(outputFilepath, texture);
+        std::string textureFileNameWithExtension =
+            getTextureFilePath(outputFilepath, const_cast<GrannyTexture*>(texture));
         material->setNode(
-            addMaterial(material, materialName, outputFilepath, textureFileNameWithExtension)
+            addMaterial(material, material_name, outputFilepath, textureFileNameWithExtension)
         );
     }
 }

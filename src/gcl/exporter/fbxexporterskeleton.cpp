@@ -2,13 +2,15 @@
 
 namespace GCL::Exporter {
 
-void FbxExporterSkeleton::exportBones(Model::SharedPtr model) {
-    for (auto bone : model->getBones()) {
+void FbxExporterSkeleton::exportBones(const Bindings::Model::SharedPtr& model) {
+    for (const auto& bone : model->getBones()) {
         exportBone(model, bone);
     }
 }
 
-void FbxExporterSkeleton::exportBone(Model::SharedPtr model, Bone::SharedPtr bone) {
+void FbxExporterSkeleton::exportBone(
+    const Bindings::Model::SharedPtr& model, const Bindings::Bone::SharedPtr& bone
+) {
     auto grannyBone = bone->getData();
     auto parentIndex = grannyBone.ParentIndex;
 
@@ -114,14 +116,14 @@ void FbxExporterSkeleton::exportBone(Model::SharedPtr model, Bone::SharedPtr bon
     }
 }
 
-void FbxExporterSkeleton::exportPoses(Model::SharedPtr model) {
+void FbxExporterSkeleton::exportPoses(const Bindings::Model::SharedPtr& model) {
     exportBindPose(model);
     exportRestPose(model);
 }
 
-void FbxExporterSkeleton::exportBindPose(Model::SharedPtr model) {
+void FbxExporterSkeleton::exportBindPose(const Bindings::Model::SharedPtr& model) {
     auto rootBone = model->getBones().at(0)->getNode();
-    vector<FbxNode*> boneClusters;
+    std::vector<FbxNode*> boneClusters;
 
     if (rootBone && rootBone->GetNodeAttribute()) {
         FbxGeometry* meshGeometry = nullptr;
@@ -163,7 +165,7 @@ void FbxExporterSkeleton::exportBindPose(Model::SharedPtr model) {
     }
 
     if (!boneClusters.empty()) {
-        auto bindPoseName = string(rootBone->GetName()).append(" BindPose");
+        auto bindPoseName = std::string(rootBone->GetName()).append(" BindPose");
         auto bindPose = FbxPose::Create(fbx_scene_, bindPoseName.c_str());
         bindPose->SetIsBindPose(true);
 
@@ -175,7 +177,9 @@ void FbxExporterSkeleton::exportBindPose(Model::SharedPtr model) {
     }
 }
 
-void FbxExporterSkeleton::expandBoneCluster(vector<FbxNode*>& boneClusters, FbxNode* boneCluster) {
+void FbxExporterSkeleton::expandBoneCluster(
+    std::vector<FbxNode*>& boneClusters, FbxNode* boneCluster
+) {
     if (boneCluster) {
         expandBoneCluster(boneClusters, boneCluster->GetParent());
 
@@ -185,9 +189,9 @@ void FbxExporterSkeleton::expandBoneCluster(vector<FbxNode*>& boneClusters, FbxN
     }
 }
 
-void FbxExporterSkeleton::exportRestPose(Model::SharedPtr model) {
+void FbxExporterSkeleton::exportRestPose(const Bindings::Model::SharedPtr& model) {
     auto rootBone = model->getBones().at(0)->getNode();
-    auto restPoseName = string(rootBone->GetName()).append(" RestPose");
+    auto restPoseName = std::string(rootBone->GetName()).append(" RestPose");
     auto restPose = FbxPose::Create(fbx_scene_, restPoseName.c_str());
     restPose->SetIsBindPose(false);
     FbxMatrix restPoseMatrix;

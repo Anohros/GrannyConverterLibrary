@@ -5,7 +5,7 @@
 
 namespace GCL::Exporter {
 
-void FbxExporterMesh::exportMeshes(Model::SharedPtr model, bool exportSkeleton) {
+void FbxExporterMesh::exportMeshes(const Bindings::Model::SharedPtr& model, bool exportSkeleton) {
     for (auto mesh : model->getMeshes()) {
         if (!mesh->isExcluded()) {
             exportMesh(model, mesh, exportSkeleton);
@@ -14,7 +14,9 @@ void FbxExporterMesh::exportMeshes(Model::SharedPtr model, bool exportSkeleton) 
 }
 
 void FbxExporterMesh::exportMesh(
-    Model::SharedPtr model, Mesh::SharedPtr mesh, bool exportSkeleton
+    const Bindings::Model::SharedPtr& model,
+    const Bindings::Mesh::SharedPtr& mesh,
+    bool exportSkeleton
 ) {
     auto meshNode = FbxNode::Create(fbx_scene_, mesh->getData()->Name);
     mesh->setNode(meshNode);
@@ -29,11 +31,14 @@ void FbxExporterMesh::exportMesh(
 }
 
 void FbxExporterMesh::createBoneWeightsAndApplyDeformation(
-    Model::SharedPtr model, Mesh::SharedPtr mesh, FbxNode* meshNode, FbxMesh* fbxMesh
+    const Bindings::Model::SharedPtr& model,
+    const Bindings::Mesh::SharedPtr& mesh,
+    FbxNode* meshNode,
+    FbxMesh* fbxMesh
 ) {
-    map<string, Bone::SharedPtr> boneMap;
-    map<string, Bone::SharedPtr> boneMapBinded;
-    vector<BoneBinding::SharedPtr> boneBindings;
+    std::map<std::string, Bindings::Bone::SharedPtr> boneMap;
+    std::map<std::string, Bindings::Bone::SharedPtr> boneMapBinded;
+    std::vector<Bindings::BoneBinding::SharedPtr> boneBindings;
 
     for (auto bone : model->getBones()) {
         boneMap[bone->getData().Name] = bone;
@@ -43,7 +48,7 @@ void FbxExporterMesh::createBoneWeightsAndApplyDeformation(
          boneBindingIndex++) {
         auto boneName = mesh->getData()->BoneBindings[boneBindingIndex].BoneName;
         auto boneCluster = FbxCluster::Create(fbx_scene_, boneName);
-        auto boneBinding = make_shared<BoneBinding>(boneMap[boneName], boneCluster);
+        auto boneBinding = std::make_shared<Bindings::BoneBinding>(boneMap[boneName], boneCluster);
         boneMapBinded[boneName] = boneMap[boneName];
         boneBindings.push_back(boneBinding);
     }
@@ -75,12 +80,13 @@ void FbxExporterMesh::createBoneWeightsAndApplyDeformation(
         }
     }
 
-    // Map bones without bone binding.
+    // std::map bones without bone binding.
     for (auto bone : boneMap) {
         auto boneName = bone.first;
         if (!boneMapBinded[boneName]) {
             auto boneCluster = FbxCluster::Create(fbx_scene_, boneName.c_str());
-            auto boneBinding = make_shared<BoneBinding>(boneMap[boneName], boneCluster);
+            auto boneBinding =
+                std::make_shared<Bindings::BoneBinding>(boneMap[boneName], boneCluster);
             boneBindings.push_back(boneBinding);
             for (unsigned vertexIndex = 0; vertexIndex < vertices.size(); vertexIndex++) {
                 boneBinding->getCluster()->AddControlPointIndex(vertexIndex, 0);
@@ -92,7 +98,7 @@ void FbxExporterMesh::createBoneWeightsAndApplyDeformation(
 }
 
 void FbxExporterMesh::createMeshDeformation(
-    FbxNode* meshNode, FbxMesh* mesh, vector<BoneBinding::SharedPtr> boneBindings
+    FbxNode* meshNode, FbxMesh* mesh, std::vector<Bindings::BoneBinding::SharedPtr> boneBindings
 ) {
     auto meshMatrix = meshNode->EvaluateGlobalTransform();
     auto meshSkin = FbxSkin::Create(fbx_scene_, "MeshSkin");
@@ -123,7 +129,7 @@ void FbxExporterMesh::createMeshDeformation(
     mesh->AddDeformer(meshSkin);
 }
 
-FbxMesh* FbxExporterMesh::exportFbxMesh(Mesh::SharedPtr mesh) {
+FbxMesh* FbxExporterMesh::exportFbxMesh(const Bindings::Mesh::SharedPtr& mesh) {
     auto fbxMesh = FbxMesh::Create(fbx_scene_, mesh->getData()->Name);
     auto vertices = mesh->getRigidVertices();
 
@@ -154,7 +160,9 @@ FbxMesh* FbxExporterMesh::exportFbxMesh(Mesh::SharedPtr mesh) {
     return fbxMesh;
 }
 
-void FbxExporterMesh::createControlPoints(FbxMesh* mesh, vector<GrannyPWNT34322Vertex> vertices) {
+void FbxExporterMesh::createControlPoints(
+    FbxMesh* mesh, std::vector<GrannyPWNT34322Vertex> vertices
+) {
     auto verticesCount(vertices.size());
     mesh->InitControlPoints(static_cast<int>(verticesCount));
 
@@ -175,8 +183,10 @@ void FbxExporterMesh::createMaterial(FbxMesh* mesh) {
     materialElement->GetIndexArray().Add(0);
 }
 
-void FbxExporterMesh::createNormal(FbxMesh* mesh, vector<GrannyPWNT34322Vertex> vertices) {
-    auto normalElement = mesh->CreateElementNormal();
+void FbxExporterMesh::createNormal(
+    FbxMesh* fbxMesh, const std::vector<GrannyPWNT34322Vertex>& vertices
+) {
+    auto normalElement = fbxMesh->CreateElementNormal();
     normalElement->SetMappingMode(FbxLayerElement::eByControlPoint);
     normalElement->SetReferenceMode(FbxLayerElement::eDirect);
 
@@ -190,7 +200,9 @@ void FbxExporterMesh::createNormal(FbxMesh* mesh, vector<GrannyPWNT34322Vertex> 
 }
 
 void FbxExporterMesh::createUV(
-    Mesh::SharedPtr mesh, FbxMesh* fbxMesh, vector<GrannyPWNT34322Vertex> vertices
+    const Bindings::Mesh::SharedPtr& mesh,
+    FbxMesh* fbxMesh,
+    const std::vector<GrannyPWNT34322Vertex>& vertices
 ) {
     // Create uv-set 1.
     FbxGeometryElementUV* uvSetElement1 = fbxMesh->CreateElementUV("UV1");
@@ -240,9 +252,9 @@ void FbxExporterMesh::createUV(
     }
 }
 
-void FbxExporterMesh::bindMaterials(Mesh::SharedPtr mesh) {
+void FbxExporterMesh::bindMaterials(const Bindings::Mesh::SharedPtr& mesh) {
     // Store already added materials in a unique list to prevent duplications.
-    vector<Material*> unique;
+    std::vector<Bindings::Material*> unique;
 
     for (auto materialBindingIndex = 0;
          materialBindingIndex < mesh->getData()->MaterialBindingCount;
@@ -260,7 +272,7 @@ void FbxExporterMesh::bindMaterials(Mesh::SharedPtr mesh) {
     }
 }
 
-int FbxExporterMesh::getMaterialForIndex(Mesh::SharedPtr mesh, int index) {
+int FbxExporterMesh::getMaterialForIndex(const Bindings::Mesh::SharedPtr& mesh, int index) {
     if (mesh->getData()->MaterialBindingCount == 0) {
         return -1;
     }
@@ -295,8 +307,8 @@ int FbxExporterMesh::getMaterialForIndex(Mesh::SharedPtr mesh, int index) {
     return -1;
 }
 
-string FbxExporterMesh::sanitizeMaterialName(string name) {
-    return sanitizeName(name);
+std::string FbxExporterMesh::sanitizeMaterialName(std::string name) {
+    return Utilities::sanitizeName(name);
 }
 
 }  // namespace GCL::Exporter

@@ -4,13 +4,11 @@
 
 namespace GCL::Exporter {
 
-using namespace GCL::Utilities;
-
-FbxExporter::FbxExporter(Scene::SharedPtr scene) : scene_(scene) {
+FbxExporter::FbxExporter(Bindings::Scene::SharedPtr scene) : scene_(scene) {
     initialize();
 }
 
-FbxExporter::FbxExporter(FbxExportOptions options, Scene::SharedPtr scene)
+FbxExporter::FbxExporter(FbxExportOptions options, Bindings::Scene::SharedPtr scene)
     : m_options(options), scene_(scene) {
     initialize();
 }
@@ -18,7 +16,7 @@ FbxExporter::FbxExporter(FbxExportOptions options, Scene::SharedPtr scene)
 FbxExporter::FbxExporter(
     ExporterModuleFactoryInterface* exportModuleFactory,
     FbxExportOptions options,
-    Scene::SharedPtr scene
+    Bindings::Scene::SharedPtr scene
 )
     : m_options(options), scene_(scene) {
     m_exporterModuleFactory = exportModuleFactory;
@@ -26,7 +24,7 @@ FbxExporter::FbxExporter(
 }
 
 FbxExporter::~FbxExporter() {
-    FbxSdkCommon::DestroySdkObjects(m_fbxManager);
+    Utilities::FbxSdkCommon::DestroySdkObjects(m_fbxManager);
 
     if (m_exporterModuleFactory) {
         delete m_exporterModuleFactory;
@@ -39,7 +37,7 @@ FbxExporter::~FbxExporter() {
 
 void FbxExporter::initialize() {
     // Initialize the fbx sdk.
-    FbxSdkCommon::InitializeSdkObjects(m_fbxManager, fbx_scene_);
+    Utilities::FbxSdkCommon::InitializeSdkObjects(m_fbxManager, fbx_scene_);
 
     // Convert the axis coordinate system.
     FbxAxisSystem axisSystem;
@@ -57,13 +55,15 @@ void FbxExporter::initialize() {
         m_exporterModuleFactory->createExporterModuleAnimation(scene_, fbx_scene_);
 }
 
-void FbxExporter::exportToFile(string outputFilepath) {
+void FbxExporter::exportToFile(std::string outputFilepath) {
     exportModels(outputFilepath);
 
-    FbxSdkCommon::SaveScene(m_fbxManager, fbx_scene_, outputFilepath.c_str(), false, false);
+    Utilities::FbxSdkCommon::SaveScene(
+        m_fbxManager, fbx_scene_, outputFilepath.c_str(), false, false
+    );
 }
 
-void FbxExporter::exportModels(string outputFilepath) {
+void FbxExporter::exportModels(std::string outputFilepath) {
     if (m_options.exportMaterials) {
         m_exporterMaterial->exportMaterials(outputFilepath);
     }
