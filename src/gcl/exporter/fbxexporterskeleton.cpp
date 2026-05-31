@@ -20,7 +20,8 @@ void FbxExporterSkeleton::exportBone(Model::SharedPtr model, Bone::SharedPtr bon
         boneTransform.SetT(FbxVector4(
             static_cast<double>(localTransform.Position[0]),
             static_cast<double>(localTransform.Position[1]),
-            static_cast<double>(localTransform.Position[2])));
+            static_cast<double>(localTransform.Position[2])
+        ));
     }
 
     if (localTransform.Flags & GrannyTransformFlags::GrannyHasOrientation) {
@@ -28,27 +29,30 @@ void FbxExporterSkeleton::exportBone(Model::SharedPtr model, Bone::SharedPtr bon
             static_cast<double>(localTransform.Orientation[0]),
             static_cast<double>(localTransform.Orientation[1]),
             static_cast<double>(localTransform.Orientation[2]),
-            static_cast<double>(localTransform.Orientation[3])));
+            static_cast<double>(localTransform.Orientation[3])
+        ));
     }
 
     if (localTransform.Flags & GrannyTransformFlags::GrannyHasScaleShear) {
         boneTransform.SetS(FbxDouble3(
             static_cast<double>(localTransform.ScaleShear[0][0]),
             static_cast<double>(localTransform.ScaleShear[1][1]),
-            static_cast<double>(localTransform.ScaleShear[2][2])));
+            static_cast<double>(localTransform.ScaleShear[2][2])
+        ));
     }
 
     // Multiply bone transformation by initial model placement.
     if (parentIndex == GrannyNoParentBone) {
         auto initialPlacement = model->getData()->InitialPlacement;
-        auto initialTransform = FbxAMatrix(
-            FbxDouble3(0, 0, 0), FbxDouble3(0, 0, 0), FbxDouble3(1, 1, 1));
+        auto initialTransform =
+            FbxAMatrix(FbxDouble3(0, 0, 0), FbxDouble3(0, 0, 0), FbxDouble3(1, 1, 1));
 
         if (initialPlacement.Flags & GrannyTransformFlags::GrannyHasPosition) {
             initialTransform.SetT(FbxDouble3(
                 static_cast<double>(initialPlacement.Position[0]),
                 static_cast<double>(initialPlacement.Position[1]),
-                static_cast<double>(initialPlacement.Position[2])));
+                static_cast<double>(initialPlacement.Position[2])
+            ));
         }
 
         if (initialPlacement.Flags & GrannyTransformFlags::GrannyHasOrientation) {
@@ -56,14 +60,16 @@ void FbxExporterSkeleton::exportBone(Model::SharedPtr model, Bone::SharedPtr bon
                 static_cast<double>(initialPlacement.Orientation[0]),
                 static_cast<double>(initialPlacement.Orientation[1]),
                 static_cast<double>(initialPlacement.Orientation[2]),
-                static_cast<double>(initialPlacement.Orientation[3])));
+                static_cast<double>(initialPlacement.Orientation[3])
+            ));
         }
 
         if (initialPlacement.Flags & GrannyTransformFlags::GrannyHasScaleShear) {
             initialTransform.SetS(FbxDouble3(
                 static_cast<double>(initialPlacement.ScaleShear[0][0]),
                 static_cast<double>(initialPlacement.ScaleShear[1][1]),
-                static_cast<double>(initialPlacement.ScaleShear[2][2])));
+                static_cast<double>(initialPlacement.ScaleShear[2][2])
+            ));
         }
 
         boneTransform = initialTransform * boneTransform;
@@ -132,7 +138,8 @@ void FbxExporterSkeleton::exportBindPose(Model::SharedPtr model) {
                 meshSkinCount = meshGeometry->GetDeformerCount(FbxDeformer::eSkin);
                 for (auto meshSkinIndex = 0; meshSkinIndex < meshSkinCount; meshSkinIndex++) {
                     auto meshSkin = static_cast<FbxSkin*>(
-                        meshGeometry->GetDeformer(meshSkinIndex, FbxDeformer::eSkin));
+                        meshGeometry->GetDeformer(meshSkinIndex, FbxDeformer::eSkin)
+                    );
                     boneClusterCount += meshSkin->GetClusterCount();
                 }
                 break;
@@ -142,7 +149,8 @@ void FbxExporterSkeleton::exportBindPose(Model::SharedPtr model) {
         if (boneClusterCount) {
             for (auto meshSkinIndex = 0; meshSkinIndex < meshSkinCount; meshSkinIndex++) {
                 auto meshSkin = static_cast<FbxSkin*>(
-                    meshGeometry->GetDeformer(meshSkinIndex, FbxDeformer::eSkin));
+                    meshGeometry->GetDeformer(meshSkinIndex, FbxDeformer::eSkin)
+                );
                 boneClusterCount = meshSkin->GetClusterCount();
                 for (auto boneClusterIndex = 0; boneClusterIndex < boneClusterCount;
                      boneClusterIndex++) {

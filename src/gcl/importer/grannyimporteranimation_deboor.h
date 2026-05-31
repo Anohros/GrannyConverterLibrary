@@ -34,7 +34,8 @@ protected:
     /// \return Animation tracks of animation.
     ///
     Track::SharedPtr importTrack(
-        Animation::SharedPtr animation, GrannyTransformTrack grannyTransformTrack) const override;
+        Animation::SharedPtr animation, GrannyTransformTrack grannyTransformTrack
+    ) const override;
 
     ///
     /// \brief Imports a scale keys from scale curve.
@@ -53,7 +54,8 @@ protected:
     void importPositionCurve(
         Animation::SharedPtr animation,
         Track::SharedPtr track,
-        GrannyTransformTrack grannyTransformTrack) const;
+        GrannyTransformTrack grannyTransformTrack
+    ) const;
 
     ///
     /// \brief Imports a rotation keys from scale curve.
@@ -64,7 +66,8 @@ protected:
     void importRotationCurve(
         Animation::SharedPtr animation,
         Track::SharedPtr track,
-        GrannyTransformTrack grannyTransformTrack) const;
+        GrannyTransformTrack grannyTransformTrack
+    ) const;
 };
 
 }  // namespace GCL::Importer

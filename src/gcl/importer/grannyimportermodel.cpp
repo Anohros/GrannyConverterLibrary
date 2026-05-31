@@ -27,7 +27,8 @@ Model::SharedPtr GrannyImporterModel::importModel(GrannyModel* grannyModel) cons
     // Use granny method to translate initial placement in scene correctly.
     FbxMatrix transform;
     GrannyBuildCompositeTransform4x4(
-        &grannyModel->InitialPlacement, reinterpret_cast<float*>(&transform));
+        &grannyModel->InitialPlacement, reinterpret_cast<float*>(&transform)
+    );
 
     model->setTransform(transform);
     model->setMeshes(importMeshes(grannyModel));

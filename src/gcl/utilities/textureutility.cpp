@@ -61,7 +61,8 @@ void exportTexture(GrannyTexture* grannyTexture, string textureFilePath, bool fl
         grannyTexture->Width,
         grannyTexture->Height,
         grannyTexture->Width * bytesPerPixel,
-        pixels.data());
+        pixels.data()
+    );
 
     ILuint imageId;
     ilGenImages(1, &imageId);
@@ -74,7 +75,8 @@ void exportTexture(GrannyTexture* grannyTexture, string textureFilePath, bool fl
         bytesPerPixel,
         ilFormat,
         IL_UNSIGNED_BYTE,
-        pixels.data());
+        pixels.data()
+    );
 
     if (flipImage) {
         iluFlipImage();

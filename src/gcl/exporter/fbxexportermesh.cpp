@@ -14,7 +14,8 @@ void FbxExporterMesh::exportMeshes(Model::SharedPtr model, bool exportSkeleton) 
 }
 
 void FbxExporterMesh::exportMesh(
-    Model::SharedPtr model, Mesh::SharedPtr mesh, bool exportSkeleton) {
+    Model::SharedPtr model, Mesh::SharedPtr mesh, bool exportSkeleton
+) {
     auto meshNode = FbxNode::Create(m_fbxScene, mesh->getData()->Name);
     mesh->setNode(meshNode);
 
@@ -28,7 +29,8 @@ void FbxExporterMesh::exportMesh(
 }
 
 void FbxExporterMesh::createBoneWeightsAndApplyDeformation(
-    Model::SharedPtr model, Mesh::SharedPtr mesh, FbxNode* meshNode, FbxMesh* fbxMesh) {
+    Model::SharedPtr model, Mesh::SharedPtr mesh, FbxNode* meshNode, FbxMesh* fbxMesh
+) {
     map<string, Bone::SharedPtr> boneMap;
     map<string, Bone::SharedPtr> boneMapBinded;
     vector<BoneBinding::SharedPtr> boneBindings;
@@ -64,7 +66,8 @@ void FbxExporterMesh::createBoneWeightsAndApplyDeformation(
                         ->getCluster()
                         ->AddControlPointIndex(
                             vertexCounter,
-                            static_cast<double>(vertex.BoneWeights[boneIndicesIndex] / 255.0));
+                            static_cast<double>(vertex.BoneWeights[boneIndicesIndex] / 255.0)
+                        );
                 }
             }
 
@@ -89,7 +92,8 @@ void FbxExporterMesh::createBoneWeightsAndApplyDeformation(
 }
 
 void FbxExporterMesh::createMeshDeformation(
-    FbxNode* meshNode, FbxMesh* mesh, vector<BoneBinding::SharedPtr> boneBindings) {
+    FbxNode* meshNode, FbxMesh* mesh, vector<BoneBinding::SharedPtr> boneBindings
+) {
     auto meshMatrix = meshNode->EvaluateGlobalTransform();
     auto meshSkin = FbxSkin::Create(m_fbxScene, "MeshSkin");
 
@@ -159,7 +163,8 @@ void FbxExporterMesh::createControlPoints(FbxMesh* mesh, vector<GrannyPWNT34322V
         controlPoints[vertexIndex] = FbxVector4(
             static_cast<double>(vertices[vertexIndex].Position[0]),
             static_cast<double>(vertices[vertexIndex].Position[1]),
-            static_cast<double>(vertices[vertexIndex].Position[2]));
+            static_cast<double>(vertices[vertexIndex].Position[2])
+        );
     }
 }
 
@@ -179,12 +184,14 @@ void FbxExporterMesh::createNormal(FbxMesh* mesh, vector<GrannyPWNT34322Vertex> 
         normalElement->GetDirectArray().Add(FbxVector4(
             static_cast<double>(vertices[vertexIndex].Normal[0]),
             static_cast<double>(vertices[vertexIndex].Normal[1]),
-            static_cast<double>(vertices[vertexIndex].Normal[2])));
+            static_cast<double>(vertices[vertexIndex].Normal[2])
+        ));
     }
 }
 
 void FbxExporterMesh::createUV(
-    Mesh::SharedPtr mesh, FbxMesh* fbxMesh, vector<GrannyPWNT34322Vertex> vertices) {
+    Mesh::SharedPtr mesh, FbxMesh* fbxMesh, vector<GrannyPWNT34322Vertex> vertices
+) {
     // Create uv-set 1.
     FbxGeometryElementUV* uvSetElement1 = fbxMesh->CreateElementUV("UV1");
     uvSetElement1->SetMappingMode(FbxLayerElement::eByControlPoint);
@@ -193,7 +200,8 @@ void FbxExporterMesh::createUV(
     for (unsigned vertexIndex = 0; vertexIndex < vertices.size(); vertexIndex++) {
         uvSetElement1->GetDirectArray().Add(FbxVector2(
             static_cast<double>(vertices[vertexIndex].UV1[0]),
-            static_cast<double>(1.0 - vertices[vertexIndex].UV1[1])));
+            static_cast<double>(1.0 - vertices[vertexIndex].UV1[1])
+        ));
     }
 
     auto typeCount = GrannyGetTotalTypeSize(mesh->getData()->PrimaryVertexData->VertexType) /
@@ -204,12 +212,12 @@ void FbxExporterMesh::createUV(
         if (typeName == nullptr) {
             continue;
         }
-        const auto isTextureCoordinateType = _strnicmp(
-                                                 mesh->getData()
-                                                     ->PrimaryVertexData->VertexType[typeIndex]
-                                                     .Name,
-                                                 GrannyVertexTextureCoordinatesName,
-                                                 strlen(GrannyVertexTextureCoordinatesName)) == 0;
+        const auto isTextureCoordinateType =
+            _strnicmp(
+                mesh->getData()->PrimaryVertexData->VertexType[typeIndex].Name,
+                GrannyVertexTextureCoordinatesName,
+                strlen(GrannyVertexTextureCoordinatesName)
+            ) == 0;
         if (isTextureCoordinateType) {
             textureCoordinateTypesCount++;
         }
@@ -227,7 +235,8 @@ void FbxExporterMesh::createUV(
     for (unsigned vertexIndex = 0; vertexIndex < vertices.size(); vertexIndex++) {
         uvSetElement2->GetDirectArray().Add(FbxVector2(
             static_cast<double>(vertices[vertexIndex].UV2[0]),
-            static_cast<double>(1.0 - vertices[vertexIndex].UV2[1])));
+            static_cast<double>(1.0 - vertices[vertexIndex].UV2[1])
+        ));
     }
 }
 

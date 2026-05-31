@@ -118,7 +118,8 @@ void GrannyImporter::importAnimations(GrannyFileInfo* grannyFileInfo, const char
     if (!grannyFileInfo->AnimationCount) {
         debug(
             "Skip load animations because granny file (file: \"%s\") has no animations.",
-            grannyFilePath);
+            grannyFilePath
+        );
         return;
     }
 

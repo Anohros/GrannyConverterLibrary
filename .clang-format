@@ -31,15 +31,9 @@ IncludeCategories:
 
 # --- Indentation & Layout ---
 AccessModifierOffset: -4
-AlignAfterOpenBracket: AlwaysBreak
+AlignAfterOpenBracket: BlockIndent
 ColumnLimit: 100
 ContinuationIndentWidth: 4
 IndentWidth: 4
 TabWidth: 4
 UseTab: Never
-
-# --- Penalties ---
-PenaltyBreakAssignment: 1000
-
-# --- Templates & Pointers ---
-PointerAlignment: Left

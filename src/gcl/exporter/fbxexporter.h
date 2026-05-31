@@ -39,7 +39,8 @@ public:
     FbxExporter(
         ExporterModuleFactoryInterface* exporterModuleFactory,
         FbxExportOptions options,
-        Scene::SharedPtr scene);
+        Scene::SharedPtr scene
+    );
 
     ///
     /// \brief Destructor

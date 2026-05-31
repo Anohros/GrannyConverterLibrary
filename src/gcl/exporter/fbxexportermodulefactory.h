@@ -30,7 +30,8 @@ public:
     /// \return Exporter module for materials.
     ///
     virtual FbxExporterMaterial* createExporterModuleMaterial(
-        Scene::SharedPtr scene, FbxScene* fbxScene) = 0;
+        Scene::SharedPtr scene, FbxScene* fbxScene
+    ) = 0;
 
     ///
     /// \brief Returns mesh exporter module.
@@ -39,7 +40,8 @@ public:
     /// \return Exporter module for meshes.
     ///
     virtual FbxExporterMesh* createExporterModuleMesh(
-        Scene::SharedPtr scene, FbxScene* fbxScene) = 0;
+        Scene::SharedPtr scene, FbxScene* fbxScene
+    ) = 0;
 
     ///
     /// \brief Returns skeleton exporter module.
@@ -48,7 +50,8 @@ public:
     /// \return Exporter module for skeletons.
     ///
     virtual FbxExporterSkeleton* createExporterModuleSkeleton(
-        Scene::SharedPtr scene, FbxScene* fbxScene) = 0;
+        Scene::SharedPtr scene, FbxScene* fbxScene
+    ) = 0;
 
     ///
     /// \brief Returns animation exporter module.
@@ -57,7 +60,8 @@ public:
     /// \return Exporter module for animations.
     ///
     virtual FbxExporterAnimation* createExporterModuleAnimation(
-        Scene::SharedPtr scene, FbxScene* fbxScene) = 0;
+        Scene::SharedPtr scene, FbxScene* fbxScene
+    ) = 0;
 };
 
 ///
@@ -72,7 +76,8 @@ public:
     /// \return Exporter module for materials.
     ///
     FbxExporterMaterial* createExporterModuleMaterial(
-        Scene::SharedPtr scene, FbxScene* fbxScene) override;
+        Scene::SharedPtr scene, FbxScene* fbxScene
+    ) override;
 
     ///
     /// \brief Returns mesh exporter module.
@@ -89,7 +94,8 @@ public:
     /// \return Exporter module for skeletons.
     ///
     FbxExporterSkeleton* createExporterModuleSkeleton(
-        Scene::SharedPtr scene, FbxScene* fbxScene) override;
+        Scene::SharedPtr scene, FbxScene* fbxScene
+    ) override;
 
     ///
     /// \brief Returns animation exporter module.
@@ -98,7 +104,8 @@ public:
     /// \return Exporter module for animations.
     ///
     FbxExporterAnimation* createExporterModuleAnimation(
-        Scene::SharedPtr scene, FbxScene* fbxScene) override;
+        Scene::SharedPtr scene, FbxScene* fbxScene
+    ) override;
 };
 
 }  // namespace GCL::Exporter

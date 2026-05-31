@@ -67,7 +67,8 @@ protected:
         Material::SharedPtr material,
         const string materialName,
         const string outputFilepath,
-        const string textureFilePath = "");
+        const string textureFilePath = ""
+    );
 
     ///
     /// \brief Sanitizes a material name.

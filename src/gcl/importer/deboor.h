@@ -31,7 +31,8 @@ vector<float> padded_knots(const vector<float>& knots, unsigned degree);
 /// \return
 ///
 FbxDouble3 de_boor_position(
-    unsigned degree, float time, const vector<float>& knots, const vector<FbxDouble3>& controls);
+    unsigned degree, float time, const vector<float>& knots, const vector<FbxDouble3>& controls
+);
 
 ///
 /// \brief de_boor_position
@@ -42,7 +43,8 @@ FbxDouble3 de_boor_position(
 /// \return
 ///
 FbxDouble3 de_boor_position(
-    unsigned degree, float time, vector<float>& knots, vector<FbxDouble3>& controls);
+    unsigned degree, float time, vector<float>& knots, vector<FbxDouble3>& controls
+);
 
 ///
 /// \brief de_boor_rotation
@@ -53,7 +55,8 @@ FbxDouble3 de_boor_position(
 /// \return
 ///
 FbxQuaternion de_boor_rotation(
-    unsigned degree, float time, const vector<float>& knots, const vector<FbxQuaternion>& controls);
+    unsigned degree, float time, const vector<float>& knots, const vector<FbxQuaternion>& controls
+);
 
 ///
 /// \brief de_boor_rotation
@@ -64,6 +67,7 @@ FbxQuaternion de_boor_rotation(
 /// \return
 ///
 FbxQuaternion de_boor_rotation(
-    unsigned degree, float time, vector<float>& knots, vector<FbxQuaternion>& controls);
+    unsigned degree, float time, vector<float>& knots, vector<FbxQuaternion>& controls
+);
 
 }  // namespace GCL::Importer

@@ -18,7 +18,8 @@ FbxExporter::FbxExporter(FbxExportOptions options, Scene::SharedPtr scene)
 FbxExporter::FbxExporter(
     ExporterModuleFactoryInterface* exportModuleFactory,
     FbxExportOptions options,
-    Scene::SharedPtr scene)
+    Scene::SharedPtr scene
+)
     : m_options(options), m_scene(scene) {
     m_exporterModuleFactory = exportModuleFactory;
     initialize();
@@ -52,8 +53,8 @@ void FbxExporter::initialize() {
     m_exporterMaterial = m_exporterModuleFactory->createExporterModuleMaterial(m_scene, m_fbxScene);
     m_exporterMesh = m_exporterModuleFactory->createExporterModuleMesh(m_scene, m_fbxScene);
     m_exporterSkeleton = m_exporterModuleFactory->createExporterModuleSkeleton(m_scene, m_fbxScene);
-    m_exporterAnimation = m_exporterModuleFactory->createExporterModuleAnimation(
-        m_scene, m_fbxScene);
+    m_exporterAnimation =
+        m_exporterModuleFactory->createExporterModuleAnimation(m_scene, m_fbxScene);
 }
 
 void FbxExporter::exportToFile(string outputFilepath) {

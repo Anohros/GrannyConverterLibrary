@@ -34,10 +34,10 @@ string FbxExporterMaterial::getTextureFilePath(string outputFilepath, GrannyText
         sourceTextureFileName = sourceTextureFilePath.substr(fileNameBeginsOffset + 1);
     }
 
-    const auto textureFileNameWithoutExtension = sourceTextureFileName.substr(
-        0, sourceTextureFileName.find_first_of('.'));
-    const auto textureFileNameWithExtension = sanitizeFileName(textureFileNameWithoutExtension)
-                                                  .append(".png");
+    const auto textureFileNameWithoutExtension =
+        sourceTextureFileName.substr(0, sourceTextureFileName.find_first_of('.'));
+    const auto textureFileNameWithExtension =
+        sanitizeFileName(textureFileNameWithoutExtension).append(".png");
 
     if (!ifstream(sourceTextureFilePath.c_str()).good()) {
         if (ifstream(sourceTextureFileName.c_str()).good()) {
@@ -54,15 +54,15 @@ string FbxExporterMaterial::getTextureFilePath(string outputFilepath, GrannyText
                 }
             }
 
-            const auto parentImportedPath = filesystem::path(
-                                                m_scene->getImportedFilePaths().front())
-                                                .parent_path()
-                                                .parent_path();
+            const auto parentImportedPath =
+                filesystem::path(m_scene->getImportedFilePaths().front())
+                    .parent_path()
+                    .parent_path();
 
             if (!foundTexture && filesystem::exists(parentImportedPath)) {
                 for (const auto& entry : filesystem::directory_iterator(
-                         parentImportedPath,
-                         filesystem::directory_options::skip_permission_denied)) {
+                         parentImportedPath, filesystem::directory_options::skip_permission_denied
+                     )) {
                     const auto lookupPath = (entry.path() / sourceTextureFileName).u8string();
                     if (ifstream(lookupPath.c_str()).good()) {
                         sourceTextureFilePath = lookupPath;
@@ -73,20 +73,22 @@ string FbxExporterMaterial::getTextureFilePath(string outputFilepath, GrannyText
             }
 
             if (!foundTexture) {
-                const auto deeperParentImportedPath = parentImportedPath.parent_path()
-                                                          .parent_path();
+                const auto deeperParentImportedPath =
+                    parentImportedPath.parent_path().parent_path();
                 // Do not scan root path and program files as parent paths.
                 if (deeperParentImportedPath.root_path().string() !=
                         deeperParentImportedPath.string() &&
                     filesystem::exists(deeperParentImportedPath)) {
                     if (!regex_match(
                             deeperParentImportedPath.string(),
-                            regex("\\\\(Program Files \\(x86\\)|Program Files)\\\\"))) {
+                            regex("\\\\(Program Files \\(x86\\)|Program Files)\\\\")
+                        )) {
                         for (const auto& entry : filesystem::recursive_directory_iterator(
                                  deeperParentImportedPath,
-                                 filesystem::directory_options::skip_permission_denied)) {
-                            const auto lookupPath = (entry.path() / sourceTextureFileName)
-                                                        .u8string();
+                                 filesystem::directory_options::skip_permission_denied
+                             )) {
+                            const auto lookupPath =
+                                (entry.path() / sourceTextureFileName).u8string();
                             if (ifstream(lookupPath.c_str()).good()) {
                                 sourceTextureFilePath = lookupPath;
                                 foundTexture = true;
@@ -103,8 +105,8 @@ string FbxExporterMaterial::getTextureFilePath(string outputFilepath, GrannyText
     if (outputFilepathFileSeparator == string::npos) {
         outputFilepathFileSeparator = outputFilepath.find_last_of('/');
     }
-    const auto targetTextureFilePath = outputFilepath.substr(0, outputFilepathFileSeparator + 1) +
-                                       textureFileNameWithExtension;
+    const auto targetTextureFilePath =
+        outputFilepath.substr(0, outputFilepathFileSeparator + 1) + textureFileNameWithExtension;
 
     if (ifstream(sourceTextureFilePath.c_str()).good()) {
         GCL::Utilities::convertImage(sourceTextureFilePath, targetTextureFilePath);
@@ -119,7 +121,8 @@ FbxSurfaceMaterial* FbxExporterMaterial::addMaterial(
     Material::SharedPtr material,
     const string materialName,
     const string outputFilepath,
-    const string textureFilePath) {
+    const string textureFilePath
+) {
     auto texture = FbxFileTexture::Create(m_fbxScene, "Diffuse Texture");
     if (!textureFilePath.empty()) {
         texture->SetFileName(textureFilePath.c_str());
@@ -129,12 +132,12 @@ FbxSurfaceMaterial* FbxExporterMaterial::addMaterial(
 
     FbxFileTexture* ambientTexture = nullptr;
     if (material->getData()->MapCount > 1) {
-        const auto grannyAmbientTexture = GCL::Utilities::getMaterialTexture(
-            material->getData()->Maps[1].Material);
+        const auto grannyAmbientTexture =
+            GCL::Utilities::getMaterialTexture(material->getData()->Maps[1].Material);
         if (grannyAmbientTexture != nullptr) {
             ambientTexture = FbxFileTexture::Create(m_fbxScene, "Ambient Texture");
-            const string ambientTextureFilePath = getTextureFilePath(
-                outputFilepath, grannyAmbientTexture);
+            const string ambientTextureFilePath =
+                getTextureFilePath(outputFilepath, grannyAmbientTexture);
             if (!ambientTextureFilePath.empty()) {
                 ambientTexture->SetFileName(ambientTextureFilePath.c_str());
             }
@@ -159,8 +162,8 @@ FbxSurfaceMaterial* FbxExporterMaterial::addMaterial(
 
 void FbxExporterMaterial::exportMaterial(string outputFilepath, Material::SharedPtr material) {
     const auto texture = GCL::Utilities::getMaterialTexture(material->getData());
-    const auto materialName = sanitizeMaterialName(
-        string(material->getData()->Name), texture->FromFileName);
+    const auto materialName =
+        sanitizeMaterialName(string(material->getData()->Name), texture->FromFileName);
 
     if (material->getData()->Texture) {
         return;
@@ -171,7 +174,8 @@ void FbxExporterMaterial::exportMaterial(string outputFilepath, Material::Shared
     } else {
         string textureFileNameWithExtension = getTextureFilePath(outputFilepath, texture);
         material->setNode(
-            addMaterial(material, materialName, outputFilepath, textureFileNameWithExtension));
+            addMaterial(material, materialName, outputFilepath, textureFileNameWithExtension)
+        );
     }
 }
 

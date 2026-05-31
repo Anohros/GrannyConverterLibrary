@@ -47,7 +47,8 @@ protected:
     /// \param boneBindings The bone bindings of the mesh.
     ///
     void createMeshDeformation(
-        FbxNode* meshNode, FbxMesh* mesh, vector<BoneBinding::SharedPtr> boneBindings);
+        FbxNode* meshNode, FbxMesh* mesh, vector<BoneBinding::SharedPtr> boneBindings
+    );
 
     ///
     /// \brief Applies the bone weights and bone deformation for a mesh.
@@ -57,7 +58,8 @@ protected:
     /// \param fbxMesh The fbx mesh of the mesh.
     ///
     void createBoneWeightsAndApplyDeformation(
-        Model::SharedPtr model, Mesh::SharedPtr mesh, FbxNode* meshNode, FbxMesh* fbxMesh);
+        Model::SharedPtr model, Mesh::SharedPtr mesh, FbxNode* meshNode, FbxMesh* fbxMesh
+    );
 
     ///
     /// \brief Export a mesh to a fbx mesh.

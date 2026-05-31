@@ -20,7 +20,8 @@ vector<float> padded_knots(const vector<float>& knots, unsigned degree) {
 }
 
 FbxDouble3 de_boor_position(
-    unsigned degree, float time, const vector<float>& knots, const vector<FbxDouble3>& controls) {
+    unsigned degree, float time, const vector<float>& knots, const vector<FbxDouble3>& controls
+) {
     auto i = degree;
 
     while (i < knots.size() - degree - 1 && knots[i] <= time) {
@@ -40,8 +41,8 @@ FbxDouble3 de_boor_position(
             auto alpha = 0.0f;
 
             if (knots[j + 1 + i - r] != knots[j + i - degree]) {
-                alpha = (time - knots[j + i - degree]) /
-                        (knots[j + 1 + i - r] - knots[j + i - degree]);
+                alpha =
+                    (time - knots[j + i - degree]) / (knots[j + 1 + i - r] - knots[j + i - degree]);
             }
 
             d[j][0] = d[j - 1][0] * (1 - alpha) + d[j][0] * alpha;
@@ -54,7 +55,8 @@ FbxDouble3 de_boor_position(
 }
 
 FbxDouble3 de_boor_position(
-    unsigned degree, float time, vector<float>& knots, vector<FbxDouble3>& controls) {
+    unsigned degree, float time, vector<float>& knots, vector<FbxDouble3>& controls
+) {
     if (controls.size() == 0) {
         return FbxDouble3();
     }
@@ -65,10 +67,8 @@ FbxDouble3 de_boor_position(
 }
 
 FbxQuaternion de_boor_rotation(
-    unsigned degree,
-    float time,
-    const vector<float>& knots,
-    const vector<FbxQuaternion>& controls) {
+    unsigned degree, float time, const vector<float>& knots, const vector<FbxQuaternion>& controls
+) {
     unsigned i = degree;
 
     while (i < knots.size() - degree - 1 && knots[i] <= time) {
@@ -88,8 +88,8 @@ FbxQuaternion de_boor_rotation(
             auto alpha = 1.0f;
 
             if (knots[j + 1 + i - r] != knots[j + i - degree]) {
-                alpha = (time - knots[j + i - degree]) /
-                        (knots[j + 1 + i - r] - knots[j + i - degree]);
+                alpha =
+                    (time - knots[j + i - degree]) / (knots[j + 1 + i - r] - knots[j + i - degree]);
             }
 
             points[j] = points[j - 1].Slerp(points[j], alpha);
@@ -100,7 +100,8 @@ FbxQuaternion de_boor_rotation(
 }
 
 FbxQuaternion de_boor_rotation(
-    unsigned degree, float time, vector<float>& knots, vector<FbxQuaternion>& controls) {
+    unsigned degree, float time, vector<float>& knots, vector<FbxQuaternion>& controls
+) {
     if (controls.size() == 0) {
         return FbxQuaternion();
     }

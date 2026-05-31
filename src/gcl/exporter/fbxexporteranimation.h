@@ -46,7 +46,8 @@ public:
         AbstractCurveKey key,
         FbxAnimCurve* animCurveX,
         FbxAnimCurve* animCurveY,
-        FbxAnimCurve* animCurveZ);
+        FbxAnimCurve* animCurveZ
+    );
 };
 
 }  // namespace GCL::Exporter

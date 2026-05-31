@@ -51,7 +51,8 @@ protected:
     /// \return Animation tracks of animation.
     ///
     virtual Track::SharedPtr importTrack(
-        Animation::SharedPtr animation, GrannyTransformTrack grannyTransformTrack) const;
+        Animation::SharedPtr animation, GrannyTransformTrack grannyTransformTrack
+    ) const;
 
     ///
     /// \brief Imports a scale keys from scale curve.
@@ -69,7 +70,8 @@ protected:
     void importPositionCurve(
         Animation::SharedPtr animation,
         Track::SharedPtr track,
-        GrannyTransformTrack grannyTransformTrack) const;
+        GrannyTransformTrack grannyTransformTrack
+    ) const;
 
     ///
     /// \brief Imports a rotation keys from scale curve.
@@ -80,7 +82,8 @@ protected:
     void importRotationCurve(
         Animation::SharedPtr animation,
         Track::SharedPtr track,
-        GrannyTransformTrack grannyTransformTrack) const;
+        GrannyTransformTrack grannyTransformTrack
+    ) const;
 
     ///
     /// \brief Calculcates time to a 30 frames per second rate.

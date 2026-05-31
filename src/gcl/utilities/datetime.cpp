@@ -10,9 +10,8 @@ using namespace std::chrono;
 
 unsigned nowMs() {
     system_clock::time_point now = system_clock::now();
-    duration<long long, ratio<1, 1000>> nowMs = duration_cast<milliseconds>(
-                                                    now.time_since_epoch()) %
-                                                1000;
+    duration<long long, ratio<1, 1000>> nowMs =
+        duration_cast<milliseconds>(now.time_since_epoch()) % 1000;
     return static_cast<unsigned>(nowMs.count());
 }
 

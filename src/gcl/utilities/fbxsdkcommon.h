@@ -36,7 +36,8 @@ public:
         FbxScene* scene,
         const char* filename,
         bool embedMedia = false,
-        bool ascii = false);
+        bool ascii = false
+    );
 };
 
 }  // namespace GCL::Utilities

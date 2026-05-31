@@ -31,7 +31,8 @@ void FbxSdkCommon::DestroySdkObjects(FbxManager* manager) {
 }
 
 bool FbxSdkCommon::SaveScene(
-    FbxManager* fbxManager, FbxScene* scene, const char* filename, bool embedMedia, bool ascii) {
+    FbxManager* fbxManager, FbxScene* scene, const char* filename, bool embedMedia, bool ascii
+) {
     FbxExporter* exporter = FbxExporter::Create(fbxManager, "");
 
     if (!exporter->SetFileExportVersion(FBX_2019_00_COMPATIBLE, FbxSceneRenamer::eNone)) {
