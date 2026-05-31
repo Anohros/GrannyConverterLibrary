@@ -7,9 +7,6 @@
 
 namespace GCL::Exporter {
 
-using namespace std;
-using namespace GCL::Bindings;
-
 ///
 /// \brief The ExporterModule class.
 ///
@@ -20,7 +17,7 @@ public:
     /// \param scene Scene which needs to be exported.
     /// \param fbxScene Fbx scene which has to be used for the export.
     ///
-    FbxExporterModule(Scene::SharedPtr scene, FbxScene* fbxScene);
+    FbxExporterModule(Bindings::Scene::SharedPtr scene, FbxScene* fbxScene);
 
     ///
     /// \brief Destructor
@@ -31,12 +28,12 @@ protected:
     ///
     /// \brief Scene of the importing granny file.
     ///
-    Scene::SharedPtr m_scene;
+    Bindings::Scene::SharedPtr scene_;
 
     ///
     /// \brief Fbx scene for the export.
     ///
-    FbxScene* m_fbxScene = nullptr;
+    FbxScene* fbx_scene_ = nullptr;
 };
 
 }  // namespace GCL::Exporter

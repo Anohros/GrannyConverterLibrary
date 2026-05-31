@@ -77,7 +77,7 @@ void FbxExporterSkeleton::exportBone(Model::SharedPtr model, Bone::SharedPtr bon
 
     // Setup the bone node.
     auto boneName = grannyBone.Name;
-    auto boneNode = FbxNode::Create(m_fbxScene, boneName);
+    auto boneNode = FbxNode::Create(fbx_scene_, boneName);
     boneNode->LclTranslation.Set(boneTransform.GetT());
     boneNode->LclRotation.Set(boneTransform.GetR());
     boneNode->LclScaling.Set(boneTransform.GetS());
@@ -94,7 +94,7 @@ void FbxExporterSkeleton::exportBone(Model::SharedPtr model, Bone::SharedPtr bon
     boneNode->SetGeometricScaling(FbxNode::EPivotSet::eDestinationPivot, world.GetS());
 
     // Create the skeleton of this bone for the fbx scene.
-    auto skeleton = FbxSkeleton::Create(m_fbxScene, boneName);
+    auto skeleton = FbxSkeleton::Create(fbx_scene_, boneName);
     boneNode->SetNodeAttribute(skeleton);
 
     // Add the bone as root or child bone depending on if granny bone has a parent.
@@ -103,7 +103,7 @@ void FbxExporterSkeleton::exportBone(Model::SharedPtr model, Bone::SharedPtr bon
         skeleton->SetSkeletonType(FbxSkeleton::eRoot);
 
         // Add bone node as root to the fbx scene.
-        m_fbxScene->GetRootNode()->AddChild(boneNode);
+        fbx_scene_->GetRootNode()->AddChild(boneNode);
     } else if (parentIndex > -1 && parentIndex < static_cast<int>(model->getBones().size())) {
         // Set skeleton type to limb node. Limb bones are visible.
         skeleton->SetSkeletonType(FbxSkeleton::eLimbNode);
@@ -164,14 +164,14 @@ void FbxExporterSkeleton::exportBindPose(Model::SharedPtr model) {
 
     if (!boneClusters.empty()) {
         auto bindPoseName = string(rootBone->GetName()).append(" BindPose");
-        auto bindPose = FbxPose::Create(m_fbxScene, bindPoseName.c_str());
+        auto bindPose = FbxPose::Create(fbx_scene_, bindPoseName.c_str());
         bindPose->SetIsBindPose(true);
 
         for (const auto boneCluster : boneClusters) {
             bindPose->Add(boneCluster, boneCluster->EvaluateGlobalTransform());
         }
 
-        m_fbxScene->AddPose(bindPose);
+        fbx_scene_->AddPose(bindPose);
     }
 }
 
@@ -188,13 +188,13 @@ void FbxExporterSkeleton::expandBoneCluster(vector<FbxNode*>& boneClusters, FbxN
 void FbxExporterSkeleton::exportRestPose(Model::SharedPtr model) {
     auto rootBone = model->getBones().at(0)->getNode();
     auto restPoseName = string(rootBone->GetName()).append(" RestPose");
-    auto restPose = FbxPose::Create(m_fbxScene, restPoseName.c_str());
+    auto restPose = FbxPose::Create(fbx_scene_, restPoseName.c_str());
     restPose->SetIsBindPose(false);
     FbxMatrix restPoseMatrix;
     FbxVector4 restPoseTransform, restPoseRotation, restPoseScale(1.0, 1.0, 1.0);
     restPoseMatrix.SetTRS(restPoseTransform, restPoseRotation, restPoseScale);
     restPose->Add(rootBone, restPoseMatrix, true);
-    m_fbxScene->AddPose(restPose);
+    fbx_scene_->AddPose(restPose);
 }
 
 }  // namespace GCL::Exporter

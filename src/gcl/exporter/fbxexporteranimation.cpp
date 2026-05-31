@@ -8,7 +8,7 @@ namespace GCL::Exporter {
 void FbxExporterAnimation::exportAnimations() {
     vector<string> modelNames;
 
-    for (auto animation : m_scene->getAnimations()) {
+    for (auto animation : scene_->getAnimations()) {
         if (animation->isExcluded()) {
             continue;
         }
@@ -16,12 +16,12 @@ void FbxExporterAnimation::exportAnimations() {
         auto animationName = animation->getData()->Name;
 
         // Create animation stack and add at least one animation layer.
-        FbxAnimStack* animStack = FbxAnimStack::Create(m_fbxScene, animationName);
-        FbxAnimLayer* animLayer = FbxAnimLayer::Create(m_fbxScene, animationName);
+        FbxAnimStack* animStack = FbxAnimStack::Create(fbx_scene_, animationName);
+        FbxAnimLayer* animLayer = FbxAnimLayer::Create(fbx_scene_, animationName);
 
         animStack->AddMember(animLayer);
 
-        for (const auto& model : m_scene->getModels()) {
+        for (const auto& model : scene_->getModels()) {
             modelNames.push_back(model->getData()->Name);
 
             // Create bone map for easier access later.
@@ -48,8 +48,8 @@ void FbxExporterAnimation::exportAnimations() {
                 for (auto track : animation->getTracks()) {
                     auto trackName = track->getName();
                     auto trackNameC = trackName.c_str();
-                    auto boneNode = FbxNode::Create(m_fbxScene, trackNameC);
-                    auto skeleton = FbxSkeleton::Create(m_fbxScene, trackNameC);
+                    auto boneNode = FbxNode::Create(fbx_scene_, trackNameC);
+                    auto skeleton = FbxSkeleton::Create(fbx_scene_, trackNameC);
 
                     if (groupName == trackName) {
                         skeleton->SetSkeletonType(FbxSkeleton::eRoot);

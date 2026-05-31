@@ -16,10 +16,10 @@ void FbxExporterMesh::exportMeshes(Model::SharedPtr model, bool exportSkeleton) 
 void FbxExporterMesh::exportMesh(
     Model::SharedPtr model, Mesh::SharedPtr mesh, bool exportSkeleton
 ) {
-    auto meshNode = FbxNode::Create(m_fbxScene, mesh->getData()->Name);
+    auto meshNode = FbxNode::Create(fbx_scene_, mesh->getData()->Name);
     mesh->setNode(meshNode);
 
-    m_fbxScene->GetRootNode()->AddChild(meshNode);
+    fbx_scene_->GetRootNode()->AddChild(meshNode);
 
     auto fbxMesh = exportFbxMesh(mesh);
 
@@ -42,7 +42,7 @@ void FbxExporterMesh::createBoneWeightsAndApplyDeformation(
     for (auto boneBindingIndex = 0; boneBindingIndex < mesh->getData()->BoneBindingCount;
          boneBindingIndex++) {
         auto boneName = mesh->getData()->BoneBindings[boneBindingIndex].BoneName;
-        auto boneCluster = FbxCluster::Create(m_fbxScene, boneName);
+        auto boneCluster = FbxCluster::Create(fbx_scene_, boneName);
         auto boneBinding = make_shared<BoneBinding>(boneMap[boneName], boneCluster);
         boneMapBinded[boneName] = boneMap[boneName];
         boneBindings.push_back(boneBinding);
@@ -79,7 +79,7 @@ void FbxExporterMesh::createBoneWeightsAndApplyDeformation(
     for (auto bone : boneMap) {
         auto boneName = bone.first;
         if (!boneMapBinded[boneName]) {
-            auto boneCluster = FbxCluster::Create(m_fbxScene, boneName.c_str());
+            auto boneCluster = FbxCluster::Create(fbx_scene_, boneName.c_str());
             auto boneBinding = make_shared<BoneBinding>(boneMap[boneName], boneCluster);
             boneBindings.push_back(boneBinding);
             for (unsigned vertexIndex = 0; vertexIndex < vertices.size(); vertexIndex++) {
@@ -95,7 +95,7 @@ void FbxExporterMesh::createMeshDeformation(
     FbxNode* meshNode, FbxMesh* mesh, vector<BoneBinding::SharedPtr> boneBindings
 ) {
     auto meshMatrix = meshNode->EvaluateGlobalTransform();
-    auto meshSkin = FbxSkin::Create(m_fbxScene, "MeshSkin");
+    auto meshSkin = FbxSkin::Create(fbx_scene_, "MeshSkin");
 
     // Set skinning type to rigid.
     meshSkin->SetSkinningType(FbxSkin::EType::eRigid);
@@ -124,7 +124,7 @@ void FbxExporterMesh::createMeshDeformation(
 }
 
 FbxMesh* FbxExporterMesh::exportFbxMesh(Mesh::SharedPtr mesh) {
-    auto fbxMesh = FbxMesh::Create(m_fbxScene, mesh->getData()->Name);
+    auto fbxMesh = FbxMesh::Create(fbx_scene_, mesh->getData()->Name);
     auto vertices = mesh->getRigidVertices();
 
     createControlPoints(fbxMesh, vertices);
@@ -249,7 +249,7 @@ void FbxExporterMesh::bindMaterials(Mesh::SharedPtr mesh) {
          materialBindingIndex++) {
         const auto material = mesh->getData()->MaterialBindings[materialBindingIndex].Material;
 
-        for (auto sceneMaterial : m_scene->getMaterials()) {
+        for (auto sceneMaterial : scene_->getMaterials()) {
             if (sceneMaterial->getData() == material &&
                 find(unique.begin(), unique.end(), sceneMaterial.get()) == unique.end()) {
                 unique.push_back(sceneMaterial.get());
@@ -274,7 +274,7 @@ int FbxExporterMesh::getMaterialForIndex(Mesh::SharedPtr mesh, int index) {
             groupTriOffset < (group.TriFirst + group.TriCount)) {
             FbxSurfaceMaterial* currentMaterial = nullptr;
 
-            for (auto sceneMaterial : m_scene->getMaterials()) {
+            for (auto sceneMaterial : scene_->getMaterials()) {
                 if (sceneMaterial->getData() ==
                     mesh->getData()->MaterialBindings[group.MaterialIndex].Material) {
                     currentMaterial = sceneMaterial->getNode();

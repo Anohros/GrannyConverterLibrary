@@ -70,7 +70,7 @@ public:
     /// \return Scene
     ///
     Scene::SharedPtr getScene() {
-        return m_scene;
+        return scene_;
     }
 
     ///
@@ -78,7 +78,7 @@ public:
     /// \return Fbx scene
     ///
     FbxScene* getFbxScene() {
-        return m_fbxScene;
+        return fbx_scene_;
     }
 
 protected:
@@ -115,7 +115,7 @@ protected:
     ///
     /// \brief Scene of the importing granny file.
     ///
-    Scene::SharedPtr m_scene;
+    Scene::SharedPtr scene_;
 
     ///
     /// \brief Fbx manager for the export by the fbx sdk.
@@ -125,7 +125,7 @@ protected:
     ///
     /// \brief Fbx scene for the export by the fbx sdk.
     ///
-    FbxScene* m_fbxScene = nullptr;
+    FbxScene* fbx_scene_ = nullptr;
 };
 
 }  // namespace GCL::Exporter

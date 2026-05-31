@@ -14,7 +14,7 @@ FbxExporterMaterial::~FbxExporterMaterial() {
 }
 
 void FbxExporterMaterial::exportMaterials(string outputFilepath) {
-    for (auto material : m_scene->getMaterials()) {
+    for (auto material : scene_->getMaterials()) {
         if (!material->isExcluded()) {
             exportMaterial(outputFilepath, material);
         }
@@ -45,7 +45,7 @@ string FbxExporterMaterial::getTextureFilePath(string outputFilepath, GrannyText
         } else {
             bool foundTexture = false;
 
-            for (auto& searchPath : m_scene->getSearchPaths()) {
+            for (auto& searchPath : scene_->getSearchPaths()) {
                 const auto lookupPath = searchPath + sourceTextureFileName;
                 if (ifstream(lookupPath.c_str()).good()) {
                     sourceTextureFilePath = lookupPath;
@@ -54,10 +54,9 @@ string FbxExporterMaterial::getTextureFilePath(string outputFilepath, GrannyText
                 }
             }
 
-            const auto parentImportedPath =
-                filesystem::path(m_scene->getImportedFilePaths().front())
-                    .parent_path()
-                    .parent_path();
+            const auto parentImportedPath = filesystem::path(scene_->getImportedFilePaths().front())
+                                                .parent_path()
+                                                .parent_path();
 
             if (!foundTexture && filesystem::exists(parentImportedPath)) {
                 for (const auto& entry : filesystem::directory_iterator(
@@ -123,7 +122,7 @@ FbxSurfaceMaterial* FbxExporterMaterial::addMaterial(
     const string outputFilepath,
     const string textureFilePath
 ) {
-    auto texture = FbxFileTexture::Create(m_fbxScene, "Diffuse Texture");
+    auto texture = FbxFileTexture::Create(fbx_scene_, "Diffuse Texture");
     if (!textureFilePath.empty()) {
         texture->SetFileName(textureFilePath.c_str());
     }
@@ -135,7 +134,7 @@ FbxSurfaceMaterial* FbxExporterMaterial::addMaterial(
         const auto grannyAmbientTexture =
             GCL::Utilities::getMaterialTexture(material->getData()->Maps[1].Material);
         if (grannyAmbientTexture != nullptr) {
-            ambientTexture = FbxFileTexture::Create(m_fbxScene, "Ambient Texture");
+            ambientTexture = FbxFileTexture::Create(fbx_scene_, "Ambient Texture");
             const string ambientTextureFilePath =
                 getTextureFilePath(outputFilepath, grannyAmbientTexture);
             if (!ambientTextureFilePath.empty()) {
@@ -146,7 +145,7 @@ FbxSurfaceMaterial* FbxExporterMaterial::addMaterial(
         }
     }
 
-    auto phongMaterial = FbxSurfacePhong::Create(m_fbxScene, materialName.c_str());
+    auto phongMaterial = FbxSurfacePhong::Create(fbx_scene_, materialName.c_str());
     if (ambientTexture != nullptr) {
         phongMaterial->Ambient.ConnectSrcObject(ambientTexture);
     }
