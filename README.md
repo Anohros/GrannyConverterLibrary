@@ -9,7 +9,7 @@ This library converts 3D scenes from Granny 3D (*.gr2) files into Autodesk FBX (
 
     Available at http://openil.sourceforge.net/
 
-- **FBX SDK 2020.3.9**:
+- **FBX SDK 2020.3.9 VS2022**:
 
     Available at https://aps.autodesk.com/developer/overview/fbx-sdk
 
