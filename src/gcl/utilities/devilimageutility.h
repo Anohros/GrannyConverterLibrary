@@ -4,8 +4,6 @@
 
 namespace GCL::Utilities {
 
-using namespace std;
-
 ///
 /// \brief Initializes devil image library.
 ///
@@ -22,6 +20,6 @@ void shutdownDevilImageLibrary();
 /// \param targetFilePath
 /// \param flipImage
 ///
-void convertImage(string sourceFilePath, string targetFilePath, bool flipImage = false);
+void convertImage(std::string sourceFilePath, std::string targetFilePath, bool flipImage = false);
 
 }  // namespace GCL::Utilities

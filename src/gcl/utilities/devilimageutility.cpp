@@ -12,7 +12,7 @@ void shutdownDevilImageLibrary() {
     ilShutDown();
 }
 
-void convertImage(string sourceFilePath, string targetFilePath, bool flipImage) {
+void convertImage(std::string sourceFilePath, std::string targetFilePath, bool flipImage) {
     ILuint imageId;
     ilGenImages(1, &imageId);
     ilBindImage(imageId);

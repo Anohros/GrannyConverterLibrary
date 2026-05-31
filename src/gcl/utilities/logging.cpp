@@ -9,22 +9,18 @@
 
 namespace GCL::Utilities::Logging {
 
-using namespace std;
-using namespace std::filesystem;
-
-using namespace GCL::Utilities::Datetime;
-
 void log(const char* level, const char* file, int line, const char* function, const char* message) {
-    static mutex logMutex;
-    lock_guard<mutex> lockGuard(logMutex);
+    static std::mutex logMutex;
+    std::lock_guard<std::mutex> lockGuard(logMutex);
 
-    ofstream(stdout) << nowTimeMs() << " " << level << " " << path(file).filename().string() << ":"
-                     << line << " " << function << " " << message << endl;
+    std::ofstream(stdout) << Datetime::nowTimeMs() << " " << level << " "
+                          << std::filesystem::path(file).filename().string() << ":" << line << " "
+                          << function << " " << message << '\n';
 
-    static ofstream logFile(DEFAULT_LOG_FILE);
+    static std::ofstream logFile(DEFAULT_LOG_FILE);
 
     if (logFile) {
-        logFile << message << endl;
+        logFile << message << '\n';
     }
 }
 

@@ -5,7 +5,6 @@
 
 namespace GCL::Utilities {
 
-using namespace std;
 using namespace GCL::Utilities::Logging;
 
 void FbxSdkCommon::InitializeSdkObjects(FbxManager*& manager, FbxScene*& scene) {
@@ -78,14 +77,14 @@ bool FbxSdkCommon::SaveScene(
     wchar_t cwd[1024];
     _wgetcwd(cwd, 1024);
 
-    auto sourceTextureDirname = string(filename);
+    auto sourceTextureDirname = std::string(filename);
     const auto dirnameEndsOffset = sourceTextureDirname.find_last_of('\\');
 
-    if (dirnameEndsOffset != string::npos) {
+    if (dirnameEndsOffset != std::string::npos) {
         sourceTextureDirname = sourceTextureDirname.substr(0, dirnameEndsOffset);
     }
 
-    _wchdir(wstring(sourceTextureDirname.begin(), sourceTextureDirname.end()).c_str());
+    _wchdir(std::wstring(sourceTextureDirname.begin(), sourceTextureDirname.end()).c_str());
 
     // Export scene to fbx file.
     bool status = exporter->Export(scene);

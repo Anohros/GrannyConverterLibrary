@@ -35,7 +35,7 @@ GrannyTexture* getMaterialTexture(GrannyMaterial* grannyMaterial) {
     return texture;
 }
 
-void exportTexture(GrannyTexture* grannyTexture, string textureFilePath, bool flipImage) {
+void exportTexture(GrannyTexture* grannyTexture, std::string textureFilePath, bool flipImage) {
     int bytesPerPixel;
     GrannyPixelLayout const* grannyPixelLayout;
     ILenum ilFormat;
@@ -50,7 +50,7 @@ void exportTexture(GrannyTexture* grannyTexture, string textureFilePath, bool fl
         ilFormat = IL_RGB;
     }
 
-    vector<unsigned char> pixels;
+    std::vector<unsigned char> pixels;
     pixels.resize(grannyTexture->Width * grannyTexture->Height * bytesPerPixel);
 
     GrannyCopyTextureImage(

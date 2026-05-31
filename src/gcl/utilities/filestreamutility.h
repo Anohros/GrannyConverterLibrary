@@ -5,8 +5,6 @@
 
 namespace GCL::Utilities::FileStreamUtility {
 
-using namespace std;
-
 ///
 /// \brief Reads out bytes from file offset to a value.
 /// \param file
@@ -14,10 +12,10 @@ using namespace std;
 /// \return
 ///
 template <typename T>
-T binaryread(fstream& file, unsigned offset);
+T binaryread(std::fstream& file, unsigned offset);
 
 template <>
-unsigned binaryread<unsigned>(fstream& file, unsigned offset);
+unsigned binaryread<unsigned>(std::fstream& file, unsigned offset);
 
 ///
 /// \brief Writes bytes to a file at specified offset.
@@ -26,20 +24,20 @@ unsigned binaryread<unsigned>(fstream& file, unsigned offset);
 /// \param bytes
 /// \param size
 ///
-void binarywrite(fstream& file, unsigned offset, const char* bytes, unsigned size = 0);
+void binarywrite(std::fstream& file, unsigned offset, const char* bytes, unsigned size = 0);
 
 ///
 /// \brief Returns size of a file.
 /// \param file
 /// \return File size
 ///
-unsigned filesize(fstream& file);
+unsigned filesize(std::fstream& file);
 
 ///
 /// \brief Returns a file as character list.
 /// \param file
 /// \return File bytes as aharacter list.
 ///
-vector<char> binarydata(fstream& file);
+std::vector<char> binarydata(std::fstream& file);
 
 }  // namespace GCL::Utilities::FileStreamUtility
