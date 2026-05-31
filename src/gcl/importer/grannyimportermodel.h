@@ -9,9 +9,6 @@
 
 namespace GCL::Importer {
 
-using namespace std;
-using namespace GCL::Bindings;
-
 ///
 /// \brief The GrannyImporterModel class.
 ///
@@ -21,12 +18,12 @@ public:
     /// \brief Constructor
     /// \param scene Scene which needs to be exported.
     ///
-    GrannyImporterModel(Scene::SharedPtr scene);
+    explicit GrannyImporterModel(Bindings::Scene::SharedPtr scene);
 
     ///
     /// \brief Destructor
     ///
-    ~GrannyImporterModel();
+    virtual ~GrannyImporterModel() = default;
 
     ///
     /// \brief Imports a model and all its meshes from a granny file to the scene.
@@ -40,27 +37,27 @@ protected:
     /// \param grannyModel Granny model.
     /// \return Model of the granny model.
     ///
-    Model::SharedPtr importModel(GrannyModel* grannyModel) const;
+    Bindings::Model::SharedPtr importModel(GrannyModel* grannyModel) const;
 
     ///
     /// \brief Import all meshes from a granny model as scene meshes.
     /// \param grannyModel Granny model
     /// \return All meshes of the granny model.
     ///
-    vector<Mesh::SharedPtr> importMeshes(GrannyModel* grannyModel) const;
+    std::vector<Bindings::Mesh::SharedPtr> importMeshes(GrannyModel* grannyModel) const;
 
     ///
     /// \brief Imports a granny mesh as scene mesh.
     /// \param grannyMesh Granny mesh
     /// \return grannyMesh Mesh of the granny mesh.
     ///
-    Mesh::SharedPtr importMesh(GrannyMesh* grannyMesh) const;
+    Bindings::Mesh::SharedPtr importMesh(GrannyMesh* grannyMesh) const;
 
 protected:
     ///
     /// \brief Scene of the importing granny file.
     ///
-    Scene::SharedPtr m_scene;
+    Bindings::Scene::SharedPtr m_scene;
 };
 
 }  // namespace GCL::Importer

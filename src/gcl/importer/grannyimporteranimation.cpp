@@ -6,10 +6,8 @@ namespace GCL::Importer {
 
 using namespace GCL::Utilities::Logging;
 
-GrannyImporterAnimation::GrannyImporterAnimation(Scene::SharedPtr scene) : m_scene(scene) {
-}
-
-GrannyImporterAnimation::~GrannyImporterAnimation() {
+GrannyImporterAnimation::GrannyImporterAnimation(Bindings::Scene::SharedPtr scene)
+    : m_scene(scene) {
 }
 
 void GrannyImporterAnimation::importAnimations(GrannyFileInfo* grannyFileInfo) const {
@@ -21,7 +19,7 @@ void GrannyImporterAnimation::importAnimations(GrannyFileInfo* grannyFileInfo) c
     }
 
     const auto grannyAnimation = grannyFileInfo->Animations[0];
-    auto animation = make_shared<Animation>(grannyAnimation);
+    auto animation = std::make_shared<Bindings::Animation>(grannyAnimation);
 
     // Process animation track groups. Only if animation does have at least one animation track
     // group.
@@ -44,10 +42,10 @@ void GrannyImporterAnimation::importAnimations(GrannyFileInfo* grannyFileInfo) c
     info("Added animation to scene.");
 }
 
-Track::SharedPtr GrannyImporterAnimation::importTrack(
-    Animation::SharedPtr animation, GrannyTransformTrack grannyTransformTrack
+Bindings::Track::SharedPtr GrannyImporterAnimation::importTrack(
+    Bindings::Animation::SharedPtr animation, GrannyTransformTrack grannyTransformTrack
 ) const {
-    auto track = make_shared<Track>(grannyTransformTrack);
+    auto track = std::make_shared<Bindings::Track>(grannyTransformTrack);
     track->setName(grannyTransformTrack.Name);
 
     importScaleCurve(track, grannyTransformTrack);
@@ -58,7 +56,7 @@ Track::SharedPtr GrannyImporterAnimation::importTrack(
 }
 
 void GrannyImporterAnimation::importScaleCurve(
-    Track::SharedPtr track, GrannyTransformTrack grannyTransformTrack
+    Bindings::Track::SharedPtr track, GrannyTransformTrack grannyTransformTrack
 ) const {
     if (GrannyCurveGetDimension(&grannyTransformTrack.ScaleShearCurve) == 0) {
         return;
@@ -74,7 +72,7 @@ void GrannyImporterAnimation::importScaleCurve(
     const auto grannyKnotCount = static_cast<unsigned>(grannyScaleShearCurve->KnotCount);
 
     for (unsigned i = 0; i < grannyKnotCount; i++) {
-        CurveScaleKey key(*scaleCurve);
+        Bindings::CurveScaleKey key(*scaleCurve);
         key.setTime(static_cast<double>(grannyScaleShearCurve->Knots[i]));
         key.setValue(FbxDouble3(
             static_cast<double>(grannyScaleShearCurve->Controls[(i * 9)]),
@@ -89,8 +87,8 @@ void GrannyImporterAnimation::importScaleCurve(
 }
 
 void GrannyImporterAnimation::importPositionCurve(
-    Animation::SharedPtr animation,
-    Track::SharedPtr track,
+    Bindings::Animation::SharedPtr animation,
+    Bindings::Track::SharedPtr track,
     GrannyTransformTrack grannyTransformTrack
 ) const {
     const float duration = animation->getData()->Duration;
@@ -134,7 +132,7 @@ void GrannyImporterAnimation::importPositionCurve(
             GrannyCurveIdentityPosition
         );
 
-        CurvePositionKey key(*positionCurve);
+        Bindings::CurvePositionKey key(*positionCurve);
         key.setTime(time);
         key.setValue(FbxDouble3(
             static_cast<double>(position[0]),
@@ -151,8 +149,8 @@ void GrannyImporterAnimation::importPositionCurve(
 }
 
 void GrannyImporterAnimation::importRotationCurve(
-    Animation::SharedPtr animation,
-    Track::SharedPtr track,
+    Bindings::Animation::SharedPtr animation,
+    Bindings::Track::SharedPtr track,
     GrannyTransformTrack grannyTransformTrack
 ) const {
     const float duration = animation->getData()->Duration;
@@ -242,7 +240,7 @@ void GrannyImporterAnimation::importRotationCurve(
             ));
         }
 
-        CurveRotationKey key(*orientationCurve);
+        Bindings::CurveRotationKey key(*orientationCurve);
         key.setTime(time);
         key.setValue(transformMatrix.GetR());
 

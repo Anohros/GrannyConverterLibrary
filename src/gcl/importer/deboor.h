@@ -9,8 +9,6 @@
 
 namespace GCL::Importer {
 
-using namespace std;
-
 // De Boor's algorithm to evaluate to interpolate keyframes to bézier spline.
 // Thanks to https://github.com/Arbos/nwn2mdk/blob/master/mdb2fbx/export_gr2.cpp
 
@@ -20,7 +18,7 @@ using namespace std;
 /// \param degree
 /// \return
 ///
-vector<float> padded_knots(const vector<float>& knots, unsigned degree);
+std::vector<float> padded_knots(const std::vector<float>& knots, unsigned degree);
 
 ///
 /// \brief de_boor_position
@@ -31,7 +29,10 @@ vector<float> padded_knots(const vector<float>& knots, unsigned degree);
 /// \return
 ///
 FbxDouble3 de_boor_position(
-    unsigned degree, float time, const vector<float>& knots, const vector<FbxDouble3>& controls
+    unsigned degree,
+    float time,
+    const std::vector<float>& knots,
+    const std::vector<FbxDouble3>& controls
 );
 
 ///
@@ -43,7 +44,7 @@ FbxDouble3 de_boor_position(
 /// \return
 ///
 FbxDouble3 de_boor_position(
-    unsigned degree, float time, vector<float>& knots, vector<FbxDouble3>& controls
+    unsigned degree, float time, std::vector<float>& knots, std::vector<FbxDouble3>& controls
 );
 
 ///
@@ -55,7 +56,10 @@ FbxDouble3 de_boor_position(
 /// \return
 ///
 FbxQuaternion de_boor_rotation(
-    unsigned degree, float time, const vector<float>& knots, const vector<FbxQuaternion>& controls
+    unsigned degree,
+    float time,
+    const std::vector<float>& knots,
+    const std::vector<FbxQuaternion>& controls
 );
 
 ///
@@ -67,7 +71,7 @@ FbxQuaternion de_boor_rotation(
 /// \return
 ///
 FbxQuaternion de_boor_rotation(
-    unsigned degree, float time, vector<float>& knots, vector<FbxQuaternion>& controls
+    unsigned degree, float time, std::vector<float>& knots, std::vector<FbxQuaternion>& controls
 );
 
 }  // namespace GCL::Importer

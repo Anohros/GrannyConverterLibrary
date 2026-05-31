@@ -4,8 +4,8 @@ namespace GCL::Importer {
 
 // De Boor's algorithm to evaluate a B-spline
 
-vector<float> padded_knots(const vector<float>& knots, unsigned degree) {
-    vector<float> v;
+std::vector<float> padded_knots(const std::vector<float>& knots, unsigned degree) {
+    std::vector<float> v;
 
     v.push_back(0);
 
@@ -20,7 +20,10 @@ vector<float> padded_knots(const vector<float>& knots, unsigned degree) {
 }
 
 FbxDouble3 de_boor_position(
-    unsigned degree, float time, const vector<float>& knots, const vector<FbxDouble3>& controls
+    unsigned degree,
+    float time,
+    const std::vector<float>& knots,
+    const std::vector<FbxDouble3>& controls
 ) {
     auto i = degree;
 
@@ -30,7 +33,7 @@ FbxDouble3 de_boor_position(
 
     i = i - 1;
 
-    vector<FbxDouble3> d;
+    std::vector<FbxDouble3> d;
 
     for (unsigned j = 0; j <= degree; ++j) {
         d.push_back(controls[j + i - degree]);
@@ -55,7 +58,7 @@ FbxDouble3 de_boor_position(
 }
 
 FbxDouble3 de_boor_position(
-    unsigned degree, float time, vector<float>& knots, vector<FbxDouble3>& controls
+    unsigned degree, float time, std::vector<float>& knots, std::vector<FbxDouble3>& controls
 ) {
     if (controls.size() == 0) {
         return FbxDouble3();
@@ -67,7 +70,10 @@ FbxDouble3 de_boor_position(
 }
 
 FbxQuaternion de_boor_rotation(
-    unsigned degree, float time, const vector<float>& knots, const vector<FbxQuaternion>& controls
+    unsigned degree,
+    float time,
+    const std::vector<float>& knots,
+    const std::vector<FbxQuaternion>& controls
 ) {
     unsigned i = degree;
 
@@ -77,7 +83,7 @@ FbxQuaternion de_boor_rotation(
 
     i = i - 1;
 
-    vector<FbxQuaternion> points;
+    std::vector<FbxQuaternion> points;
 
     for (unsigned j = 0; j <= degree; ++j) {
         points.push_back(controls[j + i - degree]);
@@ -100,7 +106,7 @@ FbxQuaternion de_boor_rotation(
 }
 
 FbxQuaternion de_boor_rotation(
-    unsigned degree, float time, vector<float>& knots, vector<FbxQuaternion>& controls
+    unsigned degree, float time, std::vector<float>& knots, std::vector<FbxQuaternion>& controls
 ) {
     if (controls.size() == 0) {
         return FbxQuaternion();

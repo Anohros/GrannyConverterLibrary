@@ -4,19 +4,14 @@
 
 namespace GCL::Importer {
 
-using namespace std;
-
-GrannyImporterAnimationDeboor::GrannyImporterAnimationDeboor(Scene::SharedPtr scene)
+GrannyImporterAnimationDeboor::GrannyImporterAnimationDeboor(Bindings::Scene::SharedPtr scene)
     : GrannyImporterAnimation(scene) {
 }
 
-GrannyImporterAnimationDeboor::~GrannyImporterAnimationDeboor() {
-}
-
-Track::SharedPtr GrannyImporterAnimationDeboor::importTrack(
-    Animation::SharedPtr animation, GrannyTransformTrack grannyTransformTrack
+Bindings::Track::SharedPtr GrannyImporterAnimationDeboor::importTrack(
+    Bindings::Animation::SharedPtr animation, GrannyTransformTrack grannyTransformTrack
 ) const {
-    Track::SharedPtr track = make_shared<Track>(grannyTransformTrack);
+    Bindings::Track::SharedPtr track = std::make_shared<Bindings::Track>(grannyTransformTrack);
     track->setName(grannyTransformTrack.Name);
 
     importScaleCurve(track, grannyTransformTrack);
@@ -27,7 +22,7 @@ Track::SharedPtr GrannyImporterAnimationDeboor::importTrack(
 }
 
 void GrannyImporterAnimationDeboor::importScaleCurve(
-    Track::SharedPtr track, GrannyTransformTrack grannyTransformTrack
+    Bindings::Track::SharedPtr track, GrannyTransformTrack grannyTransformTrack
 ) const {
     if (GrannyCurveGetDimension(&grannyTransformTrack.ScaleShearCurve) == 0) {
         return;
@@ -43,7 +38,7 @@ void GrannyImporterAnimationDeboor::importScaleCurve(
     const unsigned grannyKnotCount = static_cast<unsigned>(grannyScaleShearCurve->KnotCount);
 
     for (unsigned i = 0; i < grannyKnotCount; i++) {
-        CurveScaleKey key(*scaleCurve);
+        Bindings::CurveScaleKey key(*scaleCurve);
         key.setTime(static_cast<double>(grannyScaleShearCurve->Knots[i]));
         key.setValue(FbxDouble3(
             static_cast<double>(grannyScaleShearCurve->Controls[(i * 9)]),
@@ -58,8 +53,8 @@ void GrannyImporterAnimationDeboor::importScaleCurve(
 }
 
 void GrannyImporterAnimationDeboor::importPositionCurve(
-    Animation::SharedPtr animation,
-    Track::SharedPtr track,
+    Bindings::Animation::SharedPtr animation,
+    Bindings::Track::SharedPtr track,
     GrannyTransformTrack grannyTransformTrack
 ) const {
     const float duration = animation->getData()->Duration;
@@ -82,7 +77,7 @@ void GrannyImporterAnimationDeboor::importPositionCurve(
         return;
     }
 
-    vector<float> knots;
+    std::vector<float> knots;
     knots.reserve(grannyKnotCount);
 
     for (unsigned i = 0; i < grannyKnotCount; i++) {
@@ -91,7 +86,7 @@ void GrannyImporterAnimationDeboor::importPositionCurve(
 
     const unsigned controlCount = static_cast<unsigned>(grannyPositionCurve->ControlCount) / 3;
 
-    vector<FbxDouble3> controls;
+    std::vector<FbxDouble3> controls;
     controls.reserve(controlCount);
 
     for (unsigned i = 0; i < controlCount; i++) {
@@ -112,7 +107,7 @@ void GrannyImporterAnimationDeboor::importPositionCurve(
             grannyPositionCurve->CurveDataHeader.Degree, static_cast<float>(time), knots, controls
         );
 
-        CurvePositionKey key(grannyTransformTrack.PositionCurve);
+        Bindings::CurvePositionKey key(grannyTransformTrack.PositionCurve);
         key.setTime(time);
         key.setValue(position);
 
@@ -125,8 +120,8 @@ void GrannyImporterAnimationDeboor::importPositionCurve(
 }
 
 void GrannyImporterAnimationDeboor::importRotationCurve(
-    Animation::SharedPtr animation,
-    Track::SharedPtr track,
+    Bindings::Animation::SharedPtr animation,
+    Bindings::Track::SharedPtr track,
     GrannyTransformTrack grannyTransformTrack
 ) const {
     const float duration = animation->getData()->Duration;
@@ -149,7 +144,7 @@ void GrannyImporterAnimationDeboor::importRotationCurve(
         return;
     }
 
-    vector<float> knots;
+    std::vector<float> knots;
     knots.reserve(grannyKnotCount);
 
     for (unsigned i = 0; i < grannyKnotCount; i++) {
@@ -158,7 +153,7 @@ void GrannyImporterAnimationDeboor::importRotationCurve(
 
     const unsigned controlCount = static_cast<unsigned>(grannyOrientationCurve->ControlCount) / 4;
 
-    vector<FbxQuaternion> controls;
+    std::vector<FbxQuaternion> controls;
     controls.reserve(controlCount);
 
     for (unsigned i = 0; i < controlCount; i++) {
@@ -181,7 +176,8 @@ void GrannyImporterAnimationDeboor::importRotationCurve(
     // that animation track uses scale shear in animation track
     // because fbx does not support scale shear.
     if (!track->getScaleKeys().empty()) {
-        scaleMultiply = (static_cast<CurveScaleKey>(track->getScaleKeys().at(0))).getValue();
+        scaleMultiply =
+            (static_cast<Bindings::CurveScaleKey>(track->getScaleKeys().at(0))).getValue();
     }
 
     while (time < static_cast<double>(duration)) {
@@ -208,7 +204,7 @@ void GrannyImporterAnimationDeboor::importRotationCurve(
             );
         }
 
-        CurveRotationKey key(*orientationCurve);
+        Bindings::CurveRotationKey key(*orientationCurve);
         key.setTime(time);
         key.setValue(transformMatrix.GetR());
 

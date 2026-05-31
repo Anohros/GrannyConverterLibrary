@@ -6,9 +6,6 @@
 
 namespace GCL::Importer {
 
-using namespace std;
-using namespace GCL::Bindings;
-
 ///
 /// \brief The GrannyImporterMaterial class.
 ///
@@ -18,12 +15,12 @@ public:
     /// \brief Constructor
     /// \param scene Scene which needs to be exported.
     ///
-    GrannyImporterMaterial(Scene::SharedPtr scene);
+    explicit GrannyImporterMaterial(Bindings::Scene::SharedPtr scene);
 
     ///
     /// \brief Destructor
     ///
-    ~GrannyImporterMaterial();
+    virtual ~GrannyImporterMaterial() = default;
 
     ///
     /// \brief Import all materials of a granny file as scene materials to the scene.
@@ -35,7 +32,7 @@ protected:
     ///
     /// \brief Scene of the importing granny file.
     ///
-    Scene::SharedPtr m_scene;
+    Bindings::Scene::SharedPtr m_scene;
 };
 
 }  // namespace GCL::Importer

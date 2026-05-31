@@ -3,8 +3,6 @@
 #include <Windows.h>
 #include <fstream>
 
-using namespace std;
-
 #pragma pack(push, 4)
 
 // Granny specific data structures.

@@ -8,20 +8,20 @@ namespace GCL::Importer {
 
 using namespace GCL::Utilities::Logging;
 
-GrannyImporter::GrannyImporter() : m_scene(new Scene()) {
+GrannyImporter::GrannyImporter() : m_scene(new Bindings::Scene()) {
     initialize();
 }
 
-GrannyImporter::GrannyImporter(Scene::SharedPtr scene) : m_scene(scene) {
+GrannyImporter::GrannyImporter(Bindings::Scene::SharedPtr scene) : m_scene(scene) {
     initialize();
 }
 
 GrannyImporter::GrannyImporter(GrannyImportOptions options)
-    : m_options(options), m_scene(new Scene()) {
+    : m_options(options), m_scene(new Bindings::Scene()) {
     initialize();
 }
 
-GrannyImporter::GrannyImporter(GrannyImportOptions options, Scene::SharedPtr scene)
+GrannyImporter::GrannyImporter(GrannyImportOptions options, Bindings::Scene::SharedPtr scene)
     : m_options(options), m_scene(scene) {
     initialize();
 }
@@ -52,7 +52,7 @@ void GrannyImporter::initialize() {
 }
 
 bool GrannyImporter::importFromFile(const char* grannyFilePath) {
-    if (!ifstream(grannyFilePath).is_open()) {
+    if (!std::ifstream(grannyFilePath).is_open()) {
         warning("Skip import from file. File \"%s\" was not found.", grannyFilePath);
         return false;
     }
@@ -69,7 +69,7 @@ bool GrannyImporter::importFromFile(const char* grannyFilePath) {
     m_scene->addImportedFilePath(grannyFilePath);
 
     // Add granny file base path as search path for textures.
-    auto searchPath = filesystem::path(grannyFilePath).parent_path();
+    auto searchPath = std::filesystem::path(grannyFilePath).parent_path();
     if (!searchPath.empty()) {
         searchPath = searchPath.u8string().append("/");
         debug("Add search path \"%s\" to the scene.", searchPath.u8string().c_str());
@@ -127,7 +127,7 @@ void GrannyImporter::importAnimations(GrannyFileInfo* grannyFileInfo, const char
     m_importerAnimation->importAnimations(grannyFileInfo);
 }
 
-Scene::SharedPtr GrannyImporter::getScene() const {
+Bindings::Scene::SharedPtr GrannyImporter::getScene() const {
     return m_scene;
 }
 

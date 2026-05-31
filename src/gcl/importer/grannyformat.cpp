@@ -21,7 +21,7 @@ T GetGrannyFunction(HMODULE hModule, const char* lpProcName) {
 }
 
 bool InitializeGrannyLibrary() {
-    if (!ifstream("granny2_x64.dll").is_open()) {
+    if (!std::ifstream("granny2_x64.dll").is_open()) {
         fatal("Could not locate \"granny2_x64.dll\" library.");
         return false;
     }
