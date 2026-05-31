@@ -40,13 +40,13 @@ This library converts 3D scenes from Granny 3D (*.gr2) files into Autodesk FBX (
 ### Setup Granny 3D
 1. **Acquire the DLL:**
 
-    Obtain a licensed version of `granny2.dll`.
+    Obtain a licensed version of `granny2_x64.dll`.
 
 2. **Deploy:**
 
-    Copy the file directly into the following directory: `external/granny2/granny2.dll`
+    Copy the file directly into the following directory: `external/granny2/granny2_x64.dll`
 
-*(Note: The `granny2.dll` must be between ***2.9 and 2.12.*** Version ***2.11*** is the recommended and tested version, which can be found online.)*
+*(Note: The `granny2_x64.dll` must be between ***2.9 and 2.12.*** Version ***2.11*** is the recommended and tested version, which can be found online.)*
 
 ## Setup IDE
 While you can use any IDE of your choice to develop, build, or integrate this library, Visual Studio Code is highly recommended for its ease of use. Alternatively, Qt Creator also works well. For more details on integration, see the "How to use" section below.
