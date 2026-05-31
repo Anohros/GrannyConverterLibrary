@@ -4,8 +4,6 @@
 
 namespace GCL::Bindings {
 
-using namespace std;
-
 ///
 /// \brief Base class for bindings.
 ///
@@ -15,13 +13,13 @@ public:
     ///
     /// \brief Shared pointer alias
     ///
-    using SharedPtr = shared_ptr<T>;
+    using SharedPtr = std::shared_ptr<T>;
 
     ///
     /// \brief Returns if binding is excluded.
     /// \return Exclusion flag
     ///
-    bool isExcluded() const {
+    [[nodiscard]] bool isExcluded() const {
         return m_excluded;
     }
 
@@ -44,6 +42,11 @@ protected:
     /// \brief Flag to define whether to exclude this binding.
     ///
     bool m_excluded = false;
+
+    friend T;
+
+private:
+    Binding() = default;
 };
 
 }  // namespace GCL::Bindings

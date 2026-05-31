@@ -16,7 +16,7 @@ public:
     /// \brief Constructer with data initialization.
     /// \param data Granny curve data
     ///
-    CurveRotationKey(GrannyCurve2 data);
+    explicit CurveRotationKey(GrannyCurve2 data);
 };
 
 }  // namespace GCL::Bindings

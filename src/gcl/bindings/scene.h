@@ -12,8 +12,6 @@
 
 namespace GCL::Bindings {
 
-using namespace std;
-
 ///
 /// \brief The Scene class.
 ///
@@ -22,93 +20,93 @@ public:
     ///
     /// \brief Shared pointer alias
     ///
-    using SharedPtr = shared_ptr<Scene>;
+    using SharedPtr = std::shared_ptr<Scene>;
 
     ///
     /// \brief Returns all materials of the scene.
     /// \return Materials used in scene.
     ///
-    vector<Material::SharedPtr> getMaterials();
+    std::vector<Material::SharedPtr> getMaterials();
 
     ///
     /// \brief Append a material to the scene.
     /// \param material Material used in scene.
     ///
-    void addMaterial(Material::SharedPtr material);
+    void addMaterial(const Material::SharedPtr& material);
 
     ///
     /// \brief Returns all models of the scene.
     /// \return Models of the scene.
     ///
-    vector<Model::SharedPtr> getModels();
+    std::vector<Model::SharedPtr> getModels();
 
     ///
     /// \brief Append a model to the scene.
     /// \param Model to be added to the scene.
     ///
-    void addModel(Model::SharedPtr model);
+    void addModel(const Model::SharedPtr& model);
 
     ///
     /// \brief Returns all animations of the scene.
     /// \return Animations of the scene.
     ///
-    vector<Animation::SharedPtr> getAnimations();
+    std::vector<Animation::SharedPtr> getAnimations();
 
     ///
     /// \brief Append an animation to the scene.
     /// \param Animation to be added to the scene.
     ///
-    void addAnimation(Animation::SharedPtr animation);
+    void addAnimation(const Animation::SharedPtr& animation);
 
     ///
     /// \brief Returns all imported file paths of the scene.
     /// \return Imported files paths
     ///
-    vector<string> getImportedFilePaths();
+    std::vector<std::string> getImportedFilePaths();
 
     ///
     /// \brief Append a imported file path to the scene.
     /// \param importedFilePath Imported file path to be added.
     ///
-    void addImportedFilePath(string importedFilePath);
+    void addImportedFilePath(const std::string& importedFilePath);
 
     ///
     /// \brief Returns all search paths of the scene.
     /// \return Search paths to look up for scene relevant files e.g. textures.
     ///
-    set<string> getSearchPaths();
+    std::set<std::string> getSearchPaths();
 
     ///
     /// \brief Append a search path to the scene.
     /// \param searchPath Search path to be added.
     ///
-    void addSearchPath(string searchPath);
+    void addSearchPath(const std::string& searchPath);
 
 protected:
     ///
     /// \brief Models of the scene.
     ///
-    vector<Model::SharedPtr> m_models;
+    std::vector<Model::SharedPtr> m_models;
 
     ///
     /// \brief Materials of the scene.
     ///
-    vector<Material::SharedPtr> m_materials;
+    std::vector<Material::SharedPtr> m_materials;
 
     ///
     /// \brief Animations of the scene.
     ///
-    vector<Animation::SharedPtr> m_animations;
+    std::vector<Animation::SharedPtr> m_animations;
 
     ///
     /// \brief Imported file paths of the scene.
     ///
-    vector<string> m_importedFilePaths;
+    std::vector<std::string> m_importedFilePaths;
 
     ///
     /// \brief Search paths to look up for scene relevant files e.g. textures.
     ///
-    set<string> m_searchPaths;
+    std::set<std::string> m_searchPaths;
 };
 
 }  // namespace GCL::Bindings

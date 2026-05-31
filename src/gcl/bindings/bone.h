@@ -9,8 +9,6 @@
 
 namespace GCL::Bindings {
 
-using namespace std;
-
 ///
 /// \brief Binding of granny bone data and the counterparts fbx node and the fbx skeleton.
 ///
@@ -19,7 +17,7 @@ public:
     ///
     /// \brief Shared pointer alias
     ///
-    using SharedPtr = shared_ptr<Bone>;
+    using SharedPtr = std::shared_ptr<Bone>;
 
     ///
     /// \brief Constructer with data initialization.
@@ -33,7 +31,7 @@ public:
     /// \brief Constructer with data initialization.
     /// \param Granny bone data
     ///
-    Bone(GrannyBone data);
+    explicit Bone(GrannyBone data);
 
     ///
     /// \brief Constructer
@@ -62,7 +60,7 @@ public:
     /// \brief Returns the fbx clusters of the bone.
     /// \return Fbx clusters
     ///
-    vector<FbxCluster*> getClusters();
+    std::vector<FbxCluster*> getClusters();
 
     ///
     /// \brief Sets the granny bone data.
@@ -107,7 +105,7 @@ protected:
     ///
     /// \brief Fbx clusters of the bone.
     ///
-    vector<FbxCluster*> m_clusters;
+    std::vector<FbxCluster*> m_clusters;
 };
 
 }  // namespace GCL::Bindings

@@ -17,7 +17,7 @@ public:
     /// \brief Constructer with data initialization.
     /// \param data Granny curve data
     ///
-    AbstractCurveKey(GrannyCurve2 data);
+    explicit AbstractCurveKey(GrannyCurve2 data);
 
     ///
     /// \brief Returns the time of this key.
@@ -41,7 +41,7 @@ public:
     /// \brief Sets the value of this key.
     /// \param Animation key value
     ///
-    void setValue(FbxDouble3 value);
+    void setValue(const FbxDouble3& value);
 
 protected:
     ///

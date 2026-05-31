@@ -11,8 +11,6 @@
 
 namespace GCL::Bindings {
 
-using namespace std;
-
 ///
 /// \brief Binding of granny model data and the counterparts data like meshes and bones.
 ///
@@ -22,7 +20,7 @@ public:
     /// \brief Constructer
     /// \param data Granny data of the model.
     ///
-    Model(GrannyModel* data);
+    explicit Model(GrannyModel* data);
 
     ///
     /// \brief Returns the granny model data.
@@ -34,37 +32,37 @@ public:
     /// \brief Returns all meshes of the model.
     /// \return Meshes
     ///
-    vector<Mesh::SharedPtr> getMeshes();
+    std::vector<Mesh::SharedPtr> getMeshes();
 
     ///
     /// \brief Returns all bones of the model.
     /// \return Model bones
     ///
-    vector<Bone::SharedPtr> getBones();
+    std::vector<Bone::SharedPtr> getBones();
 
     ///
     /// \brief Append meshes to the scene.
     /// \param Meshes
     ///
-    void setMeshes(vector<Mesh::SharedPtr> meshes);
+    void setMeshes(std::vector<Mesh::SharedPtr> meshes);
 
     ///
     /// \brief Append bones to the scene.
     /// \param Model bones
     ///
-    void setBones(vector<Bone::SharedPtr> bones);
+    void setBones(std::vector<Bone::SharedPtr> bones);
 
     ///
     /// \brief Returns if model has rigid body meshes.
     /// \return Returns whether model has at least one rigid meshes or not.
     ///
-    bool hasRigidMeshes();
+    [[nodiscard]] bool hasRigidMeshes() const;
 
     ///
     /// \brief Set transform of the model.
     /// \param Model transform
     ///
-    void setTransform(FbxMatrix transform);
+    void setTransform(const FbxMatrix& transform);
 
 protected:
     ///
@@ -75,12 +73,12 @@ protected:
     ///
     /// \brief Meshes of the model.
     ///
-    vector<Mesh::SharedPtr> m_meshes;
+    std::vector<Mesh::SharedPtr> m_meshes;
 
     ///
     /// \brief Bones of the model.
     ///
-    vector<Bone::SharedPtr> m_bones;
+    std::vector<Bone::SharedPtr> m_bones;
 
     ///
     /// \brief Transform of the model.

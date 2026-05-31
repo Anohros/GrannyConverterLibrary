@@ -2,7 +2,7 @@
 
 namespace GCL::Bindings {
 
-Mesh::Mesh(GrannyMesh* data) : m_data(data), m_node(nullptr) {
+Mesh::Mesh(GrannyMesh* data) : m_data(data) {
 }
 
 GrannyMesh* Mesh::getData() {
@@ -13,7 +13,7 @@ FbxNode* Mesh::getNode() {
     return m_node;
 }
 
-vector<BoneBinding::SharedPtr> Mesh::getBoneBindings() {
+std::vector<BoneBinding::SharedPtr> Mesh::getBoneBindings() {
     return m_boneBindings;
 }
 
@@ -25,7 +25,7 @@ void Mesh::setNode(FbxNode* node) {
     m_node = node;
 }
 
-void Mesh::addBoneBinding(BoneBinding::SharedPtr binding) {
+void Mesh::addBoneBinding(const BoneBinding::SharedPtr& binding) {
     m_boneBindings.push_back(binding);
 }
 
@@ -33,22 +33,14 @@ bool Mesh::isRigid() {
     return GrannyMeshIsRigid(m_data);
 }
 
-vector<GrannyPWNT34322Vertex> Mesh::getRigidVertices() {
-    unsigned grannyVertexCount = static_cast<unsigned>(GrannyGetMeshVertexCount(m_data));
-    GrannyPWNT34322Vertex* grannyVertices = new GrannyPWNT34322Vertex[grannyVertexCount];
-
-    vector<GrannyPWNT34322Vertex> rigidVertices;
-    rigidVertices.reserve(grannyVertexCount);
-
-    GrannyCopyMeshVertices(m_data, GrannyPWNT34322VertexType, grannyVertices);
-
-    for (unsigned i = 0; i < grannyVertexCount; i++) {
-        rigidVertices.push_back(grannyVertices[i]);
+std::vector<GrannyPWNT34322Vertex> Mesh::getRigidVertices() {
+    const size_t vertex_count = static_cast<size_t>(GrannyGetMeshVertexCount(m_data));
+    if (vertex_count == 0) {
+        return {};
     }
-
-    delete[] grannyVertices;
-
-    return rigidVertices;
+    std::vector<GrannyPWNT34322Vertex> vertices(vertex_count);
+    GrannyCopyMeshVertices(m_data, GrannyPWNT34322VertexType, vertices.data());
+    return vertices;
 }
 
 }  // namespace GCL::Bindings

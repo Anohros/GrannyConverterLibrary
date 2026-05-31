@@ -17,7 +17,7 @@ FbxDouble3 AbstractCurveKey::getValue() {
     return m_value;
 }
 
-void AbstractCurveKey::setValue(FbxDouble3 value) {
+void AbstractCurveKey::setValue(const FbxDouble3& value) {
     m_value = value;
 }
 

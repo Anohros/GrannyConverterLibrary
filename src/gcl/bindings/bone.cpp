@@ -6,11 +6,10 @@ Bone::Bone(GrannyBone data, FbxNode* node, FbxSkeleton* skeleton)
     : m_data(data), m_node(node), m_skeleton(skeleton) {
 }
 
-Bone::Bone(GrannyBone data) : m_data(data), m_node(nullptr), m_skeleton(nullptr) {
+Bone::Bone(GrannyBone data) : m_data(data) {
 }
 
-Bone::Bone() {
-}
+Bone::Bone() = default;
 
 GrannyBone Bone::getData() {
     return m_data;
@@ -24,7 +23,7 @@ FbxSkeleton* Bone::getSkeleton() {
     return m_skeleton;
 }
 
-vector<FbxCluster*> Bone::getClusters() {
+std::vector<FbxCluster*> Bone::getClusters() {
     return m_clusters;
 }
 

@@ -18,7 +18,7 @@ public:
     /// \brief Constructer
     /// \param data Granny data of the material.
     ///
-    Material(GrannyMaterial* data);
+    explicit Material(GrannyMaterial* data);
 
     ///
     /// \brief Returns the granny material data.

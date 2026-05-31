@@ -2,7 +2,7 @@
 
 namespace GCL::Bindings {
 
-Skeleton::Skeleton(GrannySkeleton* data) : m_data(data), m_node(nullptr) {
+Skeleton::Skeleton(GrannySkeleton* data) : m_data(data) {
 }
 
 GrannySkeleton* Skeleton::getData() {
@@ -21,11 +21,11 @@ void Skeleton::setNode(FbxNode* node) {
     m_node = node;
 }
 
-vector<Bone::SharedPtr> Skeleton::getBones() {
+std::vector<Bone::SharedPtr> Skeleton::getBones() {
     return m_bones;
 }
 
-void Skeleton::setBones(vector<Bone::SharedPtr> bones) {
+void Skeleton::setBones(std::vector<Bone::SharedPtr> bones) {
     m_bones.swap(bones);
 }
 

@@ -10,8 +10,6 @@
 
 namespace GCL::Bindings {
 
-using namespace std;
-
 ///
 /// \brief The Animation class.
 ///
@@ -21,7 +19,7 @@ public:
     /// \brief Constructer with data initialization.
     /// \param data Granny animation data
     ///
-    Animation(GrannyAnimation* data);
+    explicit Animation(GrannyAnimation* data);
 
     ///
     /// \brief Returns the granny animation data.
@@ -33,13 +31,13 @@ public:
     /// \brief Returns the animation tracks of the animation.
     /// \return Animation tracks
     ///
-    vector<Track::SharedPtr> getTracks();
+    std::vector<Track::SharedPtr> getTracks();
 
     ///
     /// \brief Adds an animation track.
     /// \param track Animation track
     ///
-    void addTrack(Track::SharedPtr track);
+    void addTrack(const Track::SharedPtr& track);
 
 protected:
     ///
@@ -55,7 +53,7 @@ protected:
     ///
     /// \brief Animation tracks of the animation.
     ///
-    vector<Track::SharedPtr> m_tracks;
+    std::vector<Track::SharedPtr> m_tracks;
 };
 
 }  // namespace GCL::Bindings
