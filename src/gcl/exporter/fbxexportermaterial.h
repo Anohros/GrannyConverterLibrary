@@ -78,7 +78,8 @@ protected:
     }
 
     ///
-    /// \brief Sanitizes a material name.
+    /// \brief Sanitizes a material name using both material and texture names for better
+    /// uniqueness.
     /// \param materialName
     /// \param textureName
     /// \return
@@ -86,7 +87,12 @@ protected:
     virtual std::string sanitizeMaterialName(
         const std::string& materialName, const std::string& textureName
     ) {
-        return GCL::Utilities::sanitizeName(materialName);
+        // Combine material and texture names for better uniqueness in case of duplicates
+        std::string combinedName = materialName;
+        if (!textureName.empty()) {
+            combinedName += "_" + textureName;
+        }
+        return GCL::Utilities::sanitizeName(std::move(combinedName));
     }
 
     ///
