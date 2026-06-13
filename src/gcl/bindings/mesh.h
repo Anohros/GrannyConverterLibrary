@@ -65,10 +65,10 @@ public:
     bool isRigid();
 
     ///
-    /// \brief Returns rigid vertices.
+    /// \brief Returns vertices.
     /// \return Vertices
     ///
-    std::vector<GrannyPWNT34322Vertex> getRigidVertices();
+    std::vector<GrannyPWNT34322Vertex> getVertices();
 
 protected:
     ///

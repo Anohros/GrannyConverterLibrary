@@ -33,7 +33,7 @@ bool Mesh::isRigid() {
     return GrannyMeshIsRigid(m_data);
 }
 
-std::vector<GrannyPWNT34322Vertex> Mesh::getRigidVertices() {
+std::vector<GrannyPWNT34322Vertex> Mesh::getVertices() {
     const size_t vertex_count = static_cast<size_t>(GrannyGetMeshVertexCount(m_data));
     if (vertex_count == 0) {
         return {};

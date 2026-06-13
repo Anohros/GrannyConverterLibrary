@@ -89,7 +89,7 @@ void FbxExporter::exportModels(std::string outputFilepath) {
         }
 
         if (m_options.exportMeshes) {
-            m_exporterMesh->exportMeshes(model, m_options.exportSkeleton);
+            m_exporterMesh->ExportMeshes(model, m_options.exportSkeleton);
         }
 
         if (m_options.exportSkeleton && model->getBones().size() > 1) {
