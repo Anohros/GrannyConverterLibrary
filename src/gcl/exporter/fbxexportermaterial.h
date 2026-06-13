@@ -52,7 +52,7 @@ protected:
     /// \param outputFilepath Output filepath of current model.
     /// \param texture Texture of which the file path should be returned.
     ///
-    auto getTextureFilePath(std::string outputFilepath, GrannyTexture* texture) -> std::string;
+    std::string getTextureFilePath(std::string outputFilepath, GrannyTexture* texture);
 
     ///
     /// \brief Exports a material of the scene to the fbx scene - part of exportMaterial.
@@ -61,19 +61,19 @@ protected:
     /// \param outputFilepath Output filepath of current model.
     /// \param textureFilePath Filepath of diffuse texture for current material.
     ///
-    auto addMaterial(
+    FbxSurfaceMaterial* addMaterial(
         Bindings::Material::SharedPtr material,
         std::string materialName,
         std::string outputFilepath,
         std::string textureFilePath = ""
-    ) -> FbxSurfaceMaterial*;
+    );
 
     ///
     /// \brief Sanitizes a material name.
     /// \param materialName
     /// \return
     ///
-    virtual auto sanitizeMaterialName(const std::string& materialName) -> std::string {
+    virtual std::string sanitizeMaterialName(const std::string& materialName) {
         return GCL::Utilities::sanitizeName(materialName);
     }
 
