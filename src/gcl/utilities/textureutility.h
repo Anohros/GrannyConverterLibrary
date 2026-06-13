@@ -18,7 +18,7 @@ GrannyTexture* getMaterialTexture(GrannyMaterial* grannyMaterial);
 /// \param flipImage If image should be flipped.
 ///
 void exportTexture(
-    GrannyTexture* grannyTexture, std::string textureFilePath, bool flipImage = false
+    GrannyTexture* grannyTexture, const std::string& textureFilePath, bool flipImage = false
 );
 
 }  // namespace GCL::Utilities

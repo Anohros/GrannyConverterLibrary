@@ -13,12 +13,12 @@ GrannyTexture* getMaterialTexture(GrannyMaterial* grannyMaterial) {
         GrannyMaterialMap* map = &grannyMaterial->Maps[0];
 
         for (auto i = 0; i < grannyMaterial->MapCount; i++) {
-            auto currentMap = &grannyMaterial->Maps[i];
-            auto isColor = _stricmp(currentMap->Usage, "color") == 0 ||
-                           _stricmp(currentMap->Usage, "Diffuse color") == 0;
-            auto isTexture = currentMap->Material->Texture != nullptr;
-            if (isColor && isTexture) {
-                map = currentMap;
+            auto current_map = &grannyMaterial->Maps[i];
+            auto is_color = _stricmp(current_map->Usage, "color") == 0 ||
+                            _stricmp(current_map->Usage, "Diffuse color") == 0;
+            auto is_texture = current_map->Material->Texture != nullptr;
+            if (is_color && is_texture) {
+                map = current_map;
                 break;
             }
         }
@@ -35,7 +35,9 @@ GrannyTexture* getMaterialTexture(GrannyMaterial* grannyMaterial) {
     return texture;
 }
 
-void exportTexture(GrannyTexture* grannyTexture, std::string textureFilePath, bool flipImage) {
+void exportTexture(
+    GrannyTexture* grannyTexture, const std::string& textureFilePath, bool flipImage
+) {
     int bytesPerPixel;
     GrannyPixelLayout const* grannyPixelLayout;
     ILenum ilFormat;
@@ -50,7 +52,7 @@ void exportTexture(GrannyTexture* grannyTexture, std::string textureFilePath, bo
         ilFormat = IL_RGB;
     }
 
-    std::vector<unsigned char> pixels;
+    std::vector<uint8_t> pixels;
     pixels.resize(grannyTexture->Width * grannyTexture->Height * bytesPerPixel);
 
     GrannyCopyTextureImage(
