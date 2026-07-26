@@ -13,11 +13,7 @@ namespace GCL::Bindings {
 ///
 class AbstractCurveKey {
 public:
-    ///
-    /// \brief Constructer with data initialization.
-    /// \param data Granny curve data
-    ///
-    explicit AbstractCurveKey(GrannyCurve2 data);
+    virtual ~AbstractCurveKey() = default;
 
     ///
     /// \brief Returns the time of this key.
@@ -44,6 +40,13 @@ public:
     void setValue(const FbxDouble3& value);
 
 protected:
+    ///
+    /// \brief Constructer with data initialization.
+    /// \param data Granny curve data
+    ///
+    explicit AbstractCurveKey(GrannyCurve2 data);
+
+private:
     ///
     /// \brief Granny curve data
     ///

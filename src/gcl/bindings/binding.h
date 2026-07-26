@@ -11,7 +11,7 @@ template <typename T>
 class Binding {
 public:
     ///
-    /// \brief Shared pointer alias
+    /// \brief Shared pointer alias of the derived type T
     ///
     using SharedPtr = std::shared_ptr<T>;
 
@@ -38,15 +38,17 @@ public:
     }
 
 protected:
-    ///
-    /// \brief Flag to define whether to exclude this binding.
-    ///
-    bool m_excluded = false;
+    ~Binding() = default;
 
     friend T;
 
 private:
     Binding() = default;
+
+    ///
+    /// \brief Flag to define whether to exclude this binding.
+    ///
+    bool m_excluded = false;
 };
 
 }  // namespace GCL::Bindings
