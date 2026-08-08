@@ -1,11 +1,11 @@
 #pragma once
 
-#include "gcl/bindings/binding.h"
-#include "gcl/importer/grannyformat.h"
+#include <vector>
 
 #include <fbxsdk.h>
 
-#include <vector>
+#include "gcl/bindings/binding.h"
+#include "gcl/importer/grannyformat.h"
 
 namespace GCL::Bindings {
 
@@ -18,7 +18,7 @@ public:
     /// \brief Constructer
     /// \param data Granny data of the material.
     ///
-    Material(GrannyMaterial* data);
+    explicit Material(GrannyMaterial* data);
 
     ///
     /// \brief Returns the granny material data.
@@ -56,4 +56,4 @@ protected:
     FbxSurfaceMaterial* m_node = nullptr;
 };
 
-} // namespace GCL::Bindings
+}  // namespace GCL::Bindings

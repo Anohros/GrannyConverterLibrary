@@ -1,0 +1,39 @@
+# Clang-Format configuration for GrannyConverterLibrary
+# Based on Google Style and modernized.
+
+BasedOnStyle: Google
+Standard: Latest
+
+# --- Braces & Short Statements ---
+AllowShortFunctionsOnASingleLine: None
+AllowShortLambdasOnASingleLine: Empty
+BreakBeforeBraces: Attach
+
+# --- Comment Formatting (Doxygen Safe) ---
+CommentPragmas: '^(\\s*///|\\s*\\\\\b)'
+ReflowComments: true
+
+# --- Functions & Parameters ---
+BinPackArguments: false
+BinPackParameters: false
+PackConstructorInitializers: NextLine
+
+# --- Include Sorting Priorities ---
+IncludeCategories:
+  - Regex:           '^[<"]fbxsdk\.h>'
+    Priority:        2
+  - Regex:           '^[<"]IL/'
+    Priority:        2
+  - Regex:           '^<.*'
+    Priority:        1
+  - Regex:           '.*'
+    Priority:        3
+
+# --- Indentation & Layout ---
+AccessModifierOffset: -4
+AlignAfterOpenBracket: BlockIndent
+ColumnLimit: 100
+ContinuationIndentWidth: 4
+IndentWidth: 4
+TabWidth: 4
+UseTab: Never

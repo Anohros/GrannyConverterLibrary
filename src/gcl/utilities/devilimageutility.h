@@ -1,10 +1,8 @@
 #pragma once
 
-#include <iostream>
+#include <string>
 
 namespace GCL::Utilities {
-
-using namespace std;
 
 ///
 /// \brief Initializes devil image library.
@@ -22,6 +20,8 @@ void shutdownDevilImageLibrary();
 /// \param targetFilePath
 /// \param flipImage
 ///
-void convertImage(string sourceFilePath, string targetFilePath, bool flipImage = false);
+void convertImage(
+    const std::string& sourceFilePath, const std::string& targetFilePath, bool flipImage = false
+);
 
-} // namespace GCL::Utilities
+}  // namespace GCL::Utilities

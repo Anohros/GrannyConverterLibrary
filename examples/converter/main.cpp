@@ -4,8 +4,7 @@
 #include "gcl/importer/grannyimporter.h"
 #include "gcl/importer/grannyimportoptions.h"
 
-int main()
-{
+int main() {
     // Initialize library.
     GCL::GrannyConverterLibrary grannyConverterLibrary;
 

@@ -1,5 +1,7 @@
 #pragma once
 
+#include <vector>
+
 #include "gcl/bindings/animation.h"
 #include "gcl/bindings/bone.h"
 #include "gcl/bindings/curvepositionkey.h"
@@ -19,12 +21,7 @@
 #include "gcl/importer/grannyimporterskeleton.h"
 #include "gcl/importer/grannyimportoptions.h"
 
-#include <vector>
-
 namespace GCL::Importer {
-
-using namespace std;
-using namespace GCL::Bindings;
 
 ///
 /// \brief Granny importer - imports a scene from a granny file.
@@ -40,20 +37,21 @@ public:
     /// \brief Constructor with data initialization to reuse an already initialized scene.
     /// \param scene Already initialized scene to be reused.
     ///
-    GrannyImporter(Scene::SharedPtr scene);
+    explicit GrannyImporter(Bindings::Scene::SharedPtr scene);
 
     ///
     /// \brief Constructer with extended options.
     /// \param options Import options which define the way how a scene needs to be imported.
     ///
-    GrannyImporter(GrannyImportOptions options);
+    explicit GrannyImporter(GrannyImportOptions options);
 
     ///
-    /// \brief Constructer with extended options and data initialization to reuse an already initialized scene.
+    /// \brief Constructer with extended options and data initialization to reuse an already
+    /// initialized scene.
     /// \param options Import options which define the way how a scene needs to be imported.
     /// \param scene Already initialized scene to be reused.
     ///
-    GrannyImporter(GrannyImportOptions options, Scene::SharedPtr scene);
+    GrannyImporter(GrannyImportOptions options, Bindings::Scene::SharedPtr scene);
 
     ///
     /// \brief Destructor
@@ -97,7 +95,7 @@ public:
     /// \brief Return the imported scene.
     /// \return Imported scene
     ///
-    Scene::SharedPtr getScene() const;
+    Bindings::Scene::SharedPtr getScene() const;
 
 protected:
     ///
@@ -108,7 +106,7 @@ protected:
     ///
     /// \brief Scene of the importing granny file.
     ///
-    Scene::SharedPtr m_scene;
+    Bindings::Scene::SharedPtr m_scene;
 
     ///
     /// \brief Material importer module.
@@ -133,7 +131,7 @@ protected:
     ///
     /// \brief Granny files of the imported granny files.
     ///
-    vector<GrannyFile*> m_importedGrannyFiles;
+    std::vector<GrannyFile*> m_importedGrannyFiles;
 };
 
-} // namespace GCL::Importer
+}  // namespace GCL::Importer

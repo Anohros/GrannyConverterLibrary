@@ -1,5 +1,7 @@
 #pragma once
 
+#include <fbxsdk.h>
+
 #include "gcl/bindings/abstractcurvekey.h"
 #include "gcl/bindings/scene.h"
 #include "gcl/bindings/track.h"
@@ -7,12 +9,7 @@
 #include "gcl/importer/grannyformat.h"
 #include "gcl/utilities/fbxsdkcommon.h"
 
-#include <fbxsdk.h>
-
 namespace GCL::Exporter {
-
-using namespace std;
-using namespace GCL::Bindings;
 
 ///
 /// \brief The ExporterAnimations class.
@@ -33,7 +30,7 @@ public:
     /// \param boneNode Bone node of the track which should be affected by the track curves.
     /// \param animLayer Anim layer for the exporting animation.
     ///
-    void exportCurves(Track::SharedPtr track, FbxNode* boneNode, FbxAnimLayer* animLayer);
+    void exportCurves(Bindings::Track::SharedPtr track, FbxNode* boneNode, FbxAnimLayer* animLayer);
 
     ///
     /// \brief Export an curve key to the fbx scene.
@@ -43,10 +40,11 @@ public:
     /// \param animCurveZ Anim curve for z-axis value.
     ///
     void exportCurveKey(
-        AbstractCurveKey key,
+        Bindings::AbstractCurveKey key,
         FbxAnimCurve* animCurveX,
         FbxAnimCurve* animCurveY,
-        FbxAnimCurve* animCurveZ);
+        FbxAnimCurve* animCurveZ
+    );
 };
 
-} // namespace GCL::Exporter
+}  // namespace GCL::Exporter

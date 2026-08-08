@@ -6,17 +6,11 @@ namespace GCL::Importer {
 
 using namespace GCL::Utilities::Logging;
 
-GrannyImporterAnimation::GrannyImporterAnimation(Scene::SharedPtr scene)
-    : m_scene(scene)
-{
+GrannyImporterAnimation::GrannyImporterAnimation(Bindings::Scene::SharedPtr scene)
+    : m_scene(scene) {
 }
 
-GrannyImporterAnimation::~GrannyImporterAnimation()
-{
-}
-
-void GrannyImporterAnimation::importAnimations(GrannyFileInfo* grannyFileInfo) const
-{
+void GrannyImporterAnimation::importAnimations(GrannyFileInfo* grannyFileInfo) const {
     info("Load animations from granny file.");
 
     if (!grannyFileInfo->AnimationCount) {
@@ -25,9 +19,10 @@ void GrannyImporterAnimation::importAnimations(GrannyFileInfo* grannyFileInfo) c
     }
 
     const auto grannyAnimation = grannyFileInfo->Animations[0];
-    auto animation = make_shared<Animation>(grannyAnimation);
+    auto animation = std::make_shared<Bindings::Animation>(grannyAnimation);
 
-    // Process animation track groups. Only if animation does have at least one animation track group.
+    // Process animation track groups. Only if animation does have at least one animation track
+    // group.
     if (grannyAnimation->TrackGroupCount) {
         for (auto i = 0; i < grannyAnimation->TrackGroupCount; i++) {
             const auto grannyTrackGroup = grannyAnimation->TrackGroups[i];
@@ -37,7 +32,9 @@ void GrannyImporterAnimation::importAnimations(GrannyFileInfo* grannyFileInfo) c
             }
         }
     } else {
-        warning("Skip load animations because animation does not have at least one animation track.");
+        warning(
+            "Skip load animations because animation does not have at least one animation track."
+        );
     }
 
     m_scene->addAnimation(animation);
@@ -45,11 +42,10 @@ void GrannyImporterAnimation::importAnimations(GrannyFileInfo* grannyFileInfo) c
     info("Added animation to scene.");
 }
 
-Track::SharedPtr GrannyImporterAnimation::importTrack(
-    Animation::SharedPtr animation,
-    GrannyTransformTrack grannyTransformTrack) const
-{
-    auto track = make_shared<Track>(grannyTransformTrack);
+Bindings::Track::SharedPtr GrannyImporterAnimation::importTrack(
+    Bindings::Animation::SharedPtr animation, GrannyTransformTrack grannyTransformTrack
+) const {
+    auto track = std::make_shared<Bindings::Track>(grannyTransformTrack);
     track->setName(grannyTransformTrack.Name);
 
     importScaleCurve(track, grannyTransformTrack);
@@ -60,30 +56,29 @@ Track::SharedPtr GrannyImporterAnimation::importTrack(
 }
 
 void GrannyImporterAnimation::importScaleCurve(
-    Track::SharedPtr track,
-    GrannyTransformTrack grannyTransformTrack) const
-{
+    Bindings::Track::SharedPtr track, GrannyTransformTrack grannyTransformTrack
+) const {
     if (GrannyCurveGetDimension(&grannyTransformTrack.ScaleShearCurve) == 0) {
         return;
     }
 
     GrannyCurve2* scaleCurve = GrannyCurveConvertToDaK32fC32f(
-        &grannyTransformTrack.ScaleShearCurve,
-        GrannyCurveIdentityScaleShear);
+        &grannyTransformTrack.ScaleShearCurve, GrannyCurveIdentityScaleShear
+    );
 
-    const auto grannyScaleShearCurve = static_cast<GrannyCurveDataDAK32fC32f*>(
-        scaleCurve->CurveData.Object);
+    const auto grannyScaleShearCurve =
+        static_cast<GrannyCurveDataDAK32fC32f*>(scaleCurve->CurveData.Object);
 
-    const auto grannyKnotCount = static_cast<unsigned>(
-        grannyScaleShearCurve->KnotCount);
+    const auto grannyKnotCount = static_cast<unsigned>(grannyScaleShearCurve->KnotCount);
 
     for (unsigned i = 0; i < grannyKnotCount; i++) {
-        CurveScaleKey key(*scaleCurve);
+        Bindings::CurveScaleKey key(*scaleCurve);
         key.setTime(static_cast<double>(grannyScaleShearCurve->Knots[i]));
         key.setValue(FbxDouble3(
             static_cast<double>(grannyScaleShearCurve->Controls[(i * 9)]),
             static_cast<double>(grannyScaleShearCurve->Controls[(i * 9) + 4]),
-            static_cast<double>(grannyScaleShearCurve->Controls[(i * 9) + 8])));
+            static_cast<double>(grannyScaleShearCurve->Controls[(i * 9) + 8])
+        ));
 
         track->addScaleKey(key);
     }
@@ -92,10 +87,10 @@ void GrannyImporterAnimation::importScaleCurve(
 }
 
 void GrannyImporterAnimation::importPositionCurve(
-    Animation::SharedPtr animation,
-    Track::SharedPtr track,
-    GrannyTransformTrack grannyTransformTrack) const
-{
+    Bindings::Animation::SharedPtr animation,
+    Bindings::Track::SharedPtr track,
+    GrannyTransformTrack grannyTransformTrack
+) const {
     const float duration = animation->getData()->Duration;
     const float timeStep = animation->getData()->TimeStep;
 
@@ -104,14 +99,13 @@ void GrannyImporterAnimation::importPositionCurve(
     }
 
     GrannyCurve2* positionCurve = GrannyCurveConvertToDaK32fC32f(
-        &grannyTransformTrack.PositionCurve,
-        GrannyCurveIdentityPosition);
+        &grannyTransformTrack.PositionCurve, GrannyCurveIdentityPosition
+    );
 
-    const auto grannyPositionCurve = static_cast<GrannyCurveDataDAK32fC32f*>(
-        positionCurve->CurveData.Object);
+    const auto grannyPositionCurve =
+        static_cast<GrannyCurveDataDAK32fC32f*>(positionCurve->CurveData.Object);
 
-    const auto grannyKnotCount = static_cast<unsigned>(
-        grannyPositionCurve->KnotCount);
+    const auto grannyKnotCount = static_cast<unsigned>(grannyPositionCurve->KnotCount);
 
     if (!grannyKnotCount) {
         return;
@@ -135,14 +129,16 @@ void GrannyImporterAnimation::importPositionCurve(
             duration,
             static_cast<float>(time),
             position,
-            GrannyCurveIdentityPosition);
+            GrannyCurveIdentityPosition
+        );
 
-        CurvePositionKey key(*positionCurve);
+        Bindings::CurvePositionKey key(*positionCurve);
         key.setTime(time);
         key.setValue(FbxDouble3(
             static_cast<double>(position[0]),
             static_cast<double>(position[1]),
-            static_cast<double>(position[2])));
+            static_cast<double>(position[2])
+        ));
 
         track->addPositionKey(key);
 
@@ -153,10 +149,10 @@ void GrannyImporterAnimation::importPositionCurve(
 }
 
 void GrannyImporterAnimation::importRotationCurve(
-    Animation::SharedPtr animation,
-    Track::SharedPtr track,
-    GrannyTransformTrack grannyTransformTrack) const
-{
+    Bindings::Animation::SharedPtr animation,
+    Bindings::Track::SharedPtr track,
+    GrannyTransformTrack grannyTransformTrack
+) const {
     const float duration = animation->getData()->Duration;
     const float timeStep = animation->getData()->TimeStep;
 
@@ -164,8 +160,8 @@ void GrannyImporterAnimation::importRotationCurve(
 
     if (GrannyCurveGetDimension(&grannyTransformTrack.ScaleShearCurve) != 0) {
         scaleCurve = GrannyCurveConvertToDaK32fC32f(
-            &grannyTransformTrack.ScaleShearCurve,
-            GrannyCurveIdentityScaleShear);
+            &grannyTransformTrack.ScaleShearCurve, GrannyCurveIdentityScaleShear
+        );
     }
 
     if (GrannyCurveGetDimension(&grannyTransformTrack.OrientationCurve) == 0) {
@@ -173,14 +169,13 @@ void GrannyImporterAnimation::importRotationCurve(
     }
 
     GrannyCurve2* orientationCurve = GrannyCurveConvertToDaK32fC32f(
-        &grannyTransformTrack.OrientationCurve,
-        GrannyCurveIdentityOrientation);
+        &grannyTransformTrack.OrientationCurve, GrannyCurveIdentityOrientation
+    );
 
-    const auto grannyOrientationCurve = static_cast<GrannyCurveDataDAK32fC32f*>(
-        orientationCurve->CurveData.Object);
+    const auto grannyOrientationCurve =
+        static_cast<GrannyCurveDataDAK32fC32f*>(orientationCurve->CurveData.Object);
 
-    const auto grannyKnotCount = static_cast<unsigned>(
-        grannyOrientationCurve->KnotCount);
+    const auto grannyKnotCount = static_cast<unsigned>(grannyOrientationCurve->KnotCount);
 
     if (!grannyKnotCount) {
         return;
@@ -192,7 +187,7 @@ void GrannyImporterAnimation::importRotationCurve(
     while (time < static_cast<const double>(duration)) {
         time = static_cast<const double>(static_cast<float>(step) * timeStep);
 
-        float scale[9] = { 1, 0, 0, 0, 1, 0, 0, 0, 1 };
+        float scale[9] = {1, 0, 0, 0, 1, 0, 0, 0, 1};
 
         if (scaleCurve != nullptr) {
             int scaleDimension = GrannyCurveGetDimension(scaleCurve);
@@ -205,7 +200,8 @@ void GrannyImporterAnimation::importRotationCurve(
                 duration,
                 static_cast<float>(time),
                 scale,
-                GrannyCurveIdentityScaleShear);
+                GrannyCurveIdentityScaleShear
+            );
         }
 
         float quaternion[4];
@@ -220,7 +216,8 @@ void GrannyImporterAnimation::importRotationCurve(
             duration,
             static_cast<float>(time),
             quaternion,
-            GrannyCurveIdentityOrientation);
+            GrannyCurveIdentityOrientation
+        );
 
         FbxAMatrix transformMatrix;
 
@@ -228,7 +225,8 @@ void GrannyImporterAnimation::importRotationCurve(
             static_cast<double>(quaternion[0]),
             static_cast<double>(quaternion[1]),
             static_cast<double>(quaternion[2]),
-            static_cast<double>(quaternion[3])));
+            static_cast<double>(quaternion[3])
+        ));
 
         // Check for negative scale.
         // Fbx can not handle negative scaling in same way as granny2 does handle it.
@@ -238,10 +236,11 @@ void GrannyImporterAnimation::importRotationCurve(
             transformMatrix.MultSM(FbxVector4(
                 static_cast<double>(abs(scale[0])),
                 static_cast<double>(abs(scale[4])),
-                static_cast<double>(abs(scale[8]))));
+                static_cast<double>(abs(scale[8]))
+            ));
         }
 
-        CurveRotationKey key(*orientationCurve);
+        Bindings::CurveRotationKey key(*orientationCurve);
         key.setTime(time);
         key.setValue(transformMatrix.GetR());
 
@@ -253,8 +252,7 @@ void GrannyImporterAnimation::importRotationCurve(
     GrannyFreeCurve(orientationCurve);
 }
 
-double GrannyImporterAnimation::calculateTime(const double time) const
-{
+double GrannyImporterAnimation::calculateTime(const double time) const {
     const auto frame = 1.0 / 30.0;
     const auto min = time / frame;
     const auto min2 = floor(min);
@@ -262,4 +260,4 @@ double GrannyImporterAnimation::calculateTime(const double time) const
     return min2 * frame;
 }
 
-} // namespace GCL::Importer
+}  // namespace GCL::Importer

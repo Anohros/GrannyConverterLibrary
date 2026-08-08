@@ -9,9 +9,6 @@
 
 namespace GCL::Exporter {
 
-using namespace std;
-using namespace GCL::Bindings;
-
 ///
 /// \brief Granny exporter - exports a scene to a filmbox file.
 ///
@@ -21,14 +18,14 @@ public:
     /// \brief Constructer with data initialization.
     /// \param scene A scene to be exported.
     ///
-    FbxExporter(Scene::SharedPtr scene);
+    FbxExporter(Bindings::Scene::SharedPtr scene);
 
     ///
     /// \brief Constructer with extended options and data initialization.
     /// \param options Export options to define what aspects of the scene needs to be exported.
     /// \param scene A scene to be exported.
     ///
-    FbxExporter(FbxExportOptions options, Scene::SharedPtr scene);
+    FbxExporter(FbxExportOptions options, Bindings::Scene::SharedPtr scene);
 
     ///
     /// \brief Constructer with extended options and data initialization.
@@ -36,7 +33,11 @@ public:
     /// \param options Export options to define what aspects of the scene needs to be exported.
     /// \param scene A scene to be exported.
     ///
-    FbxExporter(ExporterModuleFactoryInterface* exporterModuleFactory, FbxExportOptions options, Scene::SharedPtr scene);
+    FbxExporter(
+        ExporterModuleFactoryInterface* exporterModuleFactory,
+        FbxExportOptions options,
+        Bindings::Scene::SharedPtr scene
+    );
 
     ///
     /// \brief Destructor
@@ -52,30 +53,29 @@ public:
     /// \brief Export the scene to a filmbox file.
     /// \param outputFilepath
     ///
-    void exportToFile(string outputFilepath);
+    void exportToFile(std::string outputFilepath);
 
     ///
     /// \brief Export the models of the scene to the fbx scene.
-    /// \param outputFilepath Output path where the fbx file will be exported to. It is required for material export.
+    /// \param outputFilepath Output path where the fbx file will be exported to. It is required for
+    /// material export.
     ///
-    void exportModels(string outputFilepath);
+    void exportModels(std::string outputFilepath);
 
     ///
     /// \brief Returns a scene.
     /// \return Scene
     ///
-    Scene::SharedPtr getScene()
-    {
-        return m_scene;
+    Bindings::Scene::SharedPtr getScene() {
+        return scene_;
     }
 
     ///
     /// \brief Returns fbx scene.
     /// \return Fbx scene
     ///
-    FbxScene* getFbxScene()
-    {
-        return m_fbxScene;
+    FbxScene* getFbxScene() {
+        return fbx_scene_;
     }
 
 protected:
@@ -112,7 +112,7 @@ protected:
     ///
     /// \brief Scene of the importing granny file.
     ///
-    Scene::SharedPtr m_scene;
+    Bindings::Scene::SharedPtr scene_;
 
     ///
     /// \brief Fbx manager for the export by the fbx sdk.
@@ -122,7 +122,7 @@ protected:
     ///
     /// \brief Fbx scene for the export by the fbx sdk.
     ///
-    FbxScene* m_fbxScene = nullptr;
+    FbxScene* fbx_scene_ = nullptr;
 };
 
-} // namespace GCL::Exporter
+}  // namespace GCL::Exporter

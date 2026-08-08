@@ -1,12 +1,12 @@
 #pragma once
 
-#include "gcl/bindings/bone.h"
+#include <utility>
 
 #include <fbxsdk.h>
 
-namespace GCL::Bindings {
+#include "gcl/bindings/bone.h"
 
-using namespace std;
+namespace GCL::Bindings {
 
 ///
 /// \brief Binding between a bone and a cluster.
@@ -16,7 +16,7 @@ public:
     ///
     /// \brief Shared pointer alias
     ///
-    using SharedPtr = shared_ptr<BoneBinding>;
+    using SharedPtr = std::shared_ptr<BoneBinding>;
 
     ///
     /// \brief Constructor
@@ -24,17 +24,14 @@ public:
     /// \param cluster Fbx cluster
     ///
     BoneBinding(Bone::SharedPtr bone, FbxCluster* cluster)
-        : m_bone(bone)
-        , m_cluster(cluster)
-    {
+        : m_bone(std::move(bone)), m_cluster(cluster) {
     }
 
     ///
     /// \brief Returns the bone of the binding.
     /// \return Bone
     ///
-    Bone::SharedPtr getBone()
-    {
+    Bone::SharedPtr getBone() {
         return m_bone;
     }
 
@@ -42,8 +39,7 @@ public:
     /// \brief Returns the clusters.
     /// \return Fbx cluster
     ///
-    FbxCluster* getCluster()
-    {
+    FbxCluster* getCluster() {
         return m_cluster;
     }
 
@@ -59,4 +55,4 @@ protected:
     FbxCluster* m_cluster = nullptr;
 };
 
-} // namespace GCL::Bindings
+}  // namespace GCL::Bindings

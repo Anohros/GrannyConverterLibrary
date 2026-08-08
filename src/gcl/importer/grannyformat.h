@@ -3,7 +3,7 @@
 #include <Windows.h>
 #include <fstream>
 
-using namespace std;
+#pragma pack(push, 4)
 
 // Granny specific data structures.
 
@@ -78,19 +78,21 @@ enum GrannyMemberType {
 };
 
 ///
-/// \brief Defines a custom data type .e.g. for extensions.
+/// \brief Defines a custom data type e.g. for extensions.
 ///
 struct GrannyDataTypeDefinition {
     GrannyMemberType Type;
     char const* Name = "";
     GrannyDataTypeDefinition* ReferenceType = nullptr;
     int ArrayWidth = 0;
-    int Extra[3] = { 0, 0, 0 };
+    int Extra[3] = {0, 0, 0};
     void* Ignored_Ignored = nullptr;
 };
 
 ///
 /// \brief Stores all data of a texture.
+///
+/// A texture contains image data with multiple MIP levels and image formats for rendering.
 ///
 struct GrannyTexture {
     char const* FromFileName;
@@ -109,6 +111,9 @@ struct GrannyMaterialMap;
 
 ///
 /// \brief Stores all data of a material.
+///
+/// A material defines the visual properties of a mesh including textures, colors, and rendering
+/// parameters.
 ///
 struct GrannyMaterial {
     char const* Name;
@@ -138,9 +143,9 @@ struct GrannyMaterialBinding {
 ///
 struct GrannyTransform {
     unsigned int Flags;
-    float Position[3];
-    float Orientation[4];
-    float ScaleShear[3][3];
+    GrannyTriple Position;
+    GrannyQuad Orientation;
+    GrannyTriple ScaleShear[3];
 };
 
 ///
@@ -166,17 +171,17 @@ struct GrannyTransformTrack {
 ///
 struct GrannyTrackGroup {
     char const* Name;
-    void* VectorTrackCount;
+    int VectorTrackCount;
     void* VectorTracks;
     int TransformTrackCount;
     GrannyTransformTrack* TransformTracks;
-    void* TransformLODErrorCount;
-    void* TransformLODErrors;
-    void* TextTrackCount;
+    int TransformLODErrorCount;
+    float* TransformLODErrors;
+    int TextTrackCount;
     void* TextTracks;
     GrannyTransform InitialPlacement;
     int Flags;
-    void* LoopTranslation;
+    GrannyTriple LoopTranslation;
     void* PeriodicLoop;
     GrannyVariant ExtendedData;
 };
@@ -206,6 +211,9 @@ struct GrannyBone {
 
 ///
 /// \brief Stores all data of a skeleton.
+///
+/// A skeleton contains a collection of bones that define the hierarchical structure
+/// for skinning and animation of 3D models.
 ///
 struct GrannySkeleton {
     char const* Name;
@@ -255,6 +263,9 @@ struct GrannyTriTopology {
 ///
 /// \brief Stores all vertex data of a mesh.
 ///
+/// Vertex data contains the actual vertex information including positions, normals, texture
+/// coordinates, and other vertex attributes defined by the vertex type.
+///
 struct GrannyVertexData {
     GrannyDataTypeDefinition* VertexType;
     int VertexCount;
@@ -267,6 +278,8 @@ struct GrannyVertexData {
 
 ///
 /// \brief Stores all data of a mesh.
+///
+/// A mesh contains vertex data, triangle topology, and material bindings for rendering.
 ///
 struct GrannyMesh {
     char const* Name;
@@ -290,6 +303,8 @@ struct GrannyModelMeshBinding {
 
 ///
 /// \brief Stores all data of a model.
+///
+/// A model contains a collection of meshes and their bindings to skeletons for animation.
 ///
 struct GrannyModel {
     char const* Name;
@@ -329,13 +344,13 @@ struct GrannyPWNT3432Vertex {
 ///  T: Texture coordinates for uv channel 1 and 2
 ///
 static GrannyDataTypeDefinition GrannyPWNT34322VertexType[] = {
-    { GrannyReal32Member, "Position", 0, 3 },
-    { GrannyNormalUInt8Member, "BoneWeights", 0, 4 },
-    { GrannyUInt8Member, "BoneIndices", 0, 4 },
-    { GrannyReal32Member, "Normal", 0, 3 },
-    { GrannyReal32Member, GrannyVertexTextureCoordinatesName "0", 0, 2 },
-    { GrannyReal32Member, GrannyVertexTextureCoordinatesName "1", 0, 2 },
-    { GrannyEndMember },
+    {GrannyReal32Member, "Position", 0, 3},
+    {GrannyNormalUInt8Member, "BoneWeights", 0, 4},
+    {GrannyUInt8Member, "BoneIndices", 0, 4},
+    {GrannyReal32Member, "Normal", 0, 3},
+    {GrannyReal32Member, GrannyVertexTextureCoordinatesName "0", 0, 2},
+    {GrannyReal32Member, GrannyVertexTextureCoordinatesName "1", 0, 2},
+    {GrannyEndMember},
 };
 
 ///
@@ -435,7 +450,7 @@ struct GrannyFile {
     void* IsByteReversed;
     void* Header;
     void* SourceMagicValue;
-    void* SectionCount;
+    int SectionCount;
     void** Sections;
     bool* Marshalled;
     bool* IsUserMemory;
@@ -487,10 +502,16 @@ typedef GrannyFileInfo*(__stdcall* GrannyGetFileInfo_t)(GrannyFile* File);
 typedef void(__stdcall* GrannyFreeFile_t)(GrannyFile const* File);
 typedef int(__stdcall* GrannyGetTotalTypeSize_t)(GrannyDataTypeDefinition* TypeDefinition);
 typedef int(__stdcall* GrannyGetMeshVertexCount_t)(GrannyMesh const* Mesh);
-typedef void(__stdcall* GrannyCopyMeshVertices_t)(GrannyMesh const* Mesh, GrannyDataTypeDefinition const* VertexType, void* DestVertices);
+typedef void(__stdcall* GrannyCopyMeshVertices_t)(
+    GrannyMesh const* Mesh, GrannyDataTypeDefinition const* VertexType, void* DestVertices
+);
 typedef int(__stdcall* GrannyGetMeshIndexCount_t)(GrannyMesh const* Mesh);
-typedef void(__stdcall* GrannyCopyMeshIndices_t)(GrannyMesh const* Mesh, int BytesPerIndex, void* DestIndices);
-typedef void(__stdcall* GrannyBuildCompositeTransform4x4_t)(GrannyTransform const* Transform, float* Composite4x4);
+typedef void(__stdcall* GrannyCopyMeshIndices_t)(
+    GrannyMesh const* Mesh, int BytesPerIndex, void* DestIndices
+);
+typedef void(__stdcall* GrannyBuildCompositeTransform4x4_t)(
+    GrannyTransform const* Transform, float* Composite4x4
+);
 typedef bool(__stdcall* GrannyMeshIsRigid_t)(GrannyMesh const* Mesh);
 
 typedef bool(__stdcall* GrannyComputeBasisConversion_t)(
@@ -502,7 +523,8 @@ typedef bool(__stdcall* GrannyComputeBasisConversion_t)(
     float const* DesiredBack3,
     float* ResultAffine3,
     float* ResultLinear3x3,
-    float* ResultInverseLinear3x);
+    float* ResultInverseLinear3x
+);
 
 typedef void(__stdcall* GrannyTransformFile_t)(
     GrannyFileInfo* FileInfo,
@@ -511,7 +533,8 @@ typedef void(__stdcall* GrannyTransformFile_t)(
     float const* InverseLinear3x3,
     float AffineTolerance,
     float LinearTolerance,
-    unsigned Flags);
+    unsigned Flags
+);
 
 typedef void(__stdcall* GrannyCurveMakeStaticDaK32fC32f_t)(
     GrannyCurve2* Curve,
@@ -520,11 +543,12 @@ typedef void(__stdcall* GrannyCurveMakeStaticDaK32fC32f_t)(
     int Degree,
     int Dimension,
     float const* Knots,
-    float const* Controls);
+    float const* Controls
+);
 
 typedef GrannyCurve2*(__stdcall* GrannyCurveConvertToDaK32fC32f_t)(
-    GrannyCurve2 const* SrcCurve,
-    float const* IdentityVector);
+    GrannyCurve2 const* SrcCurve, float const* IdentityVector
+);
 
 typedef void(__stdcall* GrannyFreeCurve_t)(GrannyCurve2* Curve);
 typedef int(__stdcall* GrannyCurveGetKnotCount_t)(GrannyCurve2 const* Curve);
@@ -544,7 +568,8 @@ typedef void(__stdcall* GrannyEvaluateCurveAtT_t)(
     float CurveDuration,
     float t,
     float* Result,
-    float const* IdentityVector);
+    float const* IdentityVector
+);
 
 typedef void(__stdcall* GrannyEvaluateCurveAtKnotIndex_t)(
     int Dimension,
@@ -556,21 +581,16 @@ typedef void(__stdcall* GrannyEvaluateCurveAtKnotIndex_t)(
     int KnotIndex,
     float t,
     float* Result,
-    float const* IdentityVector);
+    float const* IdentityVector
+);
 
-typedef int(__stdcall* GrannyFindKnot_t)(
-    int KnotCount,
-    float* Knots,
-    float t);
+typedef int(__stdcall* GrannyFindKnot_t)(int KnotCount, float* Knots, float t);
 
 typedef int(__stdcall* GrannyFindCloseKnot_t)(
-    int KnotCount,
-    float* Knots,
-    float t,
-    int StartinIndex);
+    int KnotCount, float* Knots, float t, int StartinIndex
+);
 
 typedef bool(__stdcall* GrannyCurveIsKeyframed_t)(GrannyCurve2 const* Curve);
-typedef void(__stdcall* GrannyCurveInitializeFormat_t)(GrannyCurve2* Curve);
 typedef void(__stdcall* GrannyCurveInitializeFormat_t)(GrannyCurve2* Curve);
 typedef GrannyDataTypeDefinition* GrannyCurveDataDaIdentityType_t;
 typedef bool(__stdcall* GrannyTextureHasAlpha_t)(GrannyTexture const* Texture);
@@ -585,7 +605,10 @@ typedef void(__stdcall* GrannyCopyTextureImage_t)(
     int DestWidth,
     int DestHeight,
     int DestStride,
-    void* Pixels);
+    void* Pixels
+);
+
+#pragma pack(pop)
 
 // Declarations for required functions of granny2 dll.
 // Declarations will get assigned by InitializeGrannyLibrary function.

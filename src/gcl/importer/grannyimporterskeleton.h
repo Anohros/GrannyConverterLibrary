@@ -1,15 +1,12 @@
 #pragma once
 
+#include <vector>
+
 #include "gcl/bindings/bone.h"
 #include "gcl/bindings/scene.h"
 #include "gcl/importer/grannyformat.h"
 
-#include <vector>
-
 namespace GCL::Importer {
-
-using namespace std;
-using namespace GCL::Bindings;
 
 ///
 /// \brief The GrannyImporterSkeleton class.
@@ -20,25 +17,25 @@ public:
     /// \brief Constructor
     /// \param scene Scene which needs to be exported.
     ///
-    GrannyImporterSkeleton(Scene::SharedPtr scene);
+    explicit GrannyImporterSkeleton(Bindings::Scene::SharedPtr scene);
 
     ///
     /// \brief Destructor
     ///
-    ~GrannyImporterSkeleton();
+    virtual ~GrannyImporterSkeleton() = default;
 
     ///
     /// \brief Load all bones from the granny model and return.
     /// \param grannyModel Granny model
     /// \return Bones of the granny model.
     ///
-    vector<Bone::SharedPtr> loadBones(GrannyModel* grannyModel) const;
+    std::vector<Bindings::Bone::SharedPtr> loadBones(GrannyModel* grannyModel) const;
 
 protected:
     ///
     /// \brief Scene of the importing granny file.
     ///
-    Scene::SharedPtr m_scene;
+    Bindings::Scene::SharedPtr m_scene;
 };
 
-} // namespace GCL::Importer
+}  // namespace GCL::Importer

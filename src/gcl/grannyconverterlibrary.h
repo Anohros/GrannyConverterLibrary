@@ -18,4 +18,4 @@ public:
     ~GrannyConverterLibrary();
 };
 
-} // namespace GCL
+}  // namespace GCL

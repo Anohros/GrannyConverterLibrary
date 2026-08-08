@@ -12,4 +12,4 @@ struct GrannyImportOptions {
     bool importAnimationDeboor = false;
 };
 
-} // namespace GCL::Importer
+}  // namespace GCL::Importer
