@@ -21,47 +21,37 @@ public:
 
 protected:
     ///
-    /// \brief Construct a track.
-    /// \param animation Animation
-    /// \param grannyTransformTrack Granny transform track
-    /// \return Animation tracks of animation.
-    ///
-    Bindings::Track::SharedPtr importTrack(
-        Bindings::Animation::SharedPtr animation, GrannyTransformTrack grannyTransformTrack
-    ) const override;
-
-    ///
     /// \brief Imports a scale keys from scale curve.
     /// \param animation Animation
     /// \param track Granny transform track
-    /// \param grannyTransformTrack Granny transform track
+    /// \param granny_transform_track Granny transform track
     ///
-    void importScaleCurve(
-        Bindings::Track::SharedPtr track, GrannyTransformTrack grannyTransformTrack
+    void ImportScaleCurve(
+        const Bindings::Track::SharedPtr& track, const GrannyTransformTrack& granny_transform_track
     ) const;
 
     ///
     /// \brief Imports a position keys from scale curve.
     /// \param animation Animation
     /// \param track Track
-    /// \param grannyTransformTrack Granny transform track
+    /// \param granny_transform_track Granny transform track
     ///
-    void importPositionCurve(
-        Bindings::Animation::SharedPtr animation,
-        Bindings::Track::SharedPtr track,
-        GrannyTransformTrack grannyTransformTrack
+    void ImportPositionCurve(
+        const Bindings::Animation::SharedPtr& animation,
+        const Bindings::Track::SharedPtr& track,
+        const GrannyTransformTrack& granny_transform_track
     ) const;
 
     ///
     /// \brief Imports a rotation keys from scale curve.
     /// \param animation Animation
     /// \param track Track
-    /// \param grannyTransformTrack Granny transform track
+    /// \param granny_transform_track Granny transform track
     ///
-    void importRotationCurve(
-        Bindings::Animation::SharedPtr animation,
-        Bindings::Track::SharedPtr track,
-        GrannyTransformTrack grannyTransformTrack
+    void ImportRotationCurve(
+        const Bindings::Animation::SharedPtr& animation,
+        const Bindings::Track::SharedPtr& track,
+        const GrannyTransformTrack& granny_transform_track
     ) const;
 };
 

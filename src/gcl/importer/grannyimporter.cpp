@@ -139,7 +139,7 @@ void GrannyImporter::importAnimations(
     }
 
     info("Import animations from granny file \"%s\".", grannyFilePath.c_str());
-    m_importerAnimation->importAnimations(grannyFileInfo);
+    m_importerAnimation->ImportAnimations(grannyFileInfo);
 }
 
 Bindings::Scene::SharedPtr GrannyImporter::getScene() const {
