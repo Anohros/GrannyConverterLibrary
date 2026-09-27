@@ -71,9 +71,9 @@ bool GrannyImporter::importFromFile(const char* grannyFilePath) {
     // Add granny file base path as search path for textures.
     auto searchPath = std::filesystem::path(grannyFilePath).parent_path();
     if (!searchPath.empty()) {
-        searchPath = searchPath.u8string().append("/");
-        debug("Add search path \"%s\" to the scene.", searchPath.u8string().c_str());
-        m_scene->addSearchPath(searchPath.u8string());
+        searchPath = searchPath.append("/");
+        debug("Add search path \"%s\" to the scene.", searchPath.c_str());
+        scene_->addSearchPath(searchPath.string());
     }
 
     // Import all materials and models of the granny file to the scene.
