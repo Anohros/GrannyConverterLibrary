@@ -48,16 +48,17 @@ public:
 
     ///
     /// \brief Export the scene to a filmbox file.
-    /// \param outputFilepath
+    /// \param outputFilepath Output path where the fbx file will be exported to.
+    /// \return Returns whether the scene was exported successfully or not.
     ///
-    void exportToFile(std::string outputFilepath);
+    bool exportToFile(const std::string& outputFilepath);
 
     ///
     /// \brief Export the models of the scene to the fbx scene.
     /// \param outputFilepath Output path where the fbx file will be exported to. It is required for
     /// material export.
     ///
-    void exportModels(std::string outputFilepath);
+    void exportModels(const std::string& outputFilepath);
 
     ///
     /// \brief Returns a scene.
