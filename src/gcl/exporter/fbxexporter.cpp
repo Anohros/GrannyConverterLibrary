@@ -4,35 +4,28 @@
 
 namespace GCL::Exporter {
 
-FbxExporter::FbxExporter(Bindings::Scene::SharedPtr scene) : scene_(scene) {
+FbxExporter::FbxExporter(Bindings::Scene::SharedPtr scene) : scene_(std::move(scene)) {
     initialize();
 }
 
 FbxExporter::FbxExporter(FbxExportOptions options, Bindings::Scene::SharedPtr scene)
-    : m_options(options), scene_(scene) {
+    : m_options(std::move(options)), scene_(std::move(scene)) {
     initialize();
 }
 
 FbxExporter::FbxExporter(
-    ExporterModuleFactoryInterface* exportModuleFactory,
+    ExporterModuleFactoryInterface* exporterModuleFactory,
     FbxExportOptions options,
     Bindings::Scene::SharedPtr scene
 )
-    : m_options(options), scene_(scene) {
-    m_exporterModuleFactory = exportModuleFactory;
+    : m_options(std::move(options)), scene_(std::move(scene)) {
+    m_exporterModuleFactory =
+        std::unique_ptr<ExporterModuleFactoryInterface>(exporterModuleFactory);
     initialize();
 }
 
 FbxExporter::~FbxExporter() {
     Utilities::FbxSdkCommon::DestroySdkObjects(m_fbxManager);
-
-    if (m_exporterModuleFactory) {
-        delete m_exporterModuleFactory;
-    }
-
-    delete m_exporterMaterial;
-    delete m_exporterSkeleton;
-    delete m_exporterAnimation;
 }
 
 void FbxExporter::initialize() {
@@ -45,14 +38,21 @@ void FbxExporter::initialize() {
     axisSystem.ConvertScene(fbx_scene_);
 
     if (!m_exporterModuleFactory) {
-        m_exporterModuleFactory = new FbxExporterModuleFactory();
+        m_exporterModuleFactory = std::make_unique<FbxExporterModuleFactory>();
     }
 
-    m_exporterMaterial = m_exporterModuleFactory->createExporterModuleMaterial(scene_, fbx_scene_);
-    m_exporterMesh = m_exporterModuleFactory->createExporterModuleMesh(scene_, fbx_scene_);
-    m_exporterSkeleton = m_exporterModuleFactory->createExporterModuleSkeleton(scene_, fbx_scene_);
-    m_exporterAnimation =
-        m_exporterModuleFactory->createExporterModuleAnimation(scene_, fbx_scene_);
+    m_exporterMaterial = std::unique_ptr<FbxExporterMaterial>(
+        m_exporterModuleFactory->createExporterModuleMaterial(scene_, fbx_scene_)
+    );
+    m_exporterMesh = std::unique_ptr<FbxExporterMesh>(
+        m_exporterModuleFactory->createExporterModuleMesh(scene_, fbx_scene_)
+    );
+    m_exporterSkeleton = std::unique_ptr<FbxExporterSkeleton>(
+        m_exporterModuleFactory->createExporterModuleSkeleton(scene_, fbx_scene_)
+    );
+    m_exporterAnimation = std::unique_ptr<FbxExporterAnimation>(
+        m_exporterModuleFactory->createExporterModuleAnimation(scene_, fbx_scene_)
+    );
 }
 
 void FbxExporter::exportToFile(std::string outputFilepath) {

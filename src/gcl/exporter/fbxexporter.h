@@ -1,5 +1,7 @@
 #pragma once
 
+#include <memory>
+
 #include "gcl/exporter/fbxexporteranimation.h"
 #include "gcl/exporter/fbxexportermaterial.h"
 #include "gcl/exporter/fbxexportermesh.h"
@@ -18,7 +20,7 @@ public:
     /// \brief Constructer with data initialization.
     /// \param scene A scene to be exported.
     ///
-    FbxExporter(Bindings::Scene::SharedPtr scene);
+    explicit FbxExporter(Bindings::Scene::SharedPtr scene);
 
     ///
     /// \brief Constructer with extended options and data initialization.
@@ -43,11 +45,6 @@ public:
     /// \brief Destructor
     ///
     ~FbxExporter();
-
-    ///
-    /// \brief Initializes the exporter.
-    ///
-    void initialize();
 
     ///
     /// \brief Export the scene to a filmbox file.
@@ -78,11 +75,18 @@ public:
         return fbx_scene_;
     }
 
+private:
+    ///
+    /// \brief Initializes the exporter. Called by the constructors, must not be called
+    /// again as it would leak the previously created sdk objects and modules.
+    ///
+    void initialize();
+
 protected:
     ///
     /// \brief Factory to create exporter modules.
     ///
-    ExporterModuleFactoryInterface* m_exporterModuleFactory = nullptr;
+    std::unique_ptr<ExporterModuleFactoryInterface> m_exporterModuleFactory;
 
     ///
     /// \brief Export options which define what aspects of the scene needs to be exported.
@@ -92,22 +96,22 @@ protected:
     ///
     /// \brief Material exporter module.
     ///
-    FbxExporterMaterial* m_exporterMaterial = nullptr;
+    std::unique_ptr<FbxExporterMaterial> m_exporterMaterial;
 
     ///
     /// \brief Mesh exporter module.
     ///
-    FbxExporterMesh* m_exporterMesh = nullptr;
+    std::unique_ptr<FbxExporterMesh> m_exporterMesh;
 
     ///
     /// \brief Skeleton exporter module.
     ///
-    FbxExporterSkeleton* m_exporterSkeleton = nullptr;
+    std::unique_ptr<FbxExporterSkeleton> m_exporterSkeleton;
 
     ///
     /// \brief Animation exporter module.
     ///
-    FbxExporterAnimation* m_exporterAnimation = nullptr;
+    std::unique_ptr<FbxExporterAnimation> m_exporterAnimation;
 
     ///
     /// \brief Scene of the importing granny file.

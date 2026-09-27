@@ -59,11 +59,6 @@ public:
     ~GrannyImporter();
 
     ///
-    /// \brief Initializes the exporter.
-    ///
-    void initialize();
-
-    ///
     /// \brief Import the granny scene.
     /// \param Full filepath to the importing granny file.
     /// \return Returns status whether file was imported successfully or skipped.
@@ -95,7 +90,13 @@ public:
     /// \brief Return the imported scene.
     /// \return Imported scene
     ///
-    Bindings::Scene::SharedPtr getScene() const;
+
+private:
+    ///
+    /// \brief Initializes the importer. Called by the constructors, must not be called
+    /// again as it would leak the previously created modules.
+    ///
+    void initialize();
 
 protected:
     ///
