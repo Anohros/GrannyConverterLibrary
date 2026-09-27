@@ -111,22 +111,22 @@ protected:
     ///
     /// \brief Material importer module.
     ///
-    GrannyImporterMaterial* m_importerMaterial = nullptr;
+    std::unique_ptr<GrannyImporterMaterial> m_importerMaterial;
 
     ///
     /// \brief Model importer module.
     ///
-    GrannyImporterModel* m_importerModel = nullptr;
+    std::unique_ptr<GrannyImporterModel> m_importerModel;
 
     ///
     /// \brief Skeleton importer module.
     ///
-    GrannyImporterSkeleton* m_importerSkeleton = nullptr;
+    std::unique_ptr<GrannyImporterSkeleton> m_importerSkeleton;
 
     ///
     /// \brief Animation importer module.
     ///
-    GrannyImporterAnimation* m_importerAnimation = nullptr;
+    std::unique_ptr<GrannyImporterAnimation> m_importerAnimation;
 
     ///
     /// \brief Granny files of the imported granny files.

@@ -42,15 +42,15 @@ std::string FbxExporterMaterial::getTextureFilePath(
     const auto textureFileNameWithExtension =
         sanitizeFileName(textureFileNameWithoutExtension).append(".png");
 
-    if (!std::ifstream(sourceTextureFilePath.c_str()).good()) {
-        if (std::ifstream(sourceTextureFileName.c_str()).good()) {
+    if (!std::filesystem::exists(sourceTextureFilePath)) {
+        if (std::filesystem::exists(sourceTextureFileName)) {
             sourceTextureFilePath = sourceTextureFileName;
         } else {
             bool foundTexture = false;
 
-            for (auto& searchPath : scene_->getSearchPaths()) {
-                const auto lookupPath = searchPath + sourceTextureFileName;
-                if (std::ifstream(lookupPath.c_str()).good()) {
+            for (const std::string& searchPath : scene_->getSearchPaths()) {
+                const std::string lookupPath = searchPath + sourceTextureFileName;
+                if (std::filesystem::exists(lookupPath)) {
                     sourceTextureFilePath = lookupPath;
                     foundTexture = true;
                     break;
@@ -67,8 +67,8 @@ std::string FbxExporterMaterial::getTextureFilePath(
                          parentImportedPath,
                          std::filesystem::directory_options::skip_permission_denied
                      )) {
-                    const auto lookupPath = (entry.path() / sourceTextureFileName).u8string();
-                    if (std::ifstream(lookupPath.c_str()).good()) {
+                    const std::string lookupPath = (entry.path() / sourceTextureFileName).string();
+                    if (std::filesystem::exists(lookupPath)) {
                         sourceTextureFilePath = lookupPath;
                         foundTexture = true;
                         break;
@@ -91,9 +91,9 @@ std::string FbxExporterMaterial::getTextureFilePath(
                                  deeperParentImportedPath,
                                  std::filesystem::directory_options::skip_permission_denied
                              )) {
-                            const auto lookupPath =
-                                (entry.path() / sourceTextureFileName).u8string();
-                            if (std::ifstream(lookupPath.c_str()).good()) {
+                            const std::string lookupPath =
+                                (entry.path() / sourceTextureFileName).string();
+                            if (std::filesystem::exists(lookupPath)) {
                                 sourceTextureFilePath = lookupPath;
                                 foundTexture = true;
                                 break;
@@ -112,7 +112,7 @@ std::string FbxExporterMaterial::getTextureFilePath(
     const auto targetTextureFilePath =
         outputFilepath.substr(0, outputFilepathFileSeparator + 1) + textureFileNameWithExtension;
 
-    if (std::ifstream(sourceTextureFilePath.c_str()).good()) {
+    if (std::filesystem::exists(sourceTextureFilePath)) {
         GCL::Utilities::convertImage(sourceTextureFilePath, targetTextureFilePath);
     } else {
         GCL::Utilities::exportTexture(texture, targetTextureFilePath, true);

@@ -38,21 +38,21 @@ GrannyImporter::~GrannyImporter() {
 }
 
 void GrannyImporter::initialize() {
-    m_importerMaterial = new GrannyImporterMaterial(m_scene);
-    m_importerModel = new GrannyImporterModel(m_scene);
-    m_importerSkeleton = new GrannyImporterSkeleton(m_scene);
+    m_importerMaterial = std::make_unique<GrannyImporterMaterial>(scene_);
+    m_importerModel = std::make_unique<GrannyImporterModel>(scene_);
+    m_importerSkeleton = std::make_unique<GrannyImporterSkeleton>(scene_);
 
     // If option for deboor animation importer is enabled then use
     // deboor animation importer otherwise default animation importer.
     if (m_options.importAnimationDeboor) {
-        m_importerAnimation = new GrannyImporterAnimationDeboor(m_scene);
+        m_importerAnimation = std::make_unique<GrannyImporterAnimationDeboor>(scene_);
     } else {
-        m_importerAnimation = new GrannyImporterAnimation(m_scene);
+        m_importerAnimation = std::make_unique<GrannyImporterAnimation>(scene_);
     }
 }
 
 bool GrannyImporter::importFromFile(const char* grannyFilePath) {
-    if (!std::ifstream(grannyFilePath).is_open()) {
+    if (!std::filesystem::exists(grannyFilePath)) {
         warning("Skip import from file. File \"%s\" was not found.", grannyFilePath);
         return false;
     }
