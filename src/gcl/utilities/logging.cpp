@@ -1,44 +1,26 @@
 #include "gcl/utilities/logging.h"
 
-#include "gcl/utilities/datetime.h"
-
 #include <cstdarg>
 #include <filesystem>
 #include <fstream>
 #include <mutex>
 
+#include "gcl/utilities/datetime.h"
+
 namespace GCL::Utilities::Logging {
 
-using namespace std;
-using namespace std::filesystem;
+void log(const char* level, const char* file, int line, const char* function, const char* message) {
+    static std::mutex logMutex;
+    std::lock_guard<std::mutex> lockGuard(logMutex);
 
-using namespace GCL::Utilities::Datetime;
+    std::ofstream(stdout) << Datetime::nowTimeMs() << " " << level << " "
+                          << std::filesystem::path(file).filename().string() << ":" << line << " "
+                          << function << " " << message << '\n';
 
-void log(const char* level, const char* file, int line, const char* function, const char* message)
-{
-    static mutex logMutex;
-    lock_guard<mutex> lockGuard(logMutex);
-
-    ofstream(stdout)
-        << nowTimeMs()
-        << " "
-        << level
-        << " "
-        << path(file).filename().string()
-        << ":"
-        << line
-        << " "
-        << function
-        << " "
-        << message
-        << endl;
-
-    static ofstream logFile(DEFAULT_LOG_FILE);
+    static std::ofstream logFile(DEFAULT_LOG_FILE);
 
     if (logFile) {
-        logFile
-            << message
-            << endl;
+        logFile << message << '\n';
     }
 }
 
@@ -47,8 +29,7 @@ void log(const char* level, const char* file, int line, const char* function, co
 #pragma clang diagnostic ignored "-Wformat-nonliteral"
 #endif
 
-void _debug(const char* file, int line, const char* function, const char* format, ...)
-{
+void _debug(const char* file, int line, const char* function, const char* format, ...) {
     va_list args;
     va_start(args, format);
 
@@ -60,8 +41,7 @@ void _debug(const char* file, int line, const char* function, const char* format
     log("Debug", file, line, function, message);
 }
 
-void _info(const char* file, int line, const char* function, const char* format, ...)
-{
+void _info(const char* file, int line, const char* function, const char* format, ...) {
     va_list args;
     va_start(args, format);
 
@@ -73,8 +53,7 @@ void _info(const char* file, int line, const char* function, const char* format,
     log("Info", file, line, function, message);
 }
 
-void _warning(const char* file, int line, const char* function, const char* format, ...)
-{
+void _warning(const char* file, int line, const char* function, const char* format, ...) {
     va_list args;
     va_start(args, format);
 
@@ -86,8 +65,7 @@ void _warning(const char* file, int line, const char* function, const char* form
     log("Warning", file, line, function, message);
 }
 
-void _fatal(const char* file, int line, const char* function, const char* format, ...)
-{
+void _fatal(const char* file, int line, const char* function, const char* format, ...) {
     va_list args;
     va_start(args, format);
 
@@ -103,4 +81,4 @@ void _fatal(const char* file, int line, const char* function, const char* format
 #pragma diagnostic pop
 #endif
 
-} // namespace GCL::Utilities::Logging
+}  // namespace GCL::Utilities::Logging

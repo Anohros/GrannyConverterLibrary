@@ -1,9 +1,9 @@
 #pragma once
 
+#include <vector>
+
 #include "gcl/bindings/abstractcurvekey.h"
 #include "gcl/importer/grannyformat.h"
-
-#include <vector>
 
 namespace GCL::Bindings {
 
@@ -16,7 +16,7 @@ public:
     /// \brief Constructer with data initialization.
     /// \param data Granny curve data
     ///
-    CurvePositionKey(GrannyCurve2 data);
+    explicit CurvePositionKey(GrannyCurve2 data);
 };
 
-} // namespace GCL::Bindings
+}  // namespace GCL::Bindings

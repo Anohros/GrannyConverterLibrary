@@ -70,4 +70,4 @@ void _fatal(const char* file, int line, const char* function, const char* format
 ///
 #define fatal(...) _fatal(__FILE__, __LINE__, __FUNCTION__, __VA_ARGS__)
 
-} // namespace GCL::Utilities::Logging
+}  // namespace GCL::Utilities::Logging

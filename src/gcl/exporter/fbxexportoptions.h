@@ -4,8 +4,6 @@
 
 namespace GCL::Exporter {
 
-using namespace std;
-
 ///
 /// \brief Enableable / disableable options for the export of a model.
 ///
@@ -56,7 +54,7 @@ struct FbxExportOptions {
     /// You can specifiy different coordinate systems.
     /// Default is 3ds max coordinate system (right-handed z-up).
     ///
-    string convertAxis = "xzy";
+    std::string convertAxis = "xzy";
 };
 
-} // namespace GCL::Exporter
+}  // namespace GCL::Exporter

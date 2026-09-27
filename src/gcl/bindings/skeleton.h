@@ -1,15 +1,13 @@
 #pragma once
 
-#include "gcl/bindings/bone.h"
-#include "gcl/importer/grannyformat.h"
+#include <vector>
 
 #include <fbxsdk.h>
 
-#include <vector>
+#include "gcl/bindings/bone.h"
+#include "gcl/importer/grannyformat.h"
 
 namespace GCL::Bindings {
-
-using namespace std;
 
 ///
 /// \brief Binding of granny skeleton data and the counterpart fbx node.
@@ -20,7 +18,7 @@ public:
     /// \brief Constructer
     /// \param data Granny data of the skeleton.
     ///
-    Skeleton(GrannySkeleton* data);
+    explicit Skeleton(GrannySkeleton* data);
 
     ///
     /// \brief Returns the granny skeleton data.
@@ -50,13 +48,13 @@ public:
     /// \brief getBones
     /// \return Returns all bones of the skeleton.
     ///
-    vector<Bone::SharedPtr> getBones();
+    std::vector<Bone::SharedPtr> getBones();
 
     ///
     /// \brief Set bones of the skeleton.
     /// \param Bones
     ///
-    void setBones(vector<Bone::SharedPtr> bones);
+    void setBones(std::vector<Bone::SharedPtr> bones);
 
 protected:
     ///
@@ -72,7 +70,7 @@ protected:
     ///
     /// \brief Bones of the skeleton.
     ///
-    vector<Bone::SharedPtr> m_bones;
+    std::vector<Bone::SharedPtr> m_bones;
 };
 
-} // namespace GCL::Bindings
+}  // namespace GCL::Bindings

@@ -1,10 +1,10 @@
 #pragma once
 
-#include "gcl/importer/grannyformat.h"
+#include <vector>
 
 #include <fbxsdk.h>
 
-#include <vector>
+#include "gcl/importer/grannyformat.h"
 
 namespace GCL::Bindings {
 
@@ -13,11 +13,7 @@ namespace GCL::Bindings {
 ///
 class AbstractCurveKey {
 public:
-    ///
-    /// \brief Constructer with data initialization.
-    /// \param data Granny curve data
-    ///
-    AbstractCurveKey(GrannyCurve2 data);
+    virtual ~AbstractCurveKey() = default;
 
     ///
     /// \brief Returns the time of this key.
@@ -41,9 +37,16 @@ public:
     /// \brief Sets the value of this key.
     /// \param Animation key value
     ///
-    void setValue(FbxDouble3 value);
+    void setValue(const FbxDouble3& value);
 
 protected:
+    ///
+    /// \brief Constructer with data initialization.
+    /// \param data Granny curve data
+    ///
+    explicit AbstractCurveKey(GrannyCurve2 data);
+
+private:
     ///
     /// \brief Granny curve data
     ///
@@ -60,4 +63,4 @@ protected:
     FbxDouble3 m_value;
 };
 
-} // namespace GCL::Bindings
+}  // namespace GCL::Bindings

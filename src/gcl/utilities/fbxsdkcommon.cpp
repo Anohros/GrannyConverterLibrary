@@ -5,11 +5,9 @@
 
 namespace GCL::Utilities {
 
-using namespace std;
 using namespace GCL::Utilities::Logging;
 
-void FbxSdkCommon::InitializeSdkObjects(FbxManager*& manager, FbxScene*& scene)
-{
+void FbxSdkCommon::InitializeSdkObjects(FbxManager*& manager, FbxScene*& scene) {
     manager = FbxManager::Create();
 
     if (!manager) {
@@ -27,13 +25,13 @@ void FbxSdkCommon::InitializeSdkObjects(FbxManager*& manager, FbxScene*& scene)
     }
 }
 
-void FbxSdkCommon::DestroySdkObjects(FbxManager* manager)
-{
+void FbxSdkCommon::DestroySdkObjects(FbxManager* manager) {
     manager->Destroy();
 }
 
-bool FbxSdkCommon::SaveScene(FbxManager* fbxManager, FbxScene* scene, const char* filename, bool embedMedia, bool ascii)
-{
+bool FbxSdkCommon::SaveScene(
+    FbxManager* fbxManager, FbxScene* scene, const char* filename, bool embedMedia, bool ascii
+) {
     FbxExporter* exporter = FbxExporter::Create(fbxManager, "");
 
     if (!exporter->SetFileExportVersion(FBX_2019_00_COMPATIBLE, FbxSceneRenamer::eNone)) {
@@ -79,14 +77,14 @@ bool FbxSdkCommon::SaveScene(FbxManager* fbxManager, FbxScene* scene, const char
     wchar_t cwd[1024];
     _wgetcwd(cwd, 1024);
 
-    auto sourceTextureDirname = string(filename);
+    auto sourceTextureDirname = std::string(filename);
     const auto dirnameEndsOffset = sourceTextureDirname.find_last_of('\\');
 
-    if (dirnameEndsOffset != string::npos) {
+    if (dirnameEndsOffset != std::string::npos) {
         sourceTextureDirname = sourceTextureDirname.substr(0, dirnameEndsOffset);
     }
 
-    _wchdir(wstring(sourceTextureDirname.begin(), sourceTextureDirname.end()).c_str());
+    _wchdir(std::wstring(sourceTextureDirname.begin(), sourceTextureDirname.end()).c_str());
 
     // Export scene to fbx file.
     bool status = exporter->Export(scene);
@@ -98,4 +96,4 @@ bool FbxSdkCommon::SaveScene(FbxManager* fbxManager, FbxScene* scene, const char
     return status;
 }
 
-} // namespace GCL::Utilities
+}  // namespace GCL::Utilities

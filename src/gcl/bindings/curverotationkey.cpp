@@ -2,9 +2,7 @@
 
 namespace GCL::Bindings {
 
-CurveRotationKey::CurveRotationKey(GrannyCurve2 data)
-    : AbstractCurveKey(data)
-{
+CurveRotationKey::CurveRotationKey(GrannyCurve2 data) : AbstractCurveKey(data) {
 }
 
-} // namespace GCL::Bindings
+}  // namespace GCL::Bindings

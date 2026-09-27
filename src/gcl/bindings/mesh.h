@@ -1,17 +1,15 @@
 #pragma once
 
+#include <Windows.h>
+#include <vector>
+
+#include <fbxsdk.h>
+
 #include "gcl/bindings/binding.h"
 #include "gcl/bindings/bonebinding.h"
 #include "gcl/importer/grannyformat.h"
 
-#include <fbxsdk.h>
-
-#include <Windows.h>
-#include <vector>
-
 namespace GCL::Bindings {
-
-using namespace std;
 
 ///
 /// \brief Binding of granny mesh data and the counterparts fbx node and the bone bindings.
@@ -19,10 +17,10 @@ using namespace std;
 class Mesh : public Binding<Mesh> {
 public:
     ///
-    /// \brief Constructer
-    /// \param data Granny data of the mesh.
+    /// \brief Constructor
+    /// \param data Granny data of the mesh
     ///
-    Mesh(GrannyMesh* data);
+    explicit Mesh(GrannyMesh* data);
 
     ///
     /// \brief Returns the granny mesh data.
@@ -40,7 +38,7 @@ public:
     /// \brief Returns the bone bindings of the mesh.
     /// \return Bone bindings
     ///
-    vector<BoneBinding::SharedPtr> getBoneBindings();
+    std::vector<BoneBinding::SharedPtr> getBoneBindings();
 
     ///
     /// \brief Sets the granny mesh data.
@@ -58,7 +56,7 @@ public:
     /// \brief Add bone binding to the mesh.
     /// \param Bone binding
     ///
-    void addBoneBinding(BoneBinding::SharedPtr binding);
+    void addBoneBinding(const BoneBinding::SharedPtr& binding);
 
     ///
     /// \brief Returns if mesh is rigid body.
@@ -67,10 +65,10 @@ public:
     bool isRigid();
 
     ///
-    /// \brief Returns rigid vertices.
+    /// \brief Returns vertices.
     /// \return Vertices
     ///
-    vector<GrannyPWNT34322Vertex> getRigidVertices();
+    std::vector<GrannyPWNT34322Vertex> getVertices();
 
 protected:
     ///
@@ -86,7 +84,7 @@ protected:
     ///
     /// \brief Bone bindings of the mesh.
     ///
-    vector<BoneBinding::SharedPtr> m_boneBindings;
+    std::vector<BoneBinding::SharedPtr> m_boneBindings;
 };
 
-} // namespace GCL::Bindings
+}  // namespace GCL::Bindings

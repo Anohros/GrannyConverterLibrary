@@ -1,44 +1,44 @@
-#include "gcl/exporter/fbxexporter.h"
 #include "gcl/exporter/fbxexportoptions.h"
 #include "gcl/grannyconverterlibrary.h"
-#include "gcl/importer/grannyimporter.h"
 #include "gcl/importer/grannyimportoptions.h"
 
-int main()
-{
+int main() {
     // Initialize library.
     GCL::GrannyConverterLibrary grannyConverterLibrary;
 
-    GCL::Importer::GrannyImportOptions options;
+    GCL::Importer::GrannyImportOptions importOptions;
 
     // Use deboor animation importer.
     // The importer is able to import animations with bones are being mis-positioned.
     // However the resulted animation is might be changed in comparison to its original.
-    // options.importAnimationDeboor = true;
+    // importOptions.importAnimationDeboor = true;
 
-    // Initialize importer.
-    GCL::Importer::GrannyImporter importer(options);
-
-    // Load a character and a animation.
-    importer.importFromFile("character.gr2");
-    importer.importFromFile("character_animation.gr2");
-
-    GCL::Exporter::FbxExportOptions exporterOptions;
+    GCL::Exporter::FbxExportOptions exportOptions;
 
     // Export all skeletons.
-    exporterOptions.exportSkeleton = true;
+    exportOptions.exportSkeleton = true;
 
     // Export all materials and textures.
-    exporterOptions.exportMaterials = true;
+    exportOptions.exportMaterials = true;
 
     // Export animations.
-    exporterOptions.exportAnimation = true;
+    exportOptions.exportAnimation = true;
 
-    // Create exporter instance with the scene to be exported.
-    GCL::Exporter::FbxExporter exporter(exporterOptions, importer.getScene());
+    // Load a character and an animation and convert them to a single fbx file.
+    const bool success = grannyConverterLibrary.ConvertFiles(
+        {"character.gr2", "character_animation.gr2"},
+        "character_with_animation.fbx",
+        importOptions,
+        exportOptions
+    );
 
-    // Export the fbx scene to a fbx file.
-    exporter.exportToFile("character_with_animation.fbx");
+    // Alternative: convert a single file.
+    // const bool success = grannyConverterLibrary.convertFile(
+    //     "character.gr2",
+    //     "character.fbx",
+    //     importOptions,
+    //     exportOptions
+    // );
 
-    return 0;
+    return success ? 0 : 1;
 }

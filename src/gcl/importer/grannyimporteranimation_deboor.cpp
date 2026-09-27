@@ -4,121 +4,104 @@
 
 namespace GCL::Importer {
 
-using namespace std;
-
-GrannyImporterAnimationDeboor::GrannyImporterAnimationDeboor(Scene::SharedPtr scene)
-    : GrannyImporterAnimation(scene)
-{
+GrannyImporterAnimationDeboor::GrannyImporterAnimationDeboor(Bindings::Scene::SharedPtr scene)
+    : GrannyImporterAnimation(scene) {
 }
 
-GrannyImporterAnimationDeboor::~GrannyImporterAnimationDeboor()
-{
-}
+void GrannyImporterAnimationDeboor::ImportScaleCurve(
+    const Bindings::Track::SharedPtr& track, const GrannyTransformTrack& granny_transform_track
+) const {
+    auto& granny = GrannyLibrary::instance();
 
-Track::SharedPtr GrannyImporterAnimationDeboor::importTrack(
-    Animation::SharedPtr animation,
-    GrannyTransformTrack grannyTransformTrack) const
-{
-    Track::SharedPtr track = make_shared<Track>(grannyTransformTrack);
-    track->setName(grannyTransformTrack.Name);
-
-    importScaleCurve(track, grannyTransformTrack);
-    importPositionCurve(animation, track, grannyTransformTrack);
-    importRotationCurve(animation, track, grannyTransformTrack);
-
-    return track;
-}
-
-void GrannyImporterAnimationDeboor::importScaleCurve(
-    Track::SharedPtr track,
-    GrannyTransformTrack grannyTransformTrack) const
-{
-    if (GrannyCurveGetDimension(&grannyTransformTrack.ScaleShearCurve) == 0) {
+    if (granny.CurveGetDimension(&granny_transform_track.scale_shear_curve) == 0) {
         return;
     }
 
-    GrannyCurve2* scaleCurve = GrannyCurveConvertToDaK32fC32f(
-        &grannyTransformTrack.ScaleShearCurve,
-        GrannyCurveIdentityScaleShear);
+    GrannyCurve2* scale_curve = granny.CurveConvertToDaK32fC32f(
+        &granny_transform_track.scale_shear_curve, granny.CurveIdentityScaleShear()
+    );
 
-    const GrannyCurveDataDAK32fC32f* grannyScaleShearCurve = static_cast<GrannyCurveDataDAK32fC32f*>(
-        scaleCurve->CurveData.Object);
+    const GrannyCurveDataDAK32fC32f* granny_scale_shear_curve =
+        static_cast<GrannyCurveDataDAK32fC32f*>(scale_curve->curve_data.object);
 
-    const unsigned grannyKnotCount = static_cast<unsigned>(
-        grannyScaleShearCurve->KnotCount);
+    const unsigned granny_knot_count = static_cast<unsigned>(granny_scale_shear_curve->knot_count);
 
-    for (unsigned i = 0; i < grannyKnotCount; i++) {
-        CurveScaleKey key(*scaleCurve);
-        key.setTime(static_cast<double>(grannyScaleShearCurve->Knots[i]));
+    for (unsigned i = 0; i < granny_knot_count; i++) {
+        Bindings::CurveScaleKey key(*scale_curve);
+        key.setTime(static_cast<double>(granny_scale_shear_curve->knots[i]));
         key.setValue(FbxDouble3(
-            static_cast<double>(grannyScaleShearCurve->Controls[(i * 9)]),
-            static_cast<double>(grannyScaleShearCurve->Controls[(i * 9) + 4]),
-            static_cast<double>(grannyScaleShearCurve->Controls[(i * 9) + 8])));
+            static_cast<double>(granny_scale_shear_curve->controls[(i * 9)]),
+            static_cast<double>(granny_scale_shear_curve->controls[(i * 9) + 4]),
+            static_cast<double>(granny_scale_shear_curve->controls[(i * 9) + 8])
+        ));
 
         track->addScaleKey(key);
     }
 
-    GrannyFreeCurve(scaleCurve);
+    granny.FreeCurve(scale_curve);
 }
 
-void GrannyImporterAnimationDeboor::importPositionCurve(
-    Animation::SharedPtr animation,
-    Track::SharedPtr track,
-    GrannyTransformTrack grannyTransformTrack) const
-{
-    const float duration = animation->getData()->Duration;
-    const float timeStep = animation->getData()->TimeStep;
+void GrannyImporterAnimationDeboor::ImportPositionCurve(
+    const Bindings::Animation::SharedPtr& animation,
+    const Bindings::Track::SharedPtr& track,
+    const GrannyTransformTrack& granny_transform_track
+) const {
+    auto& granny = GrannyLibrary::instance();
 
-    if (GrannyCurveGetDimension(&grannyTransformTrack.PositionCurve) == 0) {
+    const float duration = animation->getData()->duration;
+    const float time_step = animation->getData()->time_step;
+
+    if (granny.CurveGetDimension(&granny_transform_track.position_curve) == 0) {
         return;
     }
 
-    GrannyCurve2* positionCurve = GrannyCurveConvertToDaK32fC32f(
-        &grannyTransformTrack.PositionCurve,
-        GrannyCurveIdentityPosition);
+    GrannyCurve2* position_curve = granny.CurveConvertToDaK32fC32f(
+        &granny_transform_track.position_curve, granny.CurveIdentityPosition()
+    );
 
-    const GrannyCurveDataDAK32fC32f* grannyPositionCurve = static_cast<GrannyCurveDataDAK32fC32f*>(
-        positionCurve->CurveData.Object);
+    const GrannyCurveDataDAK32fC32f* granny_position_curve =
+        static_cast<GrannyCurveDataDAK32fC32f*>(position_curve->curve_data.object);
 
-    const unsigned grannyKnotCount = static_cast<unsigned>(
-        grannyPositionCurve->KnotCount);
+    const unsigned granny_knot_count = static_cast<unsigned>(granny_position_curve->knot_count);
 
-    if (!grannyKnotCount) {
+    if (granny_knot_count == 0) {
         return;
     }
 
-    vector<float> knots;
-    knots.reserve(grannyKnotCount);
+    std::vector<float> knots;
+    knots.reserve(granny_knot_count);
 
-    for (unsigned i = 0; i < grannyKnotCount; i++) {
-        knots.emplace_back(static_cast<float>(i) * (timeStep * 1));
+    for (unsigned i = 0; i < granny_knot_count; i++) {
+        knots.emplace_back(static_cast<float>(i) * (time_step * 1));
     }
 
-    const unsigned controlCount = static_cast<unsigned>(grannyPositionCurve->ControlCount) / 3;
+    const unsigned control_count = static_cast<unsigned>(granny_position_curve->control_count) / 3;
 
-    vector<FbxDouble3> controls;
-    controls.reserve(controlCount);
+    std::vector<FbxDouble3> controls;
+    controls.reserve(control_count);
 
-    for (unsigned i = 0; i < controlCount; i++) {
+    for (unsigned i = 0; i < control_count; i++) {
         controls.emplace_back(
-            grannyPositionCurve->Controls[(i * 3)],
-            grannyPositionCurve->Controls[(i * 3) + 1],
-            grannyPositionCurve->Controls[(i * 3) + 2]);
+            granny_position_curve->controls[(i * 3)],
+            granny_position_curve->controls[(i * 3) + 1],
+            granny_position_curve->controls[(i * 3) + 2]
+        );
     }
 
     unsigned step = 0;
     double time = 0;
 
     while (time < static_cast<double>(duration)) {
-        time = static_cast<double>(static_cast<float>(step) * timeStep);
+        time = static_cast<double>(static_cast<float>(step) * time_step);
 
-        auto position = de_boor_position(
-            grannyPositionCurve->CurveDataHeader.Degree,
+        FbxDouble3 position = de_boor_position(
+            granny_position_curve->curve_data_header.degree,
             static_cast<float>(time),
             knots,
-            controls);
+            controls
+        );
 
-        CurvePositionKey key(grannyTransformTrack.PositionCurve);
+        Bindings::CurvePositionKey key(granny_transform_track.position_curve);
         key.setTime(time);
         key.setValue(position);
 
@@ -127,103 +110,107 @@ void GrannyImporterAnimationDeboor::importPositionCurve(
         step++;
     }
 
-    GrannyFreeCurve(positionCurve);
+    granny.FreeCurve(position_curve);
 }
 
-void GrannyImporterAnimationDeboor::importRotationCurve(
-    Animation::SharedPtr animation,
-    Track::SharedPtr track,
-    GrannyTransformTrack grannyTransformTrack) const
-{
-    const float duration = animation->getData()->Duration;
-    const float timeStep = animation->getData()->TimeStep;
+void GrannyImporterAnimationDeboor::ImportRotationCurve(
+    const Bindings::Animation::SharedPtr& animation,
+    const Bindings::Track::SharedPtr& track,
+    const GrannyTransformTrack& granny_transform_track
+) const {
+    auto& granny = GrannyLibrary::instance();
 
-    if (GrannyCurveGetDimension(&grannyTransformTrack.OrientationCurve) == 0) {
+    const float duration = animation->getData()->duration;
+    const float time_step = animation->getData()->time_step;
+
+    if (granny.CurveGetDimension(&granny_transform_track.orientation_curve) == 0) {
         return;
     }
 
-    GrannyCurve2* orientationCurve = GrannyCurveConvertToDaK32fC32f(
-        &grannyTransformTrack.OrientationCurve,
-        GrannyCurveIdentityOrientation);
+    GrannyCurve2* orientation_curve = granny.CurveConvertToDaK32fC32f(
+        &granny_transform_track.orientation_curve, granny.CurveIdentityOrientation()
+    );
 
-    const GrannyCurveDataDAK32fC32f* grannyOrientationCurve = static_cast<GrannyCurveDataDAK32fC32f*>(
-        orientationCurve->CurveData.Object);
+    const GrannyCurveDataDAK32fC32f* granny_orientation_curve =
+        static_cast<GrannyCurveDataDAK32fC32f*>(orientation_curve->curve_data.object);
 
-    const unsigned grannyKnotCount = static_cast<unsigned>(
-        grannyOrientationCurve->KnotCount);
+    const unsigned granny_knot_count = static_cast<unsigned>(granny_orientation_curve->knot_count);
 
-    if (!grannyKnotCount) {
+    if (granny_knot_count == 0) {
         return;
     }
 
-    vector<float> knots;
-    knots.reserve(grannyKnotCount);
+    std::vector<float> knots;
+    knots.reserve(granny_knot_count);
 
-    for (unsigned i = 0; i < grannyKnotCount; i++) {
-        knots.emplace_back(static_cast<float>(i) * (timeStep * 1));
+    for (unsigned i = 0; i < granny_knot_count; i++) {
+        knots.emplace_back(static_cast<float>(i) * (time_step * 1));
     }
 
-    const unsigned controlCount = static_cast<unsigned>(grannyOrientationCurve->ControlCount) / 4;
+    const unsigned control_count =
+        static_cast<unsigned>(granny_orientation_curve->control_count) / 4;
 
-    vector<FbxQuaternion> controls;
-    controls.reserve(controlCount);
+    std::vector<FbxQuaternion> controls;
+    controls.reserve(control_count);
 
-    for (unsigned i = 0; i < controlCount; i++) {
+    for (unsigned i = 0; i < control_count; i++) {
         controls.emplace_back(
-            grannyOrientationCurve->Controls[(i * 4)],
-            grannyOrientationCurve->Controls[(i * 4) + 1],
-            grannyOrientationCurve->Controls[(i * 4) + 2],
-            grannyOrientationCurve->Controls[(i * 4) + 3]);
+            granny_orientation_curve->controls[(i * 4)],
+            granny_orientation_curve->controls[(i * 4) + 1],
+            granny_orientation_curve->controls[(i * 4) + 2],
+            granny_orientation_curve->controls[(i * 4) + 3]
+        );
     }
 
     unsigned step = 0;
     double time = 0;
 
     // Set default scale multiply.
-    auto scaleMultiply = FbxDouble3(1.0, 1.0, 1.0);
+    FbxDouble3 scale_multiply{1.0, 1.0, 1.0};
 
     // Get first scale key as scale multiply for rotation curve.
     // It is required to calculate correct rotation in case
     // that animation track uses scale shear in animation track
     // because fbx does not support scale shear.
     if (!track->getScaleKeys().empty()) {
-        scaleMultiply = (static_cast<CurveScaleKey>(track->getScaleKeys().at(0))).getValue();
+        scale_multiply =
+            (static_cast<Bindings::CurveScaleKey>(track->getScaleKeys().at(0))).getValue();
     }
 
     while (time < static_cast<double>(duration)) {
-        time = static_cast<double>(static_cast<float>(step) * timeStep);
+        time = static_cast<double>(static_cast<float>(step) * time_step);
 
         FbxQuaternion quaternion = de_boor_rotation(
-            grannyOrientationCurve->CurveDataHeader.Degree,
+            granny_orientation_curve->curve_data_header.degree,
             static_cast<float>(time),
             knots,
-            controls);
+            controls
+        );
 
-        FbxAMatrix transformMatrix;
+        FbxAMatrix transform_matrix;
 
-        transformMatrix.SetQ(quaternion);
+        transform_matrix.SetQ(quaternion);
 
         // Check for negative scale multiply.
         // Fbx can not handle negative scaling in same way as granny2 does handle it.
         // Multiply negative scale with rotation matrix to apply negative scaling
         // also to rotation matrix and just not apply it only to scale matrix.
-        if (scaleMultiply[0] < 0.0 || scaleMultiply[1] < 0.0 || scaleMultiply[2] < 0.0) {
-            transformMatrix.MultSM(FbxVector4(
-                abs(scaleMultiply[0]),
-                abs(scaleMultiply[1]),
-                abs(scaleMultiply[2])));
+        if (scale_multiply[0] < 0.0 || scale_multiply[1] < 0.0 || scale_multiply[2] < 0.0) {
+            transform_matrix.MultSM(
+                FbxVector4(abs(scale_multiply[0]), abs(scale_multiply[1]), abs(scale_multiply[2]))
+            );
         }
 
-        CurveRotationKey key(*orientationCurve);
+        Bindings::CurveRotationKey key(*orientation_curve);
         key.setTime(time);
-        key.setValue(transformMatrix.GetR());
+        key.setValue(transform_matrix.GetR());
 
         track->addRotationKey(key);
 
         step++;
     }
 
-    GrannyFreeCurve(orientationCurve);
+    granny.FreeCurve(orientation_curve);
 }
 
-} // namespace GCL::Importer
+}  // namespace GCL::Importer

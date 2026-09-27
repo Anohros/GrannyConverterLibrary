@@ -7,9 +7,6 @@
 
 namespace GCL::Importer {
 
-using namespace std;
-using namespace GCL::Bindings;
-
 ///
 /// \brief The GrannyImporterAnimation class.
 ///
@@ -19,74 +16,87 @@ public:
     /// \brief Constructor
     /// \param scene Scene which needs to be exported.
     ///
-    GrannyImporterAnimation(Scene::SharedPtr scene);
+    explicit GrannyImporterAnimation(Bindings::Scene::SharedPtr scene);
 
     ///
     /// \brief Destructor
     ///
-    virtual ~GrannyImporterAnimation();
+    virtual ~GrannyImporterAnimation() = default;
 
     ///
     /// \brief Imports all animations from the granny file as scene animation to the scene.
     /// \param grannyFileInfo Granny file info
     ///
-    void importAnimations(GrannyFileInfo* grannyFileInfo) const;
+    void ImportAnimations(GrannyFileInfo* granny_file_info) const;
 
 public:
     ///
     /// \brief Animation tracks in the scene.
     ///
-    vector<GrannyTransformTrack> m_tracks;
+    std::vector<GrannyTransformTrack> tracks_;
 
     ///
     /// \brief Animations in the scene.
     ///
-    vector<GrannyAnimation*> m_animations;
+    std::vector<GrannyAnimation*> animations_;
 
 protected:
     ///
     /// \brief Construct a track.
     /// \param animation Animation
-    /// \param grannyTransformTrack Granny transform track
+    /// \param granny_transform_track Granny transform track
     /// \return Animation tracks of animation.
     ///
-    virtual Track::SharedPtr importTrack(Animation::SharedPtr animation, GrannyTransformTrack grannyTransformTrack) const;
+    [[nodiscard]] virtual Bindings::Track::SharedPtr ImportTrack(
+        const Bindings::Animation::SharedPtr& animation,
+        const GrannyTransformTrack& granny_transform_track
+    ) const;
 
     ///
     /// \brief Imports a scale keys from scale curve.
     /// \param track Granny transform track
     /// \param grannyTransformTrack Granny transform track
     ///
-    void importScaleCurve(Track::SharedPtr track, GrannyTransformTrack grannyTransformTrack) const;
+    void ImportScaleCurve(
+        const Bindings::Track::SharedPtr& track, const GrannyTransformTrack& granny_transform_track
+    ) const;
 
     ///
     /// \brief Imports a position keys from scale curve.
     /// \param animation Animation
     /// \param track Track
-    /// \param grannyTransformTrack Granny transform track
+    /// \param granny_transform_track Granny transform track
     ///
-    void importPositionCurve(Animation::SharedPtr animation, Track::SharedPtr track, GrannyTransformTrack grannyTransformTrack) const;
+    void ImportPositionCurve(
+        const Bindings::Animation::SharedPtr& animation,
+        const Bindings::Track::SharedPtr& track,
+        GrannyTransformTrack granny_transform_track
+    ) const;
 
     ///
     /// \brief Imports a rotation keys from scale curve.
     /// \param animation Animation
     /// \param track Track
-    /// \param grannyTransformTrack Granny transform track
+    /// \param granny_transform_track Granny transform track
     ///
-    void importRotationCurve(Animation::SharedPtr animation, Track::SharedPtr track, GrannyTransformTrack grannyTransformTrack) const;
+    void ImportRotationCurve(
+        const Bindings::Animation::SharedPtr& animation,
+        const Bindings::Track::SharedPtr& track,
+        GrannyTransformTrack granny_transform_track
+    ) const;
 
     ///
     /// \brief Calculcates time to a 30 frames per second rate.
     /// \param time
     /// \return Time at a 30 frames per second rate.
     ///
-    double calculateTime(const double time) const;
+    double CalculateTime(const double time) const;
 
 protected:
     ///
     /// \brief Scene of the importing granny file.
     ///
-    Scene::SharedPtr m_scene;
+    Bindings::Scene::SharedPtr scene_;
 };
 
-} // namespace GCL::Importer
+}  // namespace GCL::Importer

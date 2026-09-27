@@ -1,0 +1,24 @@
+# Clang-Tidy configuration for GrannyConverterLibrary
+# Matches Google code quality standards tailored for modern Windows C++ development
+
+# Enable standard Google checks and core bug-prevention categories
+Checks: >
+  -*,
+  bugprone-*,
+  cert-*,
+  google-*,
+  modernize-*,
+  -modernize-use-auto,
+  -modernize-use-trailing-return-type,
+  performance-*,
+  readability-*
+
+# Limit to internal code.
+HeaderFilterRegex: 'gcl/.*'
+
+# Upgrade critical safety and performance issues to compiler errors
+WarningsAsErrors: >
+  bugprone-macro-parentheses,
+  bugprone-use-after-move,
+  modernize-use-override,
+  performance-move-const-arg

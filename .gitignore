@@ -48,6 +48,8 @@ _deps
 *.app
 
 # Project specific
+.vscode
+build
 external/devilsdk
 external/granny2
 external/fbxsdk

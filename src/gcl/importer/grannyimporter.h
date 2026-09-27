@@ -1,5 +1,9 @@
 #pragma once
 
+#include <memory>
+#include <string>
+#include <vector>
+
 #include "gcl/bindings/animation.h"
 #include "gcl/bindings/bone.h"
 #include "gcl/bindings/curvepositionkey.h"
@@ -19,12 +23,7 @@
 #include "gcl/importer/grannyimporterskeleton.h"
 #include "gcl/importer/grannyimportoptions.h"
 
-#include <vector>
-
 namespace GCL::Importer {
-
-using namespace std;
-using namespace GCL::Bindings;
 
 ///
 /// \brief Granny importer - imports a scene from a granny file.
@@ -40,20 +39,21 @@ public:
     /// \brief Constructor with data initialization to reuse an already initialized scene.
     /// \param scene Already initialized scene to be reused.
     ///
-    GrannyImporter(Scene::SharedPtr scene);
+    explicit GrannyImporter(Bindings::Scene::SharedPtr scene);
 
     ///
     /// \brief Constructer with extended options.
     /// \param options Import options which define the way how a scene needs to be imported.
     ///
-    GrannyImporter(GrannyImportOptions options);
+    explicit GrannyImporter(GrannyImportOptions options);
 
     ///
-    /// \brief Constructer with extended options and data initialization to reuse an already initialized scene.
+    /// \brief Constructer with extended options and data initialization to reuse an already
+    /// initialized scene.
     /// \param options Import options which define the way how a scene needs to be imported.
     /// \param scene Already initialized scene to be reused.
     ///
-    GrannyImporter(GrannyImportOptions options, Scene::SharedPtr scene);
+    GrannyImporter(GrannyImportOptions options, Bindings::Scene::SharedPtr scene);
 
     ///
     /// \brief Destructor
@@ -61,43 +61,45 @@ public:
     ~GrannyImporter();
 
     ///
-    /// \brief Initializes the exporter.
-    ///
-    void initialize();
-
-    ///
     /// \brief Import the granny scene.
-    /// \param Full filepath to the importing granny file.
+    /// \param fullFilePath Full filepath to the importing granny file.
     /// \return Returns status whether file was imported successfully or skipped.
     ///
-    bool importFromFile(const char* fullFilePath);
+    bool importFromFile(const std::string& grannyFilePath);
 
     ///
     /// \brief Load and add materials from granny file to the scene.
     /// \param grannyFileInfo Granny file info
     /// \param grannyFilePath Granny file path
     ///
-    void importMaterials(GrannyFileInfo* grannyFileInfo, const char* grannyFilePath);
+    void importMaterials(GrannyFileInfo* grannyFileInfo, const std::string& grannyFilePath);
 
     ///
     /// \brief Load and add models from granny file to the scene.
     /// \param grannyFileInfo Granny file info
     /// \param grannyFilePath Granny file path
     ///
-    void importModels(GrannyFileInfo* grannyFileInfo, const char* grannyFilePath);
+    void importModels(GrannyFileInfo* grannyFileInfo, const std::string& grannyFilePath);
 
     ///
     /// \brief Load and add animations from granny file to the scene.
     /// \param grannyFileInfo Granny file info
     /// \param grannyFilePath Granny file path
     ///
-    void importAnimations(GrannyFileInfo* grannyFileInfo, const char* grannyFilePath);
+    void importAnimations(GrannyFileInfo* grannyFileInfo, const std::string& grannyFilePath);
 
     ///
     /// \brief Return the imported scene.
     /// \return Imported scene
     ///
-    Scene::SharedPtr getScene() const;
+    [[nodiscard]] Bindings::Scene::SharedPtr getScene() const;
+
+private:
+    ///
+    /// \brief Initializes the importer. Called by the constructors, must not be called
+    /// again as it would leak the previously created modules.
+    ///
+    void initialize();
 
 protected:
     ///
@@ -108,32 +110,32 @@ protected:
     ///
     /// \brief Scene of the importing granny file.
     ///
-    Scene::SharedPtr m_scene;
+    Bindings::Scene::SharedPtr scene_;
 
     ///
     /// \brief Material importer module.
     ///
-    GrannyImporterMaterial* m_importerMaterial = nullptr;
+    std::unique_ptr<GrannyImporterMaterial> m_importerMaterial;
 
     ///
     /// \brief Model importer module.
     ///
-    GrannyImporterModel* m_importerModel = nullptr;
+    std::unique_ptr<GrannyImporterModel> m_importerModel;
 
     ///
     /// \brief Skeleton importer module.
     ///
-    GrannyImporterSkeleton* m_importerSkeleton = nullptr;
+    std::unique_ptr<GrannyImporterSkeleton> m_importerSkeleton;
 
     ///
     /// \brief Animation importer module.
     ///
-    GrannyImporterAnimation* m_importerAnimation = nullptr;
+    std::unique_ptr<GrannyImporterAnimation> m_importerAnimation;
 
     ///
     /// \brief Granny files of the imported granny files.
     ///
-    vector<GrannyFile*> m_importedGrannyFiles;
+    std::vector<GrannyFile*> m_importedGrannyFiles;
 };
 
-} // namespace GCL::Importer
+}  // namespace GCL::Importer

@@ -1,92 +1,115 @@
 #include "gcl/exporter/fbxexporter.h"
 
+#include <map>
+#include <stdexcept>
+#include <string>
+
 #include "gcl/utilities/fbxsdkcommon.h"
+#include "gcl/utilities/logging.h"
 
 namespace GCL::Exporter {
 
-using namespace GCL::Utilities;
+using namespace GCL::Utilities::Logging;
 
-FbxExporter::FbxExporter(Scene::SharedPtr scene)
-    : m_scene(scene)
-{
+FbxExporter::FbxExporter(Bindings::Scene::SharedPtr scene) : scene_(std::move(scene)) {
     initialize();
 }
 
-FbxExporter::FbxExporter(FbxExportOptions options, Scene::SharedPtr scene)
-    : m_options(options)
-    , m_scene(scene)
-{
+FbxExporter::FbxExporter(FbxExportOptions options, Bindings::Scene::SharedPtr scene)
+    : m_options(std::move(options)), scene_(std::move(scene)) {
     initialize();
 }
 
-FbxExporter::FbxExporter(ExporterModuleFactoryInterface* exportModuleFactory, FbxExportOptions options, Scene::SharedPtr scene)
-    : m_options(options)
-    , m_scene(scene)
-{
-    m_exporterModuleFactory = exportModuleFactory;
+FbxExporter::FbxExporter(
+    ExporterModuleFactoryInterface* exporterModuleFactory,
+    FbxExportOptions options,
+    Bindings::Scene::SharedPtr scene
+)
+    : m_options(std::move(options)), scene_(std::move(scene)) {
+    m_exporterModuleFactory =
+        std::unique_ptr<ExporterModuleFactoryInterface>(exporterModuleFactory);
     initialize();
 }
 
-FbxExporter::~FbxExporter()
-{
-    FbxSdkCommon::DestroySdkObjects(m_fbxManager);
+FbxExporter::~FbxExporter() {
+    Utilities::FbxSdkCommon::DestroySdkObjects(m_fbxManager);
+}
 
-    if (m_exporterModuleFactory) {
-        delete m_exporterModuleFactory;
+void FbxExporter::initialize() {
+    // Validate the axis coordinate system conversion string before initializing.
+    FbxAxisSystem axisSystem;
+    if (!FbxAxisSystem::ParseAxisSystem(m_options.convertAxis.c_str(), axisSystem)) {
+        fatal(
+            "Invalid axis coordinate system \"%s\" for the scene conversion.",
+            m_options.convertAxis.c_str()
+        );
+        throw std::invalid_argument("Invalid axis coordinate system: " + m_options.convertAxis);
     }
 
-    delete m_exporterMaterial;
-    delete m_exporterSkeleton;
-    delete m_exporterAnimation;
-}
-
-void FbxExporter::initialize()
-{
     // Initialize the fbx sdk.
-    FbxSdkCommon::InitializeSdkObjects(m_fbxManager, m_fbxScene);
+    Utilities::FbxSdkCommon::InitializeSdkObjects(m_fbxManager, fbx_scene_);
 
     // Convert the axis coordinate system.
-    FbxAxisSystem axisSystem;
-    FbxAxisSystem::ParseAxisSystem(m_options.convertAxis.c_str(), axisSystem);
-    axisSystem.ConvertScene(m_fbxScene);
+    axisSystem.ConvertScene(fbx_scene_);
 
     if (!m_exporterModuleFactory) {
-        m_exporterModuleFactory = new FbxExporterModuleFactory();
+        m_exporterModuleFactory = std::make_unique<FbxExporterModuleFactory>();
     }
 
-    m_exporterMaterial = m_exporterModuleFactory->createExporterModuleMaterial(m_scene, m_fbxScene);
-    m_exporterMesh = m_exporterModuleFactory->createExporterModuleMesh(m_scene, m_fbxScene);
-    m_exporterSkeleton = m_exporterModuleFactory->createExporterModuleSkeleton(m_scene, m_fbxScene);
-    m_exporterAnimation = m_exporterModuleFactory->createExporterModuleAnimation(m_scene, m_fbxScene);
+    m_exporterMaterial = std::unique_ptr<FbxExporterMaterial>(
+        m_exporterModuleFactory->createExporterModuleMaterial(scene_, fbx_scene_)
+    );
+    m_exporterMesh = std::unique_ptr<FbxExporterMesh>(
+        m_exporterModuleFactory->createExporterModuleMesh(scene_, fbx_scene_)
+    );
+    m_exporterSkeleton = std::unique_ptr<FbxExporterSkeleton>(
+        m_exporterModuleFactory->createExporterModuleSkeleton(scene_, fbx_scene_)
+    );
+    m_exporterAnimation = std::unique_ptr<FbxExporterAnimation>(
+        m_exporterModuleFactory->createExporterModuleAnimation(scene_, fbx_scene_)
+    );
 }
 
-void FbxExporter::exportToFile(string outputFilepath)
-{
+bool FbxExporter::exportToFile(const std::string& outputFilepath) {
     exportModels(outputFilepath);
 
-    FbxSdkCommon::SaveScene(m_fbxManager, m_fbxScene, outputFilepath.c_str(), false, false);
+    return Utilities::FbxSdkCommon::SaveScene(
+        m_fbxManager, fbx_scene_, outputFilepath.c_str(), false, false
+    );
 }
 
-void FbxExporter::exportModels(string outputFilepath)
-{
+void FbxExporter::exportModels(const std::string& outputFilepath) {
     if (m_options.exportMaterials) {
         m_exporterMaterial->exportMaterials(outputFilepath);
     }
 
-    for (auto model : m_scene->getModels()) {
-        // Export skeleton if enabled.
-        if (m_options.exportSkeleton && model->getBones().size() > 0) {
-            auto exist = m_fbxScene->GetRootNode()->FindChild(model->getBones()[0]->getData().Name);
-
-            if (!exist) {
-                m_exporterSkeleton->exportBones(model);
-            } else {
-                for (auto otherModel : m_scene->getModels()) {
-                    if (otherModel != model && otherModel->getBones()[0]->getNode() == exist) {
-                        model->setBones(otherModel->getBones());
-                    }
-                }
+    // Pre-pass: group the models by their first bone name so that skeletons are only
+    // exported once per skeleton. Models sharing a skeleton reuse the bones of the
+    // model which owns the skeleton.
+    std::map<std::string, Bindings::Model::SharedPtr> skeletonOwners;
+    if (m_options.exportSkeleton) {
+        for (const auto& model : scene_->getModels()) {
+            const auto& bones = model->getBones();
+            if (bones.empty()) {
+                continue;
             }
+
+            const std::string firstBoneName = bones[0]->getData().name;
+            auto existingOwner = skeletonOwners.find(firstBoneName);
+            if (existingOwner != skeletonOwners.end()) {
+                model->setBones(existingOwner->second->getBones());
+            } else {
+                skeletonOwners.emplace(firstBoneName, model);
+            }
+        }
+    }
+
+    for (const auto& model : scene_->getModels()) {
+        // Export the skeleton if enabled and this model owns the skeleton.
+        const auto& bones = model->getBones();
+        if (m_options.exportSkeleton && !bones.empty() &&
+            skeletonOwners.at(bones[0]->getData().name) == model) {
+            m_exporterSkeleton->exportBones(model);
         }
 
         if (model->isExcluded()) {
@@ -94,7 +117,7 @@ void FbxExporter::exportModels(string outputFilepath)
         }
 
         if (m_options.exportMeshes) {
-            m_exporterMesh->exportMeshes(model, m_options.exportSkeleton);
+            m_exporterMesh->ExportMeshes(model, m_options.exportSkeleton);
         }
 
         if (m_options.exportSkeleton && model->getBones().size() > 1) {
@@ -107,4 +130,4 @@ void FbxExporter::exportModels(string outputFilepath)
     }
 }
 
-} // namespace GCL::Exporter
+}  // namespace GCL::Exporter
