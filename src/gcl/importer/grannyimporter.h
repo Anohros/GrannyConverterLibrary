@@ -1,5 +1,7 @@
 #pragma once
 
+#include <memory>
+#include <string>
 #include <vector>
 
 #include "gcl/bindings/animation.h"
@@ -60,36 +62,37 @@ public:
 
     ///
     /// \brief Import the granny scene.
-    /// \param Full filepath to the importing granny file.
+    /// \param fullFilePath Full filepath to the importing granny file.
     /// \return Returns status whether file was imported successfully or skipped.
     ///
-    bool importFromFile(const char* fullFilePath);
+    bool importFromFile(const std::string& grannyFilePath);
 
     ///
     /// \brief Load and add materials from granny file to the scene.
     /// \param grannyFileInfo Granny file info
     /// \param grannyFilePath Granny file path
     ///
-    void importMaterials(GrannyFileInfo* grannyFileInfo, const char* grannyFilePath);
+    void importMaterials(GrannyFileInfo* grannyFileInfo, const std::string& grannyFilePath);
 
     ///
     /// \brief Load and add models from granny file to the scene.
     /// \param grannyFileInfo Granny file info
     /// \param grannyFilePath Granny file path
     ///
-    void importModels(GrannyFileInfo* grannyFileInfo, const char* grannyFilePath);
+    void importModels(GrannyFileInfo* grannyFileInfo, const std::string& grannyFilePath);
 
     ///
     /// \brief Load and add animations from granny file to the scene.
     /// \param grannyFileInfo Granny file info
     /// \param grannyFilePath Granny file path
     ///
-    void importAnimations(GrannyFileInfo* grannyFileInfo, const char* grannyFilePath);
+    void importAnimations(GrannyFileInfo* grannyFileInfo, const std::string& grannyFilePath);
 
     ///
     /// \brief Return the imported scene.
     /// \return Imported scene
     ///
+    [[nodiscard]] Bindings::Scene::SharedPtr getScene() const;
 
 private:
     ///
@@ -107,7 +110,7 @@ protected:
     ///
     /// \brief Scene of the importing granny file.
     ///
-    Bindings::Scene::SharedPtr m_scene;
+    Bindings::Scene::SharedPtr scene_;
 
     ///
     /// \brief Material importer module.

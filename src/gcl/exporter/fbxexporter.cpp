@@ -94,7 +94,7 @@ void FbxExporter::exportModels(const std::string& outputFilepath) {
                 continue;
             }
 
-            const std::string firstBoneName = bones[0]->getData().Name;
+            const std::string firstBoneName = bones[0]->getData().name;
             auto existingOwner = skeletonOwners.find(firstBoneName);
             if (existingOwner != skeletonOwners.end()) {
                 model->setBones(existingOwner->second->getBones());
@@ -108,7 +108,7 @@ void FbxExporter::exportModels(const std::string& outputFilepath) {
         // Export the skeleton if enabled and this model owns the skeleton.
         const auto& bones = model->getBones();
         if (m_options.exportSkeleton && !bones.empty() &&
-            skeletonOwners.at(bones[0]->getData().Name) == model) {
+            skeletonOwners.at(bones[0]->getData().name) == model) {
             m_exporterSkeleton->exportBones(model);
         }
 

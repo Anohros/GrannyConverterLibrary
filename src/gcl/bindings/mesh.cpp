@@ -30,16 +30,18 @@ void Mesh::addBoneBinding(const BoneBinding::SharedPtr& binding) {
 }
 
 bool Mesh::isRigid() {
-    return GrannyMeshIsRigid(m_data);
+    auto& granny = Importer::GrannyLibrary::instance();
+    return granny.MeshIsRigid(m_data);
 }
 
 std::vector<GrannyPWNT34322Vertex> Mesh::getVertices() {
-    const size_t vertex_count = static_cast<size_t>(GrannyGetMeshVertexCount(m_data));
+    auto& granny = Importer::GrannyLibrary::instance();
+    const size_t vertex_count = static_cast<size_t>(granny.GetMeshVertexCount(m_data));
     if (vertex_count == 0) {
         return {};
     }
     std::vector<GrannyPWNT34322Vertex> vertices(vertex_count);
-    GrannyCopyMeshVertices(m_data, GrannyPWNT34322VertexType, vertices.data());
+    granny.CopyMeshVertices(m_data, GrannyPWNT34322VertexType, vertices.data());
     return vertices;
 }
 

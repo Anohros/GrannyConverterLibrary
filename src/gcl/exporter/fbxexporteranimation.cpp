@@ -13,7 +13,7 @@ void FbxExporterAnimation::exportAnimations() {
             continue;
         }
 
-        auto animationName = animation->getData()->Name;
+        auto animationName = animation->getData()->name;
 
         // Create animation stack and add at least one animation layer.
         FbxAnimStack* animStack = FbxAnimStack::Create(fbx_scene_, animationName);
@@ -22,14 +22,14 @@ void FbxExporterAnimation::exportAnimations() {
         animStack->AddMember(animLayer);
 
         for (const auto& model : scene_->getModels()) {
-            modelNames.push_back(model->getData()->Name);
+            modelNames.push_back(model->getData()->name);
 
             // Create bone map for easier access later.
             std::map<std::string, FbxNode*> boneMap;
             auto bones = model->getBones();
             if (bones.size() > 1) {
                 for (auto bone : bones) {
-                    boneMap[bone->getData().Name] = bone->getNode();
+                    boneMap[bone->getData().name] = bone->getNode();
                 }
             }
 

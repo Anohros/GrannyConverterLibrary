@@ -27,7 +27,7 @@ void FbxExporterMesh::ExportMesh(
     if (!model || !mesh || !mesh->getData()) {
         return;
     }
-    FbxNode* mesh_node = FbxNode::Create(fbx_scene_, mesh->getData()->Name);
+    FbxNode* mesh_node = FbxNode::Create(fbx_scene_, mesh->getData()->name);
     if (!mesh_node) {
         return;
     }
@@ -75,14 +75,14 @@ void FbxExporterMesh::InitializeBoneBindings(
         return;
     }
     for (const Bindings::Bone::SharedPtr& bone : model->getBones()) {
-        all_bones->data[bone->getData().Name] = bone;
+        all_bones->data[bone->getData().name] = bone;
     }
     const GrannyMesh* mesh_data = mesh->getData();
-    const int bone_binding_count = mesh_data->BoneBindingCount;
+    const int bone_binding_count = mesh_data->bone_binding_count;
     bone_bindings->reserve(bone_bindings->size() + static_cast<size_t>(bone_binding_count));
     for (int bone_binding_index = 0; bone_binding_index < bone_binding_count;
          ++bone_binding_index) {
-        const char* bone_name = mesh_data->BoneBindings[bone_binding_index].BoneName;
+        const char* bone_name = mesh_data->bone_bindings[bone_binding_index].bone_name;
         auto bone_iterator = all_bones->data.find(bone_name);
         if (bone_iterator == all_bones->data.end()) {
             continue;
@@ -131,11 +131,11 @@ void FbxExporterMesh::ApplyNonRigidBoneWeights(
     int vertex_counter = 0;
     for (const GrannyPWNT34322Vertex& vertex : vertices) {
         for (int weight_index = 0; weight_index < kMaxBoneInfluences; ++weight_index) {
-            uint8_t weight = vertex.BoneWeights[weight_index];
+            uint8_t weight = vertex.bone_weights[weight_index];
             if (weight == 0U) {
                 continue;
             }
-            uint8_t bone_index = vertex.BoneIndices[weight_index];
+            uint8_t bone_index = vertex.bone_indices[weight_index];
             if (bone_index >= max_bindings_count) {
                 continue;
             }
@@ -218,7 +218,7 @@ FbxMesh* FbxExporterMesh::ExportFbxMesh(const Bindings::Mesh::SharedPtr& mesh) {
     if (!mesh || !mesh->getData() || !mesh->getNode()) {
         return nullptr;
     }
-    FbxMesh* fbx_mesh = FbxMesh::Create(fbx_scene_, mesh->getData()->Name);
+    FbxMesh* fbx_mesh = FbxMesh::Create(fbx_scene_, mesh->getData()->name);
     if (!fbx_mesh) {
         return nullptr;
     }
@@ -227,12 +227,13 @@ FbxMesh* FbxExporterMesh::ExportFbxMesh(const Bindings::Mesh::SharedPtr& mesh) {
     CreateMaterial(fbx_mesh);
     CreateNormal(fbx_mesh, vertices);
     CreateUV(mesh, fbx_mesh, vertices);
-    const size_t index_count = GrannyGetMeshIndexCount(mesh->getData());
+    auto& granny = Importer::GrannyLibrary::instance();
+    auto index_count = static_cast<size_t>(granny.GetMeshIndexCount(mesh->getData()));
     if (index_count == 0 || (index_count % 3) != 0) {
         return fbx_mesh;
     }
     std::vector<int> index_array(index_count);
-    GrannyCopyMeshIndices(mesh->getData(), 4, index_array.data());
+    granny.CopyMeshIndices(mesh->getData(), 4, index_array.data());
     BindMaterials(mesh);
     for (size_t index = 0; index < index_count; index += 3) {
         fbx_mesh->BeginPolygon(GetMaterialForIndex(mesh, index));
@@ -261,9 +262,9 @@ void FbxExporterMesh::CreateControlPoints(
     int vertex_index = 0;
     for (const GrannyPWNT34322Vertex& vertex : vertices) {
         control_points[vertex_index] = FbxVector4(
-            static_cast<double>(vertex.Position[0]),
-            static_cast<double>(vertex.Position[1]),
-            static_cast<double>(vertex.Position[2])
+            static_cast<double>(vertex.position[0]),
+            static_cast<double>(vertex.position[1]),
+            static_cast<double>(vertex.position[2])
         );
         ++vertex_index;
     }
@@ -304,29 +305,30 @@ void FbxExporterMesh::CreateNormal(
         direct_array.SetAt(
             vertex_index,
             FbxVector4(
-                static_cast<double>(vertex.Normal[0]),
-                static_cast<double>(vertex.Normal[1]),
-                static_cast<double>(vertex.Normal[2])
+                static_cast<double>(vertex.normal[0]),
+                static_cast<double>(vertex.normal[1]),
+                static_cast<double>(vertex.normal[2])
             )
         );
     }
 }
 
 int FbxExporterMesh::CountTextureCoordinateTypes(const Bindings::Mesh::SharedPtr& mesh) {
-    if (!mesh || !mesh->getData() || !mesh->getData()->PrimaryVertexData ||
-        !mesh->getData()->PrimaryVertexData->VertexType) {
+    if (!mesh || !mesh->getData() || !mesh->getData()->primary_vertex_data ||
+        !mesh->getData()->primary_vertex_data->vertex_type) {
         return 0;
     }
-    const int total_type_size =
-        GrannyGetTotalTypeSize(mesh->getData()->PrimaryVertexData->VertexType);
+    const int total_type_size = Importer::GrannyLibrary::instance().GetTotalTypeSize(
+        mesh->getData()->primary_vertex_data->vertex_type
+    );
     const int type_count = static_cast<int>(total_type_size / sizeof(GrannyDataTypeDefinition));
     int texture_coordinate_types_count = 0;
     const size_t match_length = strlen(GrannyVertexTextureCoordinatesName);
     for (int type_index = 0; type_index < type_count; ++type_index) {
         const GrannyDataTypeDefinition& vertex_type =
-            mesh->getData()->PrimaryVertexData->VertexType[type_index];
-        const char* vertex_type_name = vertex_type.Name;
-        if (vertex_type_name == nullptr) {
+            mesh->getData()->primary_vertex_data->vertex_type[type_index];
+        const char* vertex_type_name = vertex_type.name;
+        if (!vertex_type_name) {
             continue;
         }
         const bool is_texture_coordinate_type =
@@ -373,8 +375,8 @@ void FbxExporterMesh::CreateUV1(
     }
     for (int vertex_index = 0; vertex_index < vertices_count; ++vertex_index) {
         const GrannyPWNT34322Vertex& vertex = vertices[static_cast<size_t>(vertex_index)];
-        const double u_coord = static_cast<double>(vertex.UV1[0]);
-        const double v_coord = 1.0 - static_cast<double>(vertex.UV1[1]);
+        const double u_coord = static_cast<double>(vertex.uv1[0]);
+        const double v_coord = 1.0 - static_cast<double>(vertex.uv1[1]);
         direct_array.SetAt(vertex_index, FbxVector2(u_coord, v_coord));
     }
 }
@@ -398,8 +400,8 @@ void FbxExporterMesh::CreateUV2(
     }
     for (int vertex_index = 0; vertex_index < vertices_count; ++vertex_index) {
         const GrannyPWNT34322Vertex& vertex = vertices[static_cast<size_t>(vertex_index)];
-        const double u_coord = static_cast<double>(vertex.UV2[0]);
-        const double v_coord = 1.0 - static_cast<double>(vertex.UV2[1]);
+        const double u_coord = static_cast<double>(vertex.uv2[0]);
+        const double v_coord = 1.0 - static_cast<double>(vertex.uv2[1]);
         direct_array.SetAt(vertex_index, FbxVector2(u_coord, v_coord));
     }
 }
@@ -409,7 +411,7 @@ void FbxExporterMesh::BindMaterials(const Bindings::Mesh::SharedPtr& mesh) {
         return;
     }
     const GrannyMesh* mesh_data = mesh->getData();
-    const int material_binding_count = mesh_data->MaterialBindingCount;
+    const int material_binding_count = mesh_data->material_binding_count;
     if (material_binding_count == 0) {
         return;
     }
@@ -418,7 +420,7 @@ void FbxExporterMesh::BindMaterials(const Bindings::Mesh::SharedPtr& mesh) {
     for (int material_binding_index = 0; material_binding_index < material_binding_count;
          ++material_binding_index) {
         const GrannyMaterial* material =
-            mesh_data->MaterialBindings[material_binding_index].Material;
+            mesh_data->material_bindings[material_binding_index].material;
         if (!material) {
             continue;
         }
@@ -427,9 +429,9 @@ void FbxExporterMesh::BindMaterials(const Bindings::Mesh::SharedPtr& mesh) {
                 continue;
             }
             if (scene_material->getData() == material) {
-                const Bindings::Material* material = scene_material.get();
-                if (added_materials.find(material) == added_materials.end()) {
-                    added_materials.insert(material);
+                const Bindings::Material* material_binding = scene_material.get();
+                if (added_materials.find(material_binding) == added_materials.end()) {
+                    added_materials.insert(material_binding);
                     mesh->getNode()->AddMaterial(scene_material->getNode());
                 }
                 break;
@@ -443,23 +445,22 @@ int FbxExporterMesh::GetMaterialForIndex(const Bindings::Mesh::SharedPtr& mesh, 
         return -1;
     }
     const GrannyMesh* mesh_data = mesh->getData();
-    const int material_binding_count = mesh_data->MaterialBindingCount;
-    if (material_binding_count == 0 || !mesh_data->PrimaryTopology) {
+    const int material_binding_count = mesh_data->material_binding_count;
+    if (material_binding_count == 0 || !mesh_data->primary_topology) {
         return -1;
     }
     FbxNode* mesh_node = mesh->getNode();
-    const int group_count = mesh_data->PrimaryTopology->GroupCount;
+    const int group_count = mesh_data->primary_topology->group_count;
     const int group_tri_offset = static_cast<int>(index / 3);
-    const int node_material_count = mesh_node->GetMaterialCount();
     for (int group_index = 0; group_index < group_count; ++group_index) {
-        const GrannyTriMaterialGroup& group = mesh_data->PrimaryTopology->Groups[group_index];
-        if (group_tri_offset >= group.TriFirst &&
-            group_tri_offset < (group.TriFirst + group.TriCount)) {
-            if (group.MaterialIndex >= material_binding_count) {
+        const GrannyTriMaterialGroup& group = mesh_data->primary_topology->groups[group_index];
+        if (group_tri_offset >= group.tri_first &&
+            group_tri_offset < (group.tri_first + group.tri_count)) {
+            if (group.material_index >= material_binding_count) {
                 return -1;
             }
             const GrannyMaterial* target_granny_material =
-                mesh_data->MaterialBindings[group.MaterialIndex].Material;
+                mesh_data->material_bindings[group.material_index].material;
             if (!target_granny_material) {
                 return -1;
             }

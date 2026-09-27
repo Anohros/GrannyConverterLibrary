@@ -1,5 +1,7 @@
 #pragma once
 
+#include <string>
+
 #include "gcl/importer/grannyformat.h"
 
 namespace GCL::Utilities {

@@ -12,65 +12,65 @@ void FbxExporterSkeleton::exportBone(
     const Bindings::Model::SharedPtr& model, const Bindings::Bone::SharedPtr& bone
 ) {
     auto granny_bone = bone->getData();
-    auto parent_index = granny_bone.ParentIndex;
+    auto parent_index = granny_bone.parent_index;
 
     // Set bone transformation.
-    auto local_transform = bone->getData().LocalTransform;
+    auto local_transform = bone->getData().local_transform;
     auto bone_transform = FbxAMatrix(FbxDouble3(0, 0, 0), FbxDouble3(0, 0, 0), FbxDouble3(1, 1, 1));
 
-    if ((local_transform.Flags & GrannyTransformFlags::GrannyHasPosition) != 0U) {
+    if ((local_transform.flags & GrannyTransformFlags::GrannyHasPosition) != 0U) {
         bone_transform.SetT(FbxVector4(
-            static_cast<double>(local_transform.Position[0]),
-            static_cast<double>(local_transform.Position[1]),
-            static_cast<double>(local_transform.Position[2])
+            static_cast<double>(local_transform.position[0]),
+            static_cast<double>(local_transform.position[1]),
+            static_cast<double>(local_transform.position[2])
         ));
     }
 
-    if ((local_transform.Flags & GrannyTransformFlags::GrannyHasOrientation) != 0U) {
+    if ((local_transform.flags & GrannyTransformFlags::GrannyHasOrientation) != 0U) {
         bone_transform.SetQ(FbxQuaternion(
-            static_cast<double>(local_transform.Orientation[0]),
-            static_cast<double>(local_transform.Orientation[1]),
-            static_cast<double>(local_transform.Orientation[2]),
-            static_cast<double>(local_transform.Orientation[3])
+            static_cast<double>(local_transform.orientation[0]),
+            static_cast<double>(local_transform.orientation[1]),
+            static_cast<double>(local_transform.orientation[2]),
+            static_cast<double>(local_transform.orientation[3])
         ));
     }
 
-    if ((local_transform.Flags & GrannyTransformFlags::GrannyHasScaleShear) != 0U) {
+    if ((local_transform.flags & GrannyTransformFlags::GrannyHasScaleShear) != 0U) {
         bone_transform.SetS(FbxDouble3(
-            static_cast<double>(local_transform.ScaleShear[0][0]),
-            static_cast<double>(local_transform.ScaleShear[1][1]),
-            static_cast<double>(local_transform.ScaleShear[2][2])
+            static_cast<double>(local_transform.scale_shear[0][0]),
+            static_cast<double>(local_transform.scale_shear[1][1]),
+            static_cast<double>(local_transform.scale_shear[2][2])
         ));
     }
 
     // Multiply bone transformation by initial model placement.
     if (parent_index == GrannyNoParentBone) {
-        auto initial_placement = model->getData()->InitialPlacement;
+        auto initial_placement = model->getData()->initial_placement;
         auto initial_transform =
             FbxAMatrix(FbxDouble3(0, 0, 0), FbxDouble3(0, 0, 0), FbxDouble3(1, 1, 1));
 
-        if ((initial_placement.Flags & GrannyTransformFlags::GrannyHasPosition) != 0U) {
+        if ((initial_placement.flags & GrannyTransformFlags::GrannyHasPosition) != 0U) {
             initial_transform.SetT(FbxDouble3(
-                static_cast<double>(initial_placement.Position[0]),
-                static_cast<double>(initial_placement.Position[1]),
-                static_cast<double>(initial_placement.Position[2])
+                static_cast<double>(initial_placement.position[0]),
+                static_cast<double>(initial_placement.position[1]),
+                static_cast<double>(initial_placement.position[2])
             ));
         }
 
-        if ((initial_placement.Flags & GrannyTransformFlags::GrannyHasOrientation) != 0U) {
+        if ((initial_placement.flags & GrannyTransformFlags::GrannyHasOrientation) != 0U) {
             initial_transform.SetQ(FbxQuaternion(
-                static_cast<double>(initial_placement.Orientation[0]),
-                static_cast<double>(initial_placement.Orientation[1]),
-                static_cast<double>(initial_placement.Orientation[2]),
-                static_cast<double>(initial_placement.Orientation[3])
+                static_cast<double>(initial_placement.orientation[0]),
+                static_cast<double>(initial_placement.orientation[1]),
+                static_cast<double>(initial_placement.orientation[2]),
+                static_cast<double>(initial_placement.orientation[3])
             ));
         }
 
-        if ((initial_placement.Flags & GrannyTransformFlags::GrannyHasScaleShear) != 0U) {
+        if ((initial_placement.flags & GrannyTransformFlags::GrannyHasScaleShear) != 0U) {
             initial_transform.SetS(FbxDouble3(
-                static_cast<double>(initial_placement.ScaleShear[0][0]),
-                static_cast<double>(initial_placement.ScaleShear[1][1]),
-                static_cast<double>(initial_placement.ScaleShear[2][2])
+                static_cast<double>(initial_placement.scale_shear[0][0]),
+                static_cast<double>(initial_placement.scale_shear[1][1]),
+                static_cast<double>(initial_placement.scale_shear[2][2])
             ));
         }
 
@@ -78,7 +78,7 @@ void FbxExporterSkeleton::exportBone(
     }
 
     // Setup the bone node.
-    const auto* bone_name = granny_bone.Name;
+    const auto* bone_name = granny_bone.name;
     auto* bone_node = FbxNode::Create(fbx_scene_, bone_name);
     bone_node->LclTranslation.Set(bone_transform.GetT());
     bone_node->LclRotation.Set(bone_transform.GetR());
@@ -90,37 +90,37 @@ void FbxExporterSkeleton::exportBone(
     world.SetRow(
         0,
         FbxVector4(
-            static_cast<double>(granny_bone.InverseWorld4x4[0][0]),
-            static_cast<double>(granny_bone.InverseWorld4x4[0][1]),
-            static_cast<double>(granny_bone.InverseWorld4x4[0][2]),
-            static_cast<double>(granny_bone.InverseWorld4x4[0][3])
+            static_cast<double>(granny_bone.inverse_world_4x4[0][0]),
+            static_cast<double>(granny_bone.inverse_world_4x4[0][1]),
+            static_cast<double>(granny_bone.inverse_world_4x4[0][2]),
+            static_cast<double>(granny_bone.inverse_world_4x4[0][3])
         )
     );
     world.SetRow(
         1,
         FbxVector4(
-            static_cast<double>(granny_bone.InverseWorld4x4[1][0]),
-            static_cast<double>(granny_bone.InverseWorld4x4[1][1]),
-            static_cast<double>(granny_bone.InverseWorld4x4[1][2]),
-            static_cast<double>(granny_bone.InverseWorld4x4[1][3])
+            static_cast<double>(granny_bone.inverse_world_4x4[1][0]),
+            static_cast<double>(granny_bone.inverse_world_4x4[1][1]),
+            static_cast<double>(granny_bone.inverse_world_4x4[1][2]),
+            static_cast<double>(granny_bone.inverse_world_4x4[1][3])
         )
     );
     world.SetRow(
         2,
         FbxVector4(
-            static_cast<double>(granny_bone.InverseWorld4x4[2][0]),
-            static_cast<double>(granny_bone.InverseWorld4x4[2][1]),
-            static_cast<double>(granny_bone.InverseWorld4x4[2][2]),
-            static_cast<double>(granny_bone.InverseWorld4x4[2][3])
+            static_cast<double>(granny_bone.inverse_world_4x4[2][0]),
+            static_cast<double>(granny_bone.inverse_world_4x4[2][1]),
+            static_cast<double>(granny_bone.inverse_world_4x4[2][2]),
+            static_cast<double>(granny_bone.inverse_world_4x4[2][3])
         )
     );
     world.SetRow(
         3,
         FbxVector4(
-            static_cast<double>(granny_bone.InverseWorld4x4[3][0]),
-            static_cast<double>(granny_bone.InverseWorld4x4[3][1]),
-            static_cast<double>(granny_bone.InverseWorld4x4[3][2]),
-            static_cast<double>(granny_bone.InverseWorld4x4[3][3])
+            static_cast<double>(granny_bone.inverse_world_4x4[3][0]),
+            static_cast<double>(granny_bone.inverse_world_4x4[3][1]),
+            static_cast<double>(granny_bone.inverse_world_4x4[3][2]),
+            static_cast<double>(granny_bone.inverse_world_4x4[3][3])
         )
     );
     bone_node->SetGeometricTranslation(FbxNode::EPivotSet::eDestinationPivot, world.GetT());

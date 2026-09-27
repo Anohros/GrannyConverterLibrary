@@ -95,7 +95,7 @@ protected:
     ///
     /// \brief Scene of the importing granny file.
     ///
-    Bindings::Scene::SharedPtr m_scene;
+    Bindings::Scene::SharedPtr scene_;
 };
 
 }  // namespace GCL::Importer

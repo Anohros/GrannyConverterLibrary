@@ -25,7 +25,7 @@ void FbxExporterMaterial::exportMaterials(const std::string& outputFilepath) {
 std::string FbxExporterMaterial::getTextureFilePath(
     std::string outputFilepath, GrannyTexture* texture
 ) {
-    auto sourceTextureFilePath = std::string(texture->FromFileName);
+    auto sourceTextureFilePath = std::string(texture->from_file_name);
     auto sourceTextureFileName = sourceTextureFilePath;
 
     auto fileNameBeginsOffset = sourceTextureFilePath.find_last_of('\\');
@@ -135,9 +135,9 @@ FbxSurfaceMaterial* FbxExporterMaterial::addMaterial(
     texture->UVSet.Set("UV1");
 
     FbxFileTexture* ambientTexture = nullptr;
-    if (material->getData()->MapCount > 1) {
+    if (material->getData()->map_count > 1) {
         const auto grannyAmbientTexture =
-            GCL::Utilities::getMaterialTexture(material->getData()->Maps[1].Material);
+            GCL::Utilities::getMaterialTexture(material->getData()->maps[1].material);
         if (grannyAmbientTexture) {
             ambientTexture = FbxFileTexture::Create(fbx_scene_, "Ambient Texture");
             const std::string ambientTextureFilePath =
@@ -169,9 +169,9 @@ void FbxExporterMaterial::exportMaterial(
 ) {
     const auto* texture = GCL::Utilities::getMaterialTexture(material->getData());
     const auto material_name =
-        sanitizeMaterialName(material->getData()->Name, texture ? texture->FromFileName : "");
+        sanitizeMaterialName(material->getData()->name, texture ? texture->from_file_name : "");
 
-    if (material->getData()->Texture) {
+    if (material->getData()->texture) {
         return;
     }
 
