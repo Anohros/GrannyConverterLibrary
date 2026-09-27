@@ -138,7 +138,7 @@ FbxSurfaceMaterial* FbxExporterMaterial::addMaterial(
     if (material->getData()->MapCount > 1) {
         const auto grannyAmbientTexture =
             GCL::Utilities::getMaterialTexture(material->getData()->Maps[1].Material);
-        if (grannyAmbientTexture != nullptr) {
+        if (grannyAmbientTexture) {
             ambientTexture = FbxFileTexture::Create(fbx_scene_, "Ambient Texture");
             const std::string ambientTextureFilePath =
                 getTextureFilePath(outputFilepath, grannyAmbientTexture);
@@ -151,7 +151,7 @@ FbxSurfaceMaterial* FbxExporterMaterial::addMaterial(
     }
 
     auto phongMaterial = FbxSurfacePhong::Create(fbx_scene_, materialName.c_str());
-    if (ambientTexture != nullptr) {
+    if (ambientTexture) {
         phongMaterial->Ambient.ConnectSrcObject(ambientTexture);
     }
     phongMaterial->AmbientFactor.Set(1.0);

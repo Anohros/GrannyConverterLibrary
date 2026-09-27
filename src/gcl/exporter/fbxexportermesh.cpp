@@ -6,11 +6,11 @@
 namespace GCL::Exporter {
 
 void FbxExporterMesh::ExportMeshes(const Bindings::Model::SharedPtr& model, bool export_skeleton) {
-    if (model == nullptr) {
+    if (!model) {
         return;
     }
     for (const Bindings::Mesh::SharedPtr& mesh : model->getMeshes()) {
-        if (mesh == nullptr) {
+        if (!mesh) {
             continue;
         }
         if (!mesh->isExcluded()) {
@@ -24,11 +24,11 @@ void FbxExporterMesh::ExportMesh(
     const Bindings::Mesh::SharedPtr& mesh,
     bool export_skeleton
 ) {
-    if (mesh == nullptr || mesh->getData() == nullptr || model == nullptr) {
+    if (!model || !mesh || !mesh->getData()) {
         return;
     }
     FbxNode* mesh_node = FbxNode::Create(fbx_scene_, mesh->getData()->Name);
-    if (mesh_node == nullptr) {
+    if (!mesh_node) {
         return;
     }
     mesh->setNode(mesh_node);
@@ -45,8 +45,7 @@ void FbxExporterMesh::CreateBoneWeightsAndApplyDeformation(
     FbxNode* mesh_node,
     FbxMesh* fbx_mesh
 ) {
-    if (model == nullptr || mesh == nullptr || mesh->getData() == nullptr || mesh_node == nullptr ||
-        fbx_mesh == nullptr) {
+    if (!model || !mesh || !mesh->getData() || !mesh_node || !fbx_mesh) {
         return;
     }
     AllBones all_bones;
@@ -71,9 +70,8 @@ void FbxExporterMesh::InitializeBoneBindings(
     BoundBones* bound_bones,
     BoneBindingList* bone_bindings
 ) const {
-    if (model == nullptr || model->getBones().empty() || mesh == nullptr ||
-        mesh->getData() == nullptr || all_bones == nullptr || bound_bones == nullptr ||
-        bone_bindings == nullptr) {
+    if (!model || model->getBones().empty() || !mesh || !mesh->getData() || !all_bones ||
+        !bound_bones || !bone_bindings) {
         return;
     }
     for (const Bindings::Bone::SharedPtr& bone : model->getBones()) {
@@ -103,14 +101,14 @@ void FbxExporterMesh::ApplyRigidBoneWeights(
     const BoneBindingList& bone_bindings,
     const std::vector<GrannyPWNT34322Vertex>& vertices
 ) {
-    if (mesh == nullptr || bone_bindings.empty() || vertices.empty()) {
+    if (!mesh || bone_bindings.empty() || vertices.empty()) {
         return;
     }
     constexpr double kFullWeight = 255.0;
     const int vertex_count = static_cast<int>(vertices.size());
     for (const Bindings::BoneBinding::SharedPtr& bone_binding : bone_bindings) {
         FbxCluster* cluster = bone_binding->getCluster();
-        if (cluster == nullptr) {
+        if (!cluster) {
             continue;
         }
         for (int vertex_index = 0; vertex_index < vertex_count; ++vertex_index) {
@@ -124,7 +122,7 @@ void FbxExporterMesh::ApplyNonRigidBoneWeights(
     const BoneBindingList& bone_bindings,
     const std::vector<GrannyPWNT34322Vertex>& vertices
 ) {
-    if (mesh == nullptr || bone_bindings.empty() || vertices.empty()) {
+    if (!mesh || bone_bindings.empty() || vertices.empty()) {
         return;
     }
     constexpr int kMaxBoneInfluences = 4;
@@ -142,11 +140,11 @@ void FbxExporterMesh::ApplyNonRigidBoneWeights(
                 continue;
             }
             const Bindings::BoneBinding::SharedPtr& bone_binding = bone_bindings[bone_index];
-            if (bone_binding == nullptr) {
+            if (!bone_binding) {
                 continue;
             }
             FbxCluster* cluster = bone_binding->getCluster();
-            if (cluster == nullptr) {
+            if (!cluster) {
                 continue;
             }
             const double normalized_weight = static_cast<double>(weight) / kMaxBoneWeight;
@@ -162,8 +160,7 @@ void FbxExporterMesh::MapUnboundBones(
     const std::vector<GrannyPWNT34322Vertex>& vertices,
     BoneBindingList* bone_bindings
 ) {
-    if (all_bones == nullptr || bound_bones == nullptr || vertices.empty() ||
-        bone_bindings == nullptr) {
+    if (!all_bones || !bound_bones || !bone_bindings || vertices.empty()) {
         return;
     }
     const int vertex_count = static_cast<int>(vertices.size());
@@ -174,7 +171,7 @@ void FbxExporterMesh::MapUnboundBones(
             auto bone_binding = std::make_shared<Bindings::BoneBinding>(bone, bone_cluster);
             bone_bindings->push_back(bone_binding);
             FbxCluster* cluster = bone_binding->getCluster();
-            if (cluster == nullptr) {
+            if (!cluster) {
                 continue;
             }
             for (int vertex_index = 0; vertex_index < vertex_count; ++vertex_index) {
@@ -188,7 +185,7 @@ void FbxExporterMesh::MapUnboundBones(
 void FbxExporterMesh::CreateMeshDeformation(
     FbxNode* mesh_node, FbxMesh* mesh, const BoneBindingList& bone_bindings, bool is_rigid
 ) {
-    if (mesh_node == nullptr || mesh == nullptr || bone_bindings.empty()) {
+    if (!mesh_node || !mesh || bone_bindings.empty()) {
         return;
     }
     FbxAMatrix mesh_matrix = mesh_node->EvaluateGlobalTransform();
@@ -196,15 +193,15 @@ void FbxExporterMesh::CreateMeshDeformation(
     mesh_skin->SetSkinningType(is_rigid ? FbxSkin::EType::eRigid : FbxSkin::EType::eLinear);
     for (const Bindings::BoneBinding::SharedPtr& bone_binding : bone_bindings) {
         Bindings::Bone::SharedPtr bone = bone_binding->getBone();
-        if (bone == nullptr) {
+        if (!bone) {
             continue;
         }
         FbxNode* bone_node = bone->getNode();
-        if (bone_node == nullptr) {
+        if (!bone_node) {
             continue;
         }
         FbxCluster* cluster = bone_binding->getCluster();
-        if (cluster == nullptr) {
+        if (!cluster) {
             continue;
         }
         cluster->SetLink(bone_node);
@@ -218,11 +215,11 @@ void FbxExporterMesh::CreateMeshDeformation(
 }
 
 FbxMesh* FbxExporterMesh::ExportFbxMesh(const Bindings::Mesh::SharedPtr& mesh) {
-    if (mesh == nullptr || mesh->getData() == nullptr || mesh->getNode() == nullptr) {
+    if (!mesh || !mesh->getData() || !mesh->getNode()) {
         return nullptr;
     }
     FbxMesh* fbx_mesh = FbxMesh::Create(fbx_scene_, mesh->getData()->Name);
-    if (fbx_mesh == nullptr) {
+    if (!fbx_mesh) {
         return nullptr;
     }
     const std::vector<GrannyPWNT34322Vertex> vertices = mesh->getVertices();
@@ -252,13 +249,13 @@ FbxMesh* FbxExporterMesh::ExportFbxMesh(const Bindings::Mesh::SharedPtr& mesh) {
 void FbxExporterMesh::CreateControlPoints(
     FbxMesh* mesh, const std::vector<GrannyPWNT34322Vertex>& vertices
 ) {
-    if (mesh == nullptr || vertices.empty()) {
+    if (!mesh || vertices.empty()) {
         return;
     }
     const int vertices_count = static_cast<int>(vertices.size());
     mesh->InitControlPoints(vertices_count);
     FbxVector4* control_points = mesh->GetControlPoints();
-    if (control_points == nullptr) {
+    if (!control_points) {
         return;
     }
     int vertex_index = 0;
@@ -273,11 +270,11 @@ void FbxExporterMesh::CreateControlPoints(
 }
 
 void FbxExporterMesh::CreateMaterial(FbxMesh* mesh) {
-    if (mesh == nullptr) {
+    if (!mesh) {
         return;
     }
     FbxGeometryElementMaterial* material_element = mesh->CreateElementMaterial();
-    if (material_element == nullptr) {
+    if (!material_element) {
         return;
     }
     material_element->SetMappingMode(FbxLayerElement::EMappingMode::eByPolygon);
@@ -288,11 +285,11 @@ void FbxExporterMesh::CreateMaterial(FbxMesh* mesh) {
 void FbxExporterMesh::CreateNormal(
     FbxMesh* mesh, const std::vector<GrannyPWNT34322Vertex>& vertices
 ) {
-    if (mesh == nullptr) {
+    if (!mesh) {
         return;
     }
     FbxGeometryElementNormal* normal_element = mesh->CreateElementNormal();
-    if (normal_element == nullptr) {
+    if (!normal_element) {
         return;
     }
     normal_element->SetMappingMode(FbxLayerElement::EMappingMode::eByControlPoint);
@@ -316,9 +313,8 @@ void FbxExporterMesh::CreateNormal(
 }
 
 int FbxExporterMesh::CountTextureCoordinateTypes(const Bindings::Mesh::SharedPtr& mesh) {
-    if (mesh == nullptr || mesh->getData() == nullptr ||
-        mesh->getData()->PrimaryVertexData == nullptr ||
-        mesh->getData()->PrimaryVertexData->VertexType == nullptr) {
+    if (!mesh || !mesh->getData() || !mesh->getData()->PrimaryVertexData ||
+        !mesh->getData()->PrimaryVertexData->VertexType) {
         return 0;
     }
     const int total_type_size =
@@ -347,7 +343,7 @@ void FbxExporterMesh::CreateUV(
     FbxMesh* fbx_mesh,
     const std::vector<GrannyPWNT34322Vertex>& vertices
 ) {
-    if (mesh == nullptr || fbx_mesh == nullptr || vertices.empty()) {
+    if (!mesh || !fbx_mesh || vertices.empty()) {
         return;
     }
     CreateUV1(fbx_mesh, vertices);
@@ -361,11 +357,11 @@ void FbxExporterMesh::CreateUV(
 void FbxExporterMesh::CreateUV1(
     FbxMesh* fbx_mesh, const std::vector<GrannyPWNT34322Vertex>& vertices
 ) {
-    if (fbx_mesh == nullptr || vertices.empty()) {
+    if (!fbx_mesh || vertices.empty()) {
         return;
     }
     FbxGeometryElementUV* element_uv = fbx_mesh->CreateElementUV("UV1");
-    if (element_uv == nullptr) {
+    if (!element_uv) {
         return;
     }
     element_uv->SetMappingMode(FbxLayerElement::eByControlPoint);
@@ -386,11 +382,11 @@ void FbxExporterMesh::CreateUV1(
 void FbxExporterMesh::CreateUV2(
     FbxMesh* fbx_mesh, const std::vector<GrannyPWNT34322Vertex>& vertices
 ) {
-    if (fbx_mesh == nullptr || vertices.empty()) {
+    if (!fbx_mesh || vertices.empty()) {
         return;
     }
     FbxGeometryElementUV* element_uv = fbx_mesh->CreateElementUV("UV2");
-    if (element_uv == nullptr) {
+    if (!element_uv) {
         return;
     }
     element_uv->SetMappingMode(FbxLayerElement::eByControlPoint);
@@ -409,7 +405,7 @@ void FbxExporterMesh::CreateUV2(
 }
 
 void FbxExporterMesh::BindMaterials(const Bindings::Mesh::SharedPtr& mesh) {
-    if (mesh == nullptr || mesh->getData() == nullptr || mesh->getNode() == nullptr) {
+    if (!mesh || !mesh->getData() || !mesh->getNode()) {
         return;
     }
     const GrannyMesh* mesh_data = mesh->getData();
@@ -423,11 +419,11 @@ void FbxExporterMesh::BindMaterials(const Bindings::Mesh::SharedPtr& mesh) {
          ++material_binding_index) {
         const GrannyMaterial* material =
             mesh_data->MaterialBindings[material_binding_index].Material;
-        if (material == nullptr) {
+        if (!material) {
             continue;
         }
         for (const Bindings::Material::SharedPtr& scene_material : scene_->getMaterials()) {
-            if (scene_material == nullptr) {
+            if (!scene_material) {
                 continue;
             }
             if (scene_material->getData() == material) {
@@ -443,12 +439,12 @@ void FbxExporterMesh::BindMaterials(const Bindings::Mesh::SharedPtr& mesh) {
 }
 
 int FbxExporterMesh::GetMaterialForIndex(const Bindings::Mesh::SharedPtr& mesh, size_t index) {
-    if (mesh == nullptr || mesh->getData() == nullptr || mesh->getNode() == nullptr) {
+    if (!mesh || !mesh->getData() || !mesh->getNode()) {
         return -1;
     }
     const GrannyMesh* mesh_data = mesh->getData();
     const int material_binding_count = mesh_data->MaterialBindingCount;
-    if (material_binding_count == 0 || mesh_data->PrimaryTopology == nullptr) {
+    if (material_binding_count == 0 || !mesh_data->PrimaryTopology) {
         return -1;
     }
     FbxNode* mesh_node = mesh->getNode();
@@ -464,11 +460,11 @@ int FbxExporterMesh::GetMaterialForIndex(const Bindings::Mesh::SharedPtr& mesh, 
             }
             const GrannyMaterial* target_granny_material =
                 mesh_data->MaterialBindings[group.MaterialIndex].Material;
-            if (target_granny_material == nullptr) {
+            if (!target_granny_material) {
                 return -1;
             }
             FbxSurfaceMaterial* current_material = FindSceneMaterial(target_granny_material);
-            if (current_material == nullptr) {
+            if (!current_material) {
                 return -1;
             }
             return FindMaterialIndexAtNode(mesh_node, current_material);
@@ -480,11 +476,11 @@ int FbxExporterMesh::GetMaterialForIndex(const Bindings::Mesh::SharedPtr& mesh, 
 FbxSurfaceMaterial* FbxExporterMesh::FindSceneMaterial(
     const GrannyMaterial* target_material
 ) const {
-    if (target_material == nullptr) {
+    if (!target_material) {
         return nullptr;
     }
     for (const Bindings::Material::SharedPtr& scene_material : scene_->getMaterials()) {
-        if (scene_material != nullptr && scene_material->getData() == target_material) {
+        if (scene_material && scene_material->getData() == target_material) {
             return scene_material->getNode();
         }
     }
@@ -494,7 +490,7 @@ FbxSurfaceMaterial* FbxExporterMesh::FindSceneMaterial(
 int FbxExporterMesh::FindMaterialIndexAtNode(
     FbxNode* mesh_node, const FbxSurfaceMaterial* target_material
 ) {
-    if (mesh_node == nullptr || target_material == nullptr) {
+    if (!mesh_node || !target_material) {
         return -1;
     }
     const int node_material_count = mesh_node->GetMaterialCount();

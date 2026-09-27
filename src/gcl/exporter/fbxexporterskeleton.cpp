@@ -157,7 +157,7 @@ void FbxExporterSkeleton::exportBindPose(const Bindings::Model::SharedPtr& model
     FbxNode* root_bone = model->getBones().at(0)->getNode();
     std::vector<FbxNode*> bone_clusters;
 
-    if (root_bone != nullptr && root_bone->GetNodeAttribute() != nullptr) {
+    if (root_bone && root_bone->GetNodeAttribute()) {
         FbxGeometry* mesh_geometry = nullptr;
         int mesh_skin_count = 0;
         int bone_cluster_count = 0;
@@ -213,7 +213,7 @@ void FbxExporterSkeleton::exportBindPose(const Bindings::Model::SharedPtr& model
 void FbxExporterSkeleton::expandBoneCluster(
     std::vector<FbxNode*>& boneClusters, FbxNode* boneCluster
 ) {
-    if (boneCluster != nullptr) {
+    if (boneCluster) {
         expandBoneCluster(boneClusters, boneCluster->GetParent());
 
         if (find(boneClusters.begin(), boneClusters.end(), boneCluster) == boneClusters.end()) {

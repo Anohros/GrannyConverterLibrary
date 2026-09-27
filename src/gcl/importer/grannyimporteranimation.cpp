@@ -13,7 +13,7 @@ GrannyImporterAnimation::GrannyImporterAnimation(Bindings::Scene::SharedPtr scen
 void GrannyImporterAnimation::importAnimations(GrannyFileInfo* grannyFileInfo) const {
     info("Load animations from granny file.");
 
-    if (!grannyFileInfo->AnimationCount) {
+    if (grannyFileInfo->AnimationCount == 0) {
         warning("Skip load animations because granny file does not have at least one animation.");
         return;
     }
@@ -23,7 +23,7 @@ void GrannyImporterAnimation::importAnimations(GrannyFileInfo* grannyFileInfo) c
 
     // Process animation track groups. Only if animation does have at least one animation track
     // group.
-    if (grannyAnimation->TrackGroupCount) {
+    if (grannyAnimation->TrackGroupCount != 0) {
         for (auto i = 0; i < grannyAnimation->TrackGroupCount; i++) {
             const auto grannyTrackGroup = grannyAnimation->TrackGroups[i];
 
