@@ -2,25 +2,12 @@ cmake_minimum_required(VERSION 3.14)
 
 project(ConverterExample LANGUAGES CXX)
 
-set(CMAKE_INCLUDE_CURRENT_DIR ON)
-
-set(CMAKE_AUTOUIC ON)
-set(CMAKE_AUTOMOC ON)
-set(CMAKE_AUTORCC ON)
-
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-file(GLOB_RECURSE ConverterExampleSources
-    "*.cpp"
-    "*.h"
-)
+add_executable(ConverterExample main.cpp)
 
-add_executable(ConverterExample
-  ${ConverterExampleSources}
-)
-
-target_link_libraries(ConverterExample GrannyConverterLibrary)
+target_link_libraries(ConverterExample PRIVATE GrannyConverterLibrary)
 
 # Copy all dlls.
 add_custom_command(TARGET ConverterExample POST_BUILD
@@ -30,7 +17,7 @@ add_custom_command(TARGET ConverterExample POST_BUILD
 )
 
 # Expected location of the granny2 dll.
-set(GRANNY_DLL "${PROJECT_SOURCE_DIR}/../../external/granny2/granny2_x64.dll")
+set(GRANNY_DLL "${CMAKE_SOURCE_DIR}/external/granny2/granny2_x64.dll")
 
 # Copy granny2 dll.
 if(EXISTS ${GRANNY_DLL})
